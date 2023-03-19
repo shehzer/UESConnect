@@ -45,8 +45,6 @@ const handleFileChange = (e) => {
 
   const save = async function () {
    
-  
-
     setLoad(true)
 
     const mutationQ = gql`

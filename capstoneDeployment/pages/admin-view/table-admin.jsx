@@ -10,41 +10,62 @@ import client from '../../components/apollo-client'
 
 export default function tableAdmin(props) {
     const [name, setName] = useState('')
-    const [role, setRole] = useState('')
-    const [year, setYear] = useState('')
-    const [program, setProgram] = useState('')
-    const [id, setID] = useState('')
-    const [club, setClub] = useState([])
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [match, setMatch] = useState(false)
+    const [password2, setPass2] = useState('')
+    const [clubName, setClub] = useState('')
+  
+    const [admins, setAdmin] = useState([...JSON.parse(props.clubAdmins)])
+    console.log(admins)
 
     const [visible, setVisible] = useState(false);
     const [editAction, setAction] = useState();
     const toggleHigh = ()=>{setVisible(true)}
     const toggleLow = ()=>{setVisible(false)}
 
+
+    const addQ = gql`
+    mutation Mutation($registerInput: RegisterInput) {
+      registerUser(registerInput: $registerInput) {
+        clubID
+        clubName
+        email
+        name
+        password
+        role
+        token
+        userID
+      }
+    }
+    `
+    const [adminUpload] = useMutation(addQ, {
+      onCompleted: (data) => console.log(data),
+          });
+ 
+
     const columns = [
         { name: "NAME", uid: "name" },
         { name: "EMAIL", uid: "email" },
         { name: "PASSWORD", uid: "password" },
-        { name: "CLUB", uid: "club"},
+        { name: "CLUB", uid: "clubName"},
         { name: "ROLE", uid: "role" },
+        { name: "ACTIONS", uid: "actions" },
     ];
 
   function editUser(user, index){
     setName(user.name)
-    setRole(user.role)
-    setYear(user.year)
-    setProgram(user.program)
-    setID(user._id)
+    setEmail(user.email)
+    setPassword(user.password)
+  
   }
 
 
   function clear()
   {
     setName('')
-    setRole('')
-    setYear('')
-    setProgram('')
-    setID('')
+    setEmail('')
+    setPassword('')
 
   }
 
@@ -65,16 +86,24 @@ export default function tableAdmin(props) {
         return ""
       
     }
+
+    toggleLow()
+
   }
 
 
   function addUser()
   { 
 
-    let temp = team.map((element, index)=>({...element}))
-    temp.push({name:name, role:role, year:year, program:program})
-    setTeam([...temp])
-    toggleLow()
+    let qInput = {clubName:clubName, email:email, name:name, password:password, role:"ADMIN"}
+
+    console.log(qInput)
+
+
+
+    adminUpload({variables:qInput})
+
+
 
   }
 
@@ -84,40 +113,10 @@ export default function tableAdmin(props) {
     let temp = team.filter((element, index)=>(element._id!=id))
     console.log(temp)
     setTeam([...temp])
-    toggleLow()
+
   }
 
-  function confirmEdit()
-  {
-    let temp = team.map((element, index)=>({...element}))
 
-    console.log(id, name, role, program, year)
-
-
-    const newArr = temp.map((element, index)=>{
-
-      if(id==element._id)
-      {
-        element.name=name
-        element.year=year
-        element.role=role
-        element.program=program
-      }
-
-      return element
-    })
-
-    console.log(newArr)
-
-    setTeam([...newArr])
-    toggleLow()
-  }
-
-  function saveAll()
-  {
-    let sendTeam = team.map((element, index)=>({...element}))
-    props.save(sendTeam)
-  }
 
 
   function renderCell(user, columnKey){
@@ -127,9 +126,10 @@ export default function tableAdmin(props) {
     switch (columnKey) {
       case "name":
         return (
-          <User src={user.headshotURL}  name={cellValue} css={{ p: 0 }} >
+
+            <Text>{cellValue}</Text>
          
-          </User>
+  
         );
       case "role":
         return (
@@ -139,21 +139,16 @@ export default function tableAdmin(props) {
                 {cellValue}
               </Text>
             </Row>
-            <Row>
-              <Text b size={13} css={{ tt: "capitalize", color: "$accents7" }}>
-                {user.team}
-              </Text>
-            </Row>
           </Col>
         );
-      case "year":
+      case "email":
         return <StyledBadgeWrapper type={user.status}>{cellValue}</StyledBadgeWrapper>;
 
       case "actions":
         return (
           <Row justify="center" align="center">
             <Col css={{ d: "flex" }}>
-              <Tooltip  content="Edit user">
+              <Tooltip placement="leftEnd" content="Edit user">
                 <IconButtonWrapper  onClick={() => {editUser(user, columnKey);  setAction('edit'); toggleHigh();} }>
                   <EditIconWrapper  size={20} fill="#979797" />
                 </IconButtonWrapper>
@@ -163,6 +158,7 @@ export default function tableAdmin(props) {
               <Tooltip
                 content="Delete user"
                 color="error"
+                placement="leftEnd"
                 onClick={() => {editUser(user, columnKey); setAction('delete'); toggleHigh();  }}
               >
                 <IconButtonWrapper >
@@ -172,8 +168,28 @@ export default function tableAdmin(props) {
             </Col>
           </Row>
         );
+
+      case "club":
+        return(
+          <Text>{cellValue}</Text>
+        );
+
+      case "password":
+        return(
+
+          <Col style={{alignSelf:"initial"}}>
+          <Row>
+            <Text b size={14} css={{ tt: "capitalize" }}>
+              {"......."}
+            </Text>
+          </Row>
+        </Col>
+  
+        )
       default:
-        return cellValue;
+        return (
+          <Text>{cellValue}</Text>
+        );
     }
   };
   return (
@@ -199,12 +215,12 @@ export default function tableAdmin(props) {
           </Table.Column>
         )}
       </Table.Header>
-      <Table.Body items={club}>
+      <Table.Body items={admins}>
         {(item) => (
-          <Table.Row key={item._id}>
+          <Table.Row key={item.userID}>
             {(columnKey) => (
                
-              <Table.Cell key={item._id+columnKey}  >{renderCell(item, columnKey)}</Table.Cell>
+              <Table.Cell key={item.userID+columnKey}  >{renderCell(item, columnKey)}</Table.Cell>
             )}
           </Table.Row>
         )}
@@ -215,9 +231,114 @@ export default function tableAdmin(props) {
         Add Club Credentials
     </Button>
 
-    <Button onPress={saveAll} className="my-10 bg-green-600">
-        Save
-    </Button>
+
+    <Modal
+        closeButton
+        aria-labelledby="team-editor"
+        open={visible}
+        onClose={toggleLow}
+      >
+        <Modal.Header aria-labelledby="team-header" >
+          <Text id="modal-title" size={18}>
+            Team Editor
+          </Text>
+        </Modal.Header>
+       {editAction!="delete"?
+       <Modal.Body aria-labelledby="team-body"  >
+       
+         <Input
+          aria-labelledby="team-name"
+            clearable
+            bordered
+            fullWidth
+            color="primary"
+            size="lg"
+            label="Name"
+            placeholder={name?name:"Name"}
+            onChange={(e)=>{setName(e.target.value)}}
+  
+          />
+          <Input
+            clearable
+            bordered
+            fullWidth
+            color="primary"
+            size="lg"
+            label="Email"
+            placeholder={email?email:"Email"}
+            onChange={(e)=>{setEmail(e.target.value)}}
+            aria-labelledby="email"
+           
+          />
+
+          <Input
+            clearable
+            bordered
+            fullWidth
+            color="primary"
+            size="lg"
+            label="Club"
+            placeholder={clubName?clubName:"Club Name"}
+            onChange={(e)=>{setEmail(e.target.value)}}
+            aria-labelledby="email"
+           
+          />
+
+          <Input.Password
+            clearable
+            bordered
+            fullWidth
+            color="primary"
+            size="lg"
+            label="Password"
+            placeholder={password?password:"Password"}
+            onChange={(e)=>{setPassword(e.target.value)}}
+            aria-labelledby="password"
+           
+          />
+
+          <Input.Password
+            clearable
+            bordered
+            fullWidth
+            color="primary"
+            size="lg"
+            label="Confirm Password"
+            onChange={(e)=>{setPass2(e.target.value)}}
+            aria-labelledby="password"
+           
+          />    
+
+
+         {password!=password2?<Text color='error'>{"Passwords do not match"}</Text>:""}
+
+      
+        </Modal.Body>
+        : 
+        <Modal.Body>
+            <Input
+            clearable
+            bordered
+            fullWidth
+            color="primary"
+            size="lg"
+            disabled
+            placeholder={name}
+            aria-labelledby="team-program"
+          />
+      </Modal.Body>
+
+      
+      
+      }
+        <Modal.Footer aria-labelledby="team-footer" >
+           {editAction!="delete"?<Button className="bg-blue-600"  onPress={handleConfirm} disabled={password!=password2 || password==""}>Confirm</Button>:
+           <Button className="bg-rose-600" color='error' onPress={handleConfirm}>DELETE</Button> }
+            <Button  bordered color='error' onPress={toggleLow}>Cancel</Button>
+
+        </Modal.Footer>
+      </Modal>
+
 
 
     </div>
