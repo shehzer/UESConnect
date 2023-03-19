@@ -50,10 +50,10 @@ export default cors( async (req, res) => {
 
   
   
-  // if (contentType && contentType.startsWith('multipart/form-data')) {
+  if (contentType && contentType.startsWith('multipart/form-data')) {
 
-  //   req.filePayload = await processRequest(req, res)
-  // }
+    req.filePayload = await processRequest(req, res)
+  }
 
   await startServer
 
