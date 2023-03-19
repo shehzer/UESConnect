@@ -14,6 +14,8 @@ const schema = makeExecutableSchema({typeDefs, resolvers})
 
 connectDb();
 
+  
+
 
 const  apolloServer  =  new  ApolloServer({  schema, cache: "bounded", context: ({req}) =>{},introspection:true, playground:true, });
 const startServer = apolloServer.start()
