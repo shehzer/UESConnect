@@ -1,12 +1,17 @@
 import  {  ApolloServer  }  from  "apollo-server-micro";
 import Cors from 'micro-cors';
 import connectDb from './config/connectionDB'
+import {makeExecutableSchema} from "@graphql-tools/schema";
+import {graphql} from "graphql"
 // import processRequest from "graphql-upload/processRequest.js";
 console.log(ApolloServer)
 
 const cors = Cors()
 const typeDefs = require("./schemas/typdefs")
 const resolvers = require("./resolvers/index")
+
+const schema = makeExecutableSchema({typeDefs, resolvers})
+
 connectDb();
 
 
@@ -34,7 +39,13 @@ export default cors( async (req, res) => {
 
   const contentType = req.headers['content-type']
 
+  const {body} = req
 
+  const {query, variables, operationName} = body
+
+  const result = await graphql(schema, query, null, variables, operationName)
+
+  console.log(result)
 
   
   
