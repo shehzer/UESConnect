@@ -1,0 +1,54 @@
+.overallContainer {
+  margin: 30px;
+  width: 50%;
+}
+
+.pageTitle {
+  font-size: 40px;
+  font-weight: bold;
+}
+.title {
+  font-size: 30px;
+  padding: 5px 5px 5px 20px;
+  font-weight: bold;
+}
+
+.description {
+  font-size: 15px;
+  padding-left: 20px;
+  padding-bottom: 10px;
+}
+
+.elementContainer {
+  margin: 25px;
+  border: 0px white solid;
+  border-radius: 25px;
+  background-color: #16181a;
+}
+
+.editButton {
+  display: inline-block;
+  margin-left: 20px;
+  background-color: #0070f3;
+}
+
+.deleteButton {
+  display: inline-block;
+  margin: 20px;
+  background-color: #bb2124;
+}
+
+.navButton {
+  display: inline-block;
+  margin: 20px;
+  background-color: #0070f3;
+}
+
+.createButton {
+  margin: 25px;
+  background-color: #22bb33;
+}
+
+.buttonContainer {
+  white-space: nowrap;
+}

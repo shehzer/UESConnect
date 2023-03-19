@@ -1,0 +1,18 @@
+.container {
+  margin: 50px;
+  display: flex;
+  flex-direction: column;
+}
+.cards {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+.body {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+.inputHeader {
+  margin-bottom: 35px;
+}

@@ -1,0 +1,30 @@
+.body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.infoBox {
+  display: flex;
+  flex-direction: row;
+
+  margin-bottom: 50px;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  margin: 50px;
+}
+
+.submit {
+  align-self: flex-end;
+  margin-left: 10px;
+}
+
+.imageBox {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-bottom: 50px;
+}

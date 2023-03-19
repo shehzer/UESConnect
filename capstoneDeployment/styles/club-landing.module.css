@@ -1,0 +1,36 @@
+.header {
+  margin: 25px;
+  display: flex;
+  flex-direction: row;
+}
+
+.nav-buttons {
+  margin: 5px;
+}
+
+.navHolder {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  margin-top: 50px;
+}
+
+.headerInput {
+  color: white;
+  border-color: #0072f5;
+  border-width: 5px;
+  background-color: black;
+  border-radius: 10px;
+}
+
+.headerInput::placeholder {
+  color: white;
+}
+
+.topBar {
+  display: flex;
+  flex-direction: row;
+  margin: 5px;
+  margin-top: 15px;
+  justify-content: center;
+}

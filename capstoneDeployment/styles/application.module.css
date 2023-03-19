@@ -1,0 +1,62 @@
+.header {
+  font-size: 40px;
+  font-weight: bold;
+  padding: 10px 10px 10px 20px;
+}
+.body {
+  margin: 25px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  align-items: normal;
+}
+
+.question,
+.ans {
+  font-size: 20px;
+  padding: 5px 5px 0px 50px;
+}
+
+.qaContainer {
+  margin-left: 40px;
+  padding-bottom: 20px;
+}
+
+.label {
+  font-size: 20px;
+  padding: 5px 5px 0px 20px;
+  font-weight: bold;
+}
+
+.output {
+  font-size: 20px;
+  margin: 0px 5px 5px 40px;
+}
+
+.subHeader {
+  font-size: 30px;
+  margin: 5px 5px 5px 20px;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+input.answer {
+  height: 40px;
+}
+
+textarea.answer {
+  height: 100px;
+}
+
+.questionSection {
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.applicationContainer {
+  margin: 25px;
+  border: 0px white solid;
+  border-radius: 25px;
+  background-color: #16181a;
+  width: 50%;
+}

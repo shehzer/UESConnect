@@ -1,0 +1,13 @@
+.header{
+    font-size: 40px;
+    font-weight: bold;
+    padding: 10px 10px 10px 20px;
+}
+.topBar {
+    display: flex;
+    flex-direction: row;
+    margin: 5px;
+    margin-top: 15px;
+    justify-content: center;
+  }
+  

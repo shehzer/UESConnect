@@ -1,0 +1,109 @@
+.mainTable {
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid darkgray;
+    border-collapse: separate;
+    border-radius: 5px;
+    font-size: 0.8em;
+    font-family: sans-serif;
+    width: 90%;
+    max-width: 1000px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    margin-top: 40px;
+    max-height: 400px;
+    overflow-x: auto;
+}
+.mainTable tr {
+    text-align: center;
+}
+.mainTable th {
+    border-top: none;
+}
+.mainTable tr.resultRow:hover {
+    background-color: dimgrey;
+    cursor: pointer;
+}
+.mainTable tr:first-child {
+    border-top: none;
+}
+.mainTable th,
+.mainTable tr {
+    padding: 6px 8px;
+    border-left: 2px solid darkgray;
+    border-top: 2px solid darkgray;
+}
+.mainTable th:first-child {
+    border-left: none;
+}
+.plain {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.filterForm {
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.searchField {
+    padding: 5px;
+}
+.searchField label{
+    padding: 10px;
+}
+.searchField input {
+    border-radius: 5px;
+    background-color: #16181a;
+}
+.deleteButton {
+    margin: 0;
+    font-size: 0.9em;
+    color: #bb2124
+}
+.tableHolder {
+    overflow-x: auto;
+}
+
+.pageTitle {
+    font-size: 30px;
+    padding: 5px 5px 5px 20px;
+    font-weight: bold;
+}
+
+.pageButton {
+    border-radius: 10px;
+    background-color: #0070f3;
+    padding: 5px 10px;
+}
+
+.pageControl {
+    display: flex;
+    justify-content: space-between;
+    width: 15%;
+    min-width: 200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 20px 0px;
+}
+
+.searchButton {
+    border-radius: 10px;
+    background-color: #0070f3;
+    padding: 5px 10px;
+}
+
+.createButton {
+    border-radius: 10px;
+    background-color: #22bb33;
+    padding: 5px 10px;
+}
+.miscControls {
+    display: flex;
+    justify-content: space-between;
+    width: 15%;
+    min-width: 150px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 20px 0px;
+}
