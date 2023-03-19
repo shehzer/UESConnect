@@ -3,7 +3,7 @@ import Cors from 'micro-cors';
 import connectDb from './config/connectionDB'
 import {makeExecutableSchema} from "@graphql-tools/schema";
 import {graphql} from "graphql"
-// import processRequest from "graphql-upload/processRequest.js";
+import processRequest from "graphql-upload/processRequest.js";
 console.log(ApolloServer)
 
 const cors = Cors()
