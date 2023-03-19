@@ -2,6 +2,7 @@
     font-size: 40px;
     font-weight: bold;
     padding: 10px 10px 10px 20px;
+    margin: 25px
 }
 .topBar {
     display: flex;

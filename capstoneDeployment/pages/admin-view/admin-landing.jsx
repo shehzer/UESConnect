@@ -22,9 +22,8 @@ export async function getServerSideProps(context) {
 export default function amdinLanding(props) {
 
   const [adminList, setList] = useState([...JSON.parse(props.admins)])
-  console.log(adminList)
 
-
+  
 
   function addAdmin()
   {
@@ -41,7 +40,7 @@ export default function amdinLanding(props) {
     <div className={styles.header}>
       <div className={styles.topBar}>
         <Text h6 size="$2xl" weight="bold">
-          UES Connect
+          Club Admins
         </Text>
         <Button
           className="bg-[#0072F5]"
@@ -52,7 +51,7 @@ export default function amdinLanding(props) {
         </Button>
       </div>
 
-      <TableAdmin/>
+      <TableAdmin clubAdmins={props.admins} />
 
 
 
