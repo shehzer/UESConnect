@@ -112,6 +112,7 @@ export default function tableAdmin(props) {
   {
     let temp = team.filter((element, index)=>(element._id!=id))
     console.log(temp)
+    console.log("hello")
     setTeam([...temp])
 
   }
