@@ -15,7 +15,7 @@ const schema = makeExecutableSchema({typeDefs, resolvers})
 connectDb();
 
 
-const  apolloServer  =  new  ApolloServer({  typeDefs,  resolvers, cache: "bounded", context: ({req}) =>{},introspection:true, playground:true, });
+const  apolloServer  =  new  ApolloServer({  schema, cache: "bounded", context: ({req}) =>{},introspection:true, playground:true, });
 const startServer = apolloServer.start()
 
 export default cors( async (req, res) => {
@@ -39,13 +39,14 @@ export default cors( async (req, res) => {
 
   const contentType = req.headers['content-type']
 
-  const {body} = req
+//   const {body} = req
+//   console.log(req)
 
-  const {query, variables, operationName} = body
+//   const {query, variables, operationName} = body
 
-  const result = await graphql(schema, query, null, variables, operationName)
+//   const result = await graphql(schema, query, null, variables, operationName)
 
-  console.log(result)
+//   console.log(result)
 
   
   
