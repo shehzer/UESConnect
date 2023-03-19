@@ -38,7 +38,7 @@ export default function App({ Component, pageProps }) {
   const { isBrowser } = useSSR()
 
   const uploadLink = createUploadLink({ 
-    uri: "https://capstone-shehzer.vercel.app/api/graphql" });
+    uri: "https://capstone-rosy-nine.vercel.app/api/graphql" });
 
     const client = new ApolloClient({
       link: uploadLink,
