@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router'
 import { gql, useMutation } from '@apollo/client'
-import client from '../../apollo-client'
+import client from '../../../components/apollo-client'
 import APILoadingScreen from '../loading-screen'
 import StudentHeader from '../student-header'
 import { useState, useRef, useEffect, localStorage } from 'react'
