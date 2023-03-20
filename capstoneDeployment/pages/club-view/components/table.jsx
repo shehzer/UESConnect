@@ -85,6 +85,7 @@ export default function table(props) {
 });
 const handleFileChange = (e) => {
   const file = e.target.files;
+  console.log(file, "from handleFileChange")
 
   if (!file) return;
   setFile(file)
@@ -95,10 +96,11 @@ const handleFileChange = (e) => {
 
   function addUser()
   { 
+    console.log(file[0], "on uploading")
 
     console.log(file, props.clubID, {name:name, role:role, year:year, program:program} )
 
-    execUpload({variables:{file:file, clubId:props.clubID, execAdd:{name:name, role:role, year:year, program:program}}});
+    execUpload({variables:{file:file[0], clubId:props.clubID, execAdd:{name:name, role:role, year:year, program:program}}});
 
     // {
     //   "file": "file",
