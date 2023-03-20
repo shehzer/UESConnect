@@ -81,7 +81,7 @@ export default function table(props) {
 
   const [execUpload] = useMutation(uploadExec, {
     onCompleted: (data) => console.log(data),
-    onError: (err)=>{console.log(err)}
+    onError: (err)=>{console.log(err, "i am erroring on exec upload")}
 });
 const handleFileChange = (e) => {
   const file = e.target.files;
