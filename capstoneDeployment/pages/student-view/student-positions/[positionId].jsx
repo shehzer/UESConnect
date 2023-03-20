@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router'
-import { gql } from '@apollo/client'
-import client from '../../../components/apollo-client'
+import { gql, useMutation } from '@apollo/client'
+import client from '../../apollo-client'
 import APILoadingScreen from '../loading-screen'
 import StudentHeader from '../student-header'
 import { useState, useRef, useEffect, localStorage } from 'react'
@@ -31,14 +31,20 @@ export default function StudentPositions(props) {
 
   const submit = (e) => {
     e.preventDefault()
-    console.log(userEmail)
-    console.log(userName)
-    console.log(userQA)
-    submitApplicationFunc()
+    applicationUpload({ variables: {
+      file: filename,
+      applicationInput: {
+        description: positionData.description,
+        email: userEmail,
+        name: userName,
+        positionID: positionId,
+        qA: userQA,
+      },
+    }})
+    
   }
 
   const handleReadMore = () => {
-    //sets isLiked to the opposite of the current isReadMore
     setIsReadMore(!isReadMore)
   }
 
@@ -46,6 +52,7 @@ export default function StudentPositions(props) {
 
   const handleFileInputChange = (event) => {
     setSelectedFile(event.target.files[0]);
+    console.log(event.target.files[0])
   };
 
   const router = useRouter()
@@ -99,62 +106,18 @@ export default function StudentPositions(props) {
         alert(e.message)
       })
   }
-
-
-  const handleFormSubmit = async function () {
-    const submitApplication = gql`
-    mutation ObjectUploader($filename: Upload!, $objType: String, $objId: String) {
-      objectUploader(filename: $filename, objType: $objType, objId: $objId)
-    }
-    `
-    client
-      .mutate({
-        mutation: submitApplication,
-        variables: {
-          filename: filename,
-          objType: "resume",
-          objId: '639036756318e7127b127811'
-        },
-      })
-      .then((result) => {
-        console.log(result)
-        console.log('poo')
-      })
-      .catch((e) => {
-        alert(e.message)
-      })
-  }
-
-  const submitApplicationFunc = async function () {
-    const submitApplication = gql`
-      mutation Mutation($applicationInput: ApplicationInput) {
-        createApplication(applicationInput: $applicationInput) {
+  
+  const submitApplication = gql`
+      mutation Mutation($file: Upload, $applicationInput: ApplicationInput) {
+        createApplication(file: $file, applicationInput: $applicationInput) {
           _id
         }
       }
     `
-    client
-      .mutate({
-        mutation: submitApplication,
-        variables: {
-          applicationInput: {
-            description: positionData.description,
-            email: userEmail,
-            name: userName,
-            positionID: positionId,
-            qA: userQA,
-          },
-        },
-      })
-      .then((result) => {
-        console.log(result)
-        setApplicationId(result)
-        alert('Thank you for Applying!')
-      })
-      .catch((e) => {
-        alert(e.message)
-      })
-  }
+  const [applicationUpload] = useMutation(submitApplication, {
+    onCompleted: (data) => console.log(data),
+    onError: (err)=>{console.log(err, "i am erroring on application upload")}
+});
 
   return (
     <div className="flex flex-col bg-slate-200 w-full h-full text-slate-800 items-center ">
@@ -199,7 +162,7 @@ export default function StudentPositions(props) {
             {isReadMore ? 'Read More...' : 'Read Less...'}
           </button>
         </div>
-        <form onSubmit={handleFormSubmit}>
+        <form>
           <div className="flex flex-col items-center justify-center">
             <label htmlFor="resume" className="mb-2 font-bold text-gray-700">
               Upload Your Resume
@@ -212,17 +175,8 @@ export default function StudentPositions(props) {
               onChange={handleFileInputChange}
             />
           </div>
-          <div className="mt-4">
-            <button
-              type="submit"
-              className="py-2 px-4 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
-              disabled={!filename}
-            >
-              Upload
-            </button>
-          </div>
         </form>
-        <div className="flex self-center space-x-2">
+        <div className="flex self-center space-x-2 pt-3">
           <div className="flex flex-col self-center">
             <label className="form-label inline-block mb-2 text-lg font-bold self-center">
               {' '}

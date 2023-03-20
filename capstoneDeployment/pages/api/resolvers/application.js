@@ -1,6 +1,35 @@
 import { user, pass } from '../config/default.json'
 const Application = require('../models/Application')
 const transporter = require('../email/transporter')
+import { getNamedType } from 'graphql'
+import {parse, join} from 'path'
+import {baseURL, S3_ACCESS_KEY, S3_SECRET_ACCESS_KEY, S3_BUCKET_REGION, S3_BUCKET_NAME} from '../config/default.json'
+const AWS = require('aws-sdk')
+const object = require('../models/Object')
+
+let s3 = new AWS.S3({
+  accessKeyId: S3_ACCESS_KEY,
+  secretAccessKey: S3_SECRET_ACCESS_KEY,
+  bucketName: S3_BUCKET_NAME,
+  region: S3_BUCKET_REGION
+});
+
+async function uploadToS3(name, body){
+  var params = { 
+    Bucket: S3_BUCKET_NAME,
+    Key: name,
+    Body: body
+  }
+  return s3.upload(params, function(err,data){
+    if(err){
+      console.log('error in callback')
+      console.log(err)
+    }
+    console.log('success')
+    console.log(data)
+  }).promise()
+}
+
 
 module.exports = {
   Query: {
@@ -16,11 +45,26 @@ module.exports = {
     },
   },
   Mutation: {
-    createApplication: async (_, { applicationInput: { name, email, description, qA, positionID, resumeID } }) => {
-      const createdApplication = new Application({ name, email, description, qA, positionID, resumeID })
-      
+    createApplication: async (_, {file, applicationInput: { name, email, description, qA, positionID} }) => {
+      const createdApplication = new Application({ name, email, description, qA, positionID})
+      console.log("we in here")
       const res = await createdApplication.save()
-  
+      let objectId = res._id.toString()
+      let { filename, createReadStream} = await file.file;
+      let objectType = "resume"
+      let stream = createReadStream();
+      let fullName = `${objectId}${filename}`
+      let resAWS = await uploadToS3(fullName,stream)
+      let createdObject = new object({
+        filename: resAWS.key,
+        url: resAWS.Location,
+        objType: objectType,
+        objId: objectId,
+      })
+
+      console.log("createdObject", createdObject)
+      const result = await createdObject.save() //This is where MongoDB actually saves
+      console.log("this is result", result)
       // Send a confirmation email
       const testAccount = { user, pass }
   

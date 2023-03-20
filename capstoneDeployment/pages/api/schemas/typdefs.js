@@ -20,7 +20,7 @@ module.exports = gql`
     createPosition(positionInput: PositionInput): Position!
     deletePosition(ID: ID!): Boolean!
     editPosition(ID: ID!, positionInput: PositionInput): Boolean
-    createApplication(applicationInput: ApplicationInput): Application!
+    createApplication(file: Upload, applicationInput: ApplicationInput): Application!
     deleteApplication(ID: ID!): Boolean!
     registerUser(registerInput: RegisterInput): User
     loginUser(loginInput: LoginInput): Club
@@ -157,7 +157,6 @@ module.exports = gql`
     description: String
     qA: [QuestionAnswerInput]
     positionID: String
-    resumeID: String
   }
 
   input QuestionAnswerInput {
