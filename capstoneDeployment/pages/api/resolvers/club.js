@@ -1,8 +1,34 @@
-//This is where the actual logic comes in
-
 const { exec } = require('child_process')
 const Club = require('../models/Club')
 const object = require('../models/Object')
+import {createWriteStream} from 'fs'
+import { getNamedType } from 'graphql'
+import {parse, join} from 'path'
+import {baseURL, S3_ACCESS_KEY, S3_SECRET_ACCESS_KEY, S3_BUCKET_REGION, S3_BUCKET_NAME} from '../config/default.json'
+const AWS = require('aws-sdk')
+
+let s3 = new AWS.S3({
+  accessKeyId: S3_ACCESS_KEY,
+  secretAccessKey: S3_SECRET_ACCESS_KEY,
+  bucketName: S3_BUCKET_NAME,
+  region: S3_BUCKET_REGION
+});
+
+async function uploadToS3(name, body){
+  var params = { 
+    Bucket: S3_BUCKET_NAME,
+    Key: name,
+    Body: body
+  }
+  return s3.upload(params, function(err,data){
+    if(err){
+      console.log('error in callback')
+      console.log(err)
+    }
+    console.log('success')
+    console.log(data)
+  }).promise()
+}
 
 module.exports = {
   Query: {
@@ -76,12 +102,7 @@ module.exports = {
     deleteClub: async (_, { ID }) => {
       const wasDeleted = (await Club.deleteOne({ _id: ID })).deletedCount
       return wasDeleted
-      //1 if something was deleted, 0 if nothing was deleted
     },
-    // async editClub(_, {ID, clubInput:{name, department,description, execs}}){
-    //     const wasEdited = (await Club.updateOne({_id: ID}, {name: name, department: department, description: description, execs: execs})).modifiedCount;
-    //     return wasEdited;
-    // }
     editClub: async(
       _,
       { ID, clubInput: { name, department, description, execs } },
@@ -113,7 +134,7 @@ module.exports = {
     },
     addExec: async (
       _,
-      { clubId, execAdd: { name, role, year, program} }
+      { file, clubId, execAdd: { name, role, year, program} }
     ) =>{
       console.log(name)
       let newExec = {
@@ -123,12 +144,38 @@ module.exports = {
         program: program,
       }
       let changedClub = await Club.updateOne({_id: clubId}, {$push: {execs: newExec}})
+      console.log("asdads")
+      let { filename, createReadStream} = await file.file;
       let res = await Club.findById(clubId)
-      return res.execs[res.execs.length - 1]
+      let objectId = res.execs[res.execs.length - 1]._id.toString()
+      let objectType = "headshot"
+      let stream = createReadStream();
+      let fullName = `${objectId}${filename}`
+      let resAWS = await uploadToS3(fullName,stream)
+      let createdObject = new object({
+        filename: resAWS.key,
+        url: resAWS.Location,
+        objType: objectType,
+        objId: objectId,
+      })
+
+      console.log("createdObject", createdObject)
+      const result = await createdObject.save() //This is where MongoDB actually saves
+      console.log("this is result", result)
+      let newerExec = {
+        _id: res.execs[res.execs.length - 1]._id.toString(),
+        name: res.execs[res.execs.length - 1].name,
+        role: res.execs[res.execs.length - 1].role,
+        year: res.execs[res.execs.length - 1].year,
+        program: res.execs[res.execs.length - 1].program,
+        headshotURL: resAWS.Location,
+      }
+      console.log("newer stuff", newerExec)
+      return newerExec
     },
     editExec: async (
       _,
-      { clubId, execInput: {  _id, name, role, year, program }}
+      { file, clubId, execInput: {  _id, name, role, year, program }}
     )=>{
       let execUpdate = {
         _id: _id,
