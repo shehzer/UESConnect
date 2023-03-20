@@ -46,7 +46,7 @@ export default function clubTeam(props) {
         Team Information
       </h1>
 
-          <Table execs={props.team} save={save}></Table>
+          <Table execs={props.team} save={save} clubID = {props.ID}></Table>
 
     </div>
   )

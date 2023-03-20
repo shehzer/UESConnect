@@ -18,6 +18,7 @@ export default function table(props) {
     const [team, setTeam] = useState([...props.execs])
     const [visible, setVisible] = useState(false);
     const [editAction, setAction] = useState();
+    const [file, setFile] = useState();
     const toggleHigh = ()=>{setVisible(true)}
     const toggleLow = ()=>{setVisible(false)}
 
@@ -67,13 +68,41 @@ export default function table(props) {
     }
   }
 
+  const uploadExec = gql`mutation Mutation($file: Upload!, $clubId: String, $execAdd: ExecAdd) {
+    addExec(file: $file, clubId: $clubId, execAdd: $execAdd) {
+      _id
+      name
+      program
+      role
+      year
+      headshotURL
+    }
+  }`
+
+  const [execUpload] = useMutation(uploadExec, {
+    onCompleted: (data) => console.log(data),
+});
+const handleFileChange = (e) => {
+  const file = e.target.files;
+
+  if (!file) return;
+  setFile(file)
+
+};
+   
+
 
   function addUser()
   { 
+    let execAdd = {name:name, role:role, year:year, program:program}
 
-    let temp = team.map((element, index)=>({...element}))
-    temp.push({name:name, role:role, year:year, program:program})
-    setTeam([...temp])
+
+    execUpload({ variables: { file:file, clubId:props.clubID, execAdd:execAdd }});
+
+
+    // let temp = team.map((element, index)=>({...element}))
+    // temp.push({name:name, role:role, year:year, program:program})
+    // setTeam([...temp])
     toggleLow()
 
   }
@@ -249,6 +278,13 @@ export default function table(props) {
           <Dropdown type="year" initial={year} save={setYear}/>
           <Text style={{alignSelf:"center"}}>Program</Text>
           <Dropdown type="program" initial={program} save={setProgram}/>
+
+          <Text style={{alignSelf:"center"}} >Picture</Text>
+              <input
+          type="file"
+          name="GraphQLUploadForMedium"
+          onChange={handleFileChange}
+        />
 
       
         </Modal.Body>
