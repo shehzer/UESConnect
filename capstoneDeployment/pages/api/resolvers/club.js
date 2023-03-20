@@ -149,13 +149,14 @@ module.exports = {
         program: program,
       }
       let changedClub = await Club.updateOne({_id: clubId}, {$push: {execs: newExec}})
-      let { filename, createReadStream } = await file;
-      let objectId = await clubId
-      let objectType = "headshot"
-      console.log("feil", objectId)
-      let stream = createReadStream();
-      console.log('fileActual', file)
-      console.log('hello')
+      let fileActual = await file;
+      console.log("this is the file", fileActual)
+      // let objectId = await clubId
+      // let objectType = "headshot"
+      // console.log("feil", objectId)
+      // let stream = createReadStream();
+      // console.log('fileActual', file)
+      // console.log('hello')
       let res = await Club.findById(clubId)
       return res.execs[res.execs.length - 1]
     },
