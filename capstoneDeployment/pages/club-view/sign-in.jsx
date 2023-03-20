@@ -8,7 +8,7 @@ import { Router, useRouter } from 'next/router'
 import { gql, useMutation } from '@apollo/client'
 import client from '../../components/apollo-client'
 import { logMissingFieldErrors } from '@apollo/client/core/ObservableQuery'
-import { AuthContext } from './context/context'
+import { AuthContext } from '../../components/context/context'
 
 export default function signIn() {
   const router = useRouter()

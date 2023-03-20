@@ -1,7 +1,7 @@
 import React from "react";
 import { useRouter } from "next/router";
 
-const AuthContext = React.createContext();
+const AuthContext = React.createContext("");
 const { Provider } = AuthContext;
 
 const AuthProvider = ({ children }) => {
@@ -37,4 +37,4 @@ const AuthProvider = ({ children }) => {
  );
 };
 
-export { AuthContext, AuthProvider };
+export  { AuthContext, AuthProvider };
