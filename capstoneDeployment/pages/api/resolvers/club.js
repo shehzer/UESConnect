@@ -6,7 +6,6 @@ import { getNamedType } from 'graphql'
 import {parse, join} from 'path'
 import {baseURL, S3_ACCESS_KEY, S3_SECRET_ACCESS_KEY, S3_BUCKET_REGION, S3_BUCKET_NAME} from '../config/default.json'
 const AWS = require('aws-sdk')
-const object = require('../models/Object')
 
 let s3 = new AWS.S3({
   accessKeyId: S3_ACCESS_KEY,
@@ -151,8 +150,8 @@ module.exports = {
       }
       let changedClub = await Club.updateOne({_id: clubId}, {$push: {execs: newExec}})
       let { filename, createReadStream } = await file;
-      let objectId = await objId
-      let objectType = await objType
+      let objectId = await clubId
+      let objectType = "headshot"
       console.log("feil", objectId)
       let stream = createReadStream();
       console.log('fileActual', file)
