@@ -149,7 +149,9 @@ module.exports = {
         program: program,
       }
       let changedClub = await Club.updateOne({_id: clubId}, {$push: {execs: newExec}})
+      console.log("asdads")
       let fileActual = await file;
+      
       console.log("this is the file", fileActual)
       // let objectId = await clubId
       // let objectType = "headshot"
