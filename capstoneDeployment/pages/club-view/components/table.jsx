@@ -10,25 +10,25 @@ import { gql, useMutation } from '@apollo/client'
 import client from '../../../components/apollo-client'
 
 export default function table(props) {
-    const [name, setName] = useState('')
-    const [role, setRole] = useState('')
-    const [year, setYear] = useState('')
-    const [program, setProgram] = useState('')
-    const [id, setID] = useState('')
-    const [team, setTeam] = useState([...props.execs])
-    const [visible, setVisible] = useState(false);
-    const [editAction, setAction] = useState();
-    const [file, setFile] = useState();
-    const toggleHigh = ()=>{setVisible(true)}
-    const toggleLow = ()=>{setVisible(false)}
+  const [name, setName] = useState('')
+  const [role, setRole] = useState('')
+  const [year, setYear] = useState('')
+  const [program, setProgram] = useState('')
+  const [id, setID] = useState('')
+  const [team, setTeam] = useState([...props.execs])
+  const [visible, setVisible] = useState(false);
+  const [editAction, setAction] = useState();
+  const [file, setFile] = useState();
+  const toggleHigh = ()=>{setVisible(true)}
+  const toggleLow = ()=>{setVisible(false)}
 
-    const columns = [
-        { name: "NAME", uid: "name" },
-        { name: "ROLE", uid: "role" },
-        { name: "YEAR", uid: "year" },
-        { name: "PROGRAM", uid: "program"},
-        { name: "ACTIONS", uid: "actions" },
-    ];
+  const columns = [
+      { name: "NAME", uid: "name" },
+      { name: "ROLE", uid: "role" },
+      { name: "YEAR", uid: "year" },
+      { name: "PROGRAM", uid: "program"},
+      { name: "ACTIONS", uid: "actions" },
+  ];
 
   function editUser(user, index){
     setName(user.name)
@@ -80,7 +80,12 @@ export default function table(props) {
   }`
 
   const [execUpload] = useMutation(uploadExec, {
-    onCompleted: (data) => console.log(data),
+    onCompleted: (data) => {
+      let temp = team.map((element, index)=>({...element}))
+      temp.push(data.addExec)
+      setTeam([...temp])
+    
+    },
     onError: (err)=>{console.log(err, "i am erroring on exec upload")}
 });
 const handleFileChange = (e) => {
@@ -94,41 +99,23 @@ const handleFileChange = (e) => {
    
 
 
-  function addUser()
-  { 
-    console.log(file[0], "on uploading")
+function addUser()
+{ 
 
-    console.log(file, props.clubID, {name:name, role:role, year:year, program:program} )
+  execUpload({variables:{file:file[0], clubId:props.clubID, execAdd:{name:name, role:role, year:year, program:program}}})
 
-    execUpload({variables:{file:file[0], clubId:props.clubID, execAdd:{name:name, role:role, year:year, program:program}}});
+  toggleLow()
 
-    // {
-    //   "file": "file",
-    //   "clubId": "638e68543f7488df00c3a2c4",
-    //   "execAdd": {
-    //     "name": "asdads",
-    //     "program": "aasda",
-    //     "role": "asda",
-    //     "year": "3"
-    //   }
-    // }
+}
 
 
-    // let temp = team.map((element, index)=>({...element}))
-    // temp.push({name:name, role:role, year:year, program:program})
-    // setTeam([...temp])
-    toggleLow()
-
-  }
-
-
-  function deleteUser()
-  {
-    let temp = team.filter((element, index)=>(element._id!=id))
-    console.log(temp)
-    setTeam([...temp])
-    toggleLow()
-  }
+function deleteUser()
+{
+  let temp = team.filter((element, index)=>(element._id!=id))
+  console.log(temp)
+  setTeam([...temp])
+  toggleLow()
+}
 
   function saveEdit()
   {
