@@ -1,8 +1,35 @@
-//This is where the actual logic comes in
-
 const { exec } = require('child_process')
 const Club = require('../models/Club')
 const object = require('../models/Object')
+import {createWriteStream} from 'fs'
+import { getNamedType } from 'graphql'
+import {parse, join} from 'path'
+import {baseURL, S3_ACCESS_KEY, S3_SECRET_ACCESS_KEY, S3_BUCKET_REGION, S3_BUCKET_NAME} from '../config/default.json'
+const AWS = require('aws-sdk')
+const object = require('../models/Object')
+
+let s3 = new AWS.S3({
+  accessKeyId: S3_ACCESS_KEY,
+  secretAccessKey: S3_SECRET_ACCESS_KEY,
+  bucketName: S3_BUCKET_NAME,
+  region: S3_BUCKET_REGION
+});
+
+async function uploadToS3(name, body){
+  var params = { 
+    Bucket: S3_BUCKET_NAME,
+    Key: name,
+    Body: body
+  }
+  return s3.upload(params, function(err,data){
+    if(err){
+      console.log('error in callback')
+      console.log(err)
+    }
+    console.log('success')
+    console.log(data)
+  }).promise()
+}
 
 module.exports = {
   Query: {
@@ -113,7 +140,7 @@ module.exports = {
     },
     addExec: async (
       _,
-      { clubId, execAdd: { name, role, year, program} }
+      { file, clubId, execAdd: { name, role, year, program} }
     ) =>{
       console.log(name)
       let newExec = {
@@ -123,12 +150,18 @@ module.exports = {
         program: program,
       }
       let changedClub = await Club.updateOne({_id: clubId}, {$push: {execs: newExec}})
+      let { filename, createReadStream } = await file;
+      let objectId = await objId
+      let objectType = await objType
+      console.log("feil", objectId)
+      let stream = createReadStream();
+      console.log('fileActual', file)
       let res = await Club.findById(clubId)
       return res.execs[res.execs.length - 1]
     },
     editExec: async (
       _,
-      { clubId, execInput: {  _id, name, role, year, program }}
+      { file, clubId, execInput: {  _id, name, role, year, program }}
     )=>{
       let execUpdate = {
         _id: _id,
