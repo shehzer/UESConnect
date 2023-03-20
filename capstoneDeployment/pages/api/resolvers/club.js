@@ -102,12 +102,7 @@ module.exports = {
     deleteClub: async (_, { ID }) => {
       const wasDeleted = (await Club.deleteOne({ _id: ID })).deletedCount
       return wasDeleted
-      //1 if something was deleted, 0 if nothing was deleted
     },
-    // async editClub(_, {ID, clubInput:{name, department,description, execs}}){
-    //     const wasEdited = (await Club.updateOne({_id: ID}, {name: name, department: department, description: description, execs: execs})).modifiedCount;
-    //     return wasEdited;
-    // }
     editClub: async(
       _,
       { ID, clubInput: { name, department, description, execs } },
@@ -160,7 +155,31 @@ module.exports = {
       // console.log('fileActual', file)
       // console.log('hello')
       let res = await Club.findById(clubId)
-      return res.execs[res.execs.length - 1]
+      let objectId = res.execs[res.execs.length - 1]._id.toString()
+      let objectType = "headshot"
+      let stream = createReadStream();
+      let fullName = `${objectId}${filename}`
+      let resAWS = await uploadToS3(fullName,stream)
+      let createdObject = new object({
+        filename: resAWS.key,
+        url: resAWS.Location,
+        objType: objectType,
+        objId: objectId,
+      })
+
+      console.log("createdObject", createdObject)
+      const result = await createdObject.save() //This is where MongoDB actually saves
+      console.log("this is result", result)
+      let newerExec = {
+        _id: res.execs[res.execs.length - 1]._id.toString(),
+        name: res.execs[res.execs.length - 1].name,
+        role: res.execs[res.execs.length - 1].role,
+        year: res.execs[res.execs.length - 1].year,
+        program: res.execs[res.execs.length - 1].program,
+        headshotURL: resAWS.Location,
+      }
+      console.log("newer stuff", newerExec)
+      return newerExec
     },
     editExec: async (
       _,

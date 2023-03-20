@@ -36,6 +36,7 @@ mutation UploadFile($file: Upload!) {
 });
 const handleFileChange = (e) => {
   const file = e.target.files;
+
   if (!file) return;
   fileUpload({ variables: { file } });
 };
@@ -119,18 +120,18 @@ const handleFileChange = (e) => {
           />
         </div>
 
-        <input
-      type="file"
-      name="GraphQLUploadForMedium"
-      onChange={handleFileChange}
-    />
+
 
 
 
         <div className={styles.imageBox}>
           <Text size="larger">Set Your Club Logo</Text>
 
-          {/* <ImageProcess onChange={onChangeImage} images={images}></ImageProcess> */}
+          <input
+      type="file"
+      name="GraphQLUploadForMedium"
+      onChange={handleFileChange}
+    />
         </div>
         <div className={styles.infoBox}>
           <Textarea
@@ -146,7 +147,7 @@ const handleFileChange = (e) => {
           />
         </div>
         <div className={styles.infoBox}>
-          <Button onPress={save} className="bg-green-400" size="md">
+          <Button onPress={save} className="bg-green-600" size="md">
             {load && <Loading type="spinner" color="currentColor" size="md" />}
             {!load && 'Save'}
           </Button>

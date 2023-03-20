@@ -18,6 +18,7 @@ export default function table(props) {
     const [team, setTeam] = useState([...props.execs])
     const [visible, setVisible] = useState(false);
     const [editAction, setAction] = useState();
+    const [file, setFile] = useState();
     const toggleHigh = ()=>{setVisible(true)}
     const toggleLow = ()=>{setVisible(false)}
 
@@ -67,13 +68,41 @@ export default function table(props) {
     }
   }
 
+  const uploadExec = gql`mutation Mutation($file: Upload!, $clubId: String, $execAdd: ExecAdd) {
+    addExec(file: $file, clubId: $clubId, execAdd: $execAdd) {
+      _id
+      name
+      program
+      role
+      year
+      headshotURL
+    }
+  }`
+
+  const [execUpload] = useMutation(uploadExec, {
+    onCompleted: (data) => console.log(data),
+});
+const handleFileChange = (e) => {
+  const file = e.target.files;
+
+  if (!file) return;
+  setFile(file)
+
+};
+   
+
 
   function addUser()
   { 
+    let execAdd = {name:name, role:role, year:year, program:program}
 
-    let temp = team.map((element, index)=>({...element}))
-    temp.push({name:name, role:role, year:year, program:program})
-    setTeam([...temp])
+
+    execUpload({ variables: { file:file, clubId:props.clubID, execAdd:execAdd }});
+
+
+    // let temp = team.map((element, index)=>({...element}))
+    // temp.push({name:name, role:role, year:year, program:program})
+    // setTeam([...temp])
     toggleLow()
 
   }
@@ -87,7 +116,7 @@ export default function table(props) {
     toggleLow()
   }
 
-  function confirmEdit()
+  function saveEdit()
   {
     let temp = team.map((element, index)=>({...element}))
 
@@ -111,12 +140,6 @@ export default function table(props) {
 
     setTeam([...newArr])
     toggleLow()
-  }
-
-  function saveAll()
-  {
-    let sendTeam = team.map((element, index)=>({...element}))
-    props.save(sendTeam)
   }
 
 
@@ -215,10 +238,6 @@ export default function table(props) {
         Add Team Member
     </Button>
 
-    <Button onPress={saveAll} className="my-10 bg-green-600">
-        Save
-    </Button>
-
     <Modal
         closeButton
         aria-labelledby="team-editor"
@@ -260,6 +279,13 @@ export default function table(props) {
           <Text style={{alignSelf:"center"}}>Program</Text>
           <Dropdown type="program" initial={program} save={setProgram}/>
 
+          <Text style={{alignSelf:"center"}} >Picture</Text>
+              <input
+          type="file"
+          name="GraphQLUploadForMedium"
+          onChange={handleFileChange}
+        />
+
       
         </Modal.Body>
         : 
@@ -278,7 +304,7 @@ export default function table(props) {
       
       }
         <Modal.Footer aria-labelledby="team-footer" >
-           {editAction!="delete"?<Button  bordered color='primary' onPress={handleConfirm}>Confirm</Button>:
+           {editAction!="delete"?<Button className='bg-blue-600' onPress={handleConfirm}>Save</Button>:
            <Button className="bg-rose-600" color='error' onPress={handleConfirm}>DELETE</Button> }
             <Button  bordered color='error' onPress={toggleLow}>Cancel</Button>
 
