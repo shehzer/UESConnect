@@ -17,7 +17,6 @@ export default function tableAdmin(props) {
     const [clubName, setClub] = useState('')
   
     const [admins, setAdmin] = useState([...JSON.parse(props.clubAdmins)])
-    console.log(admins)
 
     const [visible, setVisible] = useState(false);
     const [editAction, setAction] = useState();
@@ -40,7 +39,14 @@ export default function tableAdmin(props) {
     }
     `
     const [adminUpload] = useMutation(addQ, {
-      onCompleted: (data) => console.log(data),
+      onCompleted: (data) => {
+        console.log(data);
+
+        let temp = admins.map((element, index)=>({...element}))
+        temp.push(data.registerUser)
+        setAdmin([...temp])
+      
+      },
           });
  
 
@@ -95,7 +101,7 @@ export default function tableAdmin(props) {
   function addUser()
   { 
 
-    let qInput = {clubName:clubName, email:email, name:name, password:password, role:"ADMIN"}
+    let qInput = {registerInput:{clubName:clubName, email:email, name:name, password:password, role:"ADMIN"}}
 
     console.log(qInput)
 
@@ -280,7 +286,7 @@ export default function tableAdmin(props) {
             size="lg"
             label="Club"
             placeholder={clubName?clubName:"Club Name"}
-            onChange={(e)=>{setEmail(e.target.value)}}
+            onChange={(e)=>{setClub(e.target.value)}}
             aria-labelledby="email"
            
           />
