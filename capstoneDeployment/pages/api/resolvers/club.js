@@ -194,5 +194,9 @@ module.exports = {
         }
       }
     },
+    deleteExec: async (_, {clubId, execId}) =>{
+      const wasDeleted = (await Club.deleteOne({"_id": ID, "exec._id" = execId })).deletedCount
+      return wasDeleted
+    },
   },
 };
