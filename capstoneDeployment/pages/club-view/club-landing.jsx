@@ -12,7 +12,7 @@ import { ClubPositions } from "../../components/modal-positions";
 import { ApplicationPage } from '../../components/club-applications'
 import { Input, Spacer, Text } from '@nextui-org/react'
 import { Router, useRouter } from 'next/router'
-import { AuthContext } from './context/context'
+import { AuthContext } from '../../components/context/context'
 
 export async function getServerSideProps(context) {
   return {

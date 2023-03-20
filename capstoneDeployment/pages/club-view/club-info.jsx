@@ -36,6 +36,7 @@ mutation UploadFile($file: Upload!) {
 });
 const handleFileChange = (e) => {
   const file = e.target.files;
+  console.log("from club-info", file)
 
   if (!file) return;
   fileUpload({ variables: { file } });
