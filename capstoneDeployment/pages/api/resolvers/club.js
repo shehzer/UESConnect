@@ -194,5 +194,15 @@ module.exports = {
         }
       }
     },
+    deleteExec: async (_, {clubId, execId}) =>{
+      const wasDeleted = (await Club.update({"_id": clubId}, {$pull: {'execs':{"_id": execId}}})).modifiedCount
+      try{
+        let newQuery = await Object.deleteOne({ objId: execId, objType: "headshot" })
+      }catch{
+        console.log("No picture")
+      }
+        console.log(wasDeleted)
+      return wasDeleted
+    },
   },
 };

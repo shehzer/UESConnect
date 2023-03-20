@@ -16,6 +16,12 @@ export default function signIn() {
   const username = useRef('')
   const password = useRef('')
 
+  const handleKeyDown = function(event){
+    if(event.key === 'Enter') {
+      logIn()
+    }
+  }
+
   const authContext = useContext(AuthContext);
 
   const mutationQ = gql`
@@ -166,6 +172,7 @@ const queryQ = gql`query Query($id: ID!) {
           label="Email Address"
         />
         <Input.Password
+          onKeyDown={handleKeyDown}
           ref={password}
           className="bg-black mb-8"
           size="xl"

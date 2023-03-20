@@ -68,6 +68,7 @@ export async function getPositions(filters: {
         _id
         name
         description
+        numberOfOpenings
       }
     }
   `
