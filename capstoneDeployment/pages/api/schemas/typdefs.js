@@ -29,9 +29,22 @@ module.exports = gql`
     addExec(file: Upload, clubId: String, execAdd: ExecAdd): Execs
     editExec(file: Upload, clubId: String, execInput: ExecsInput): Exec
     deleteExec(clubId: String, execId: String): Boolean!
+    deleteUser(email: String): Boolean!
+    editUser(changeUserInput: ChangeUserInput): Boolean!
+
   }
 
+  input ChangeUserInput {
+    email: String! 
+    password: String!
+    newName: String
+    newPassword: String
+    newEmail: String
+    
+  }
+  
   type Club {
+    token: String
     userRole: String
     _id: String
     name: String
