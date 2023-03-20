@@ -86,11 +86,7 @@ module.exports = {
       console.log(dataE.filename)
       console.log(dataE.createReadStream)
 
-      const { createReadStream, filename } = await file;
-   
-     
-
-
+      const { createReadStream, filename } = await file
     }
   },
 };

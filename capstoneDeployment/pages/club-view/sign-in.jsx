@@ -79,6 +79,7 @@ const queryQ = gql`query Query($id: ID!) {
 
         if(role=="MASTER")
         {
+          payload.map((item)=>(delete item.__typename))
           router.push({
             pathname: '../admin-view/admin-landing',
             query: {

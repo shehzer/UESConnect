@@ -20,7 +20,7 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
   link: ApolloLink.from([
     link,
-    new HttpLink({ uri: 'https://capstone-shehzer.vercel.app/api/graphql' }),
+    new HttpLink({ uri: 'https://capstone-rosy-nine.vercel.app/api/graphql' }),
   ]),
 
 })
