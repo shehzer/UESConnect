@@ -89,7 +89,8 @@ module.exports = {
       }
     },
     deleteApplication: async (_, { ID }) => {
-      const wasDeleted = (await Application.deleteOne({ _id: ID })).deletedCount
+      const wasDeleted = (await Application.deleteOne({ _id: ID }))
+      console.log(wasDeleted)
       return wasDeleted
       //1 if something was deleted, 0 if nothing was deleted
     },
