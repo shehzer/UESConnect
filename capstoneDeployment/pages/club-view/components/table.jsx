@@ -95,10 +95,21 @@ const handleFileChange = (e) => {
 
   function addUser()
   { 
-    let execAdd = {name:name, role:role, year:year, program:program}
 
+    console.log(file, props.clubID, {name:name, role:role, year:year, program:program} )
 
-    execUpload({ variables: { file:file, clubId:props.clubID, execAdd:execAdd }});
+    execUpload({variables:{file:file, clubId:props.clubID, execAdd:{name:name, role:role, year:year, program:program}}});
+
+    // {
+    //   "file": "file",
+    //   "clubId": "638e68543f7488df00c3a2c4",
+    //   "execAdd": {
+    //     "name": "asdads",
+    //     "program": "aasda",
+    //     "role": "asda",
+    //     "year": "3"
+    //   }
+    // }
 
 
     // let temp = team.map((element, index)=>({...element}))
