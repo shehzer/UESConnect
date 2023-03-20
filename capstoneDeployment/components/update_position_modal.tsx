@@ -1,17 +1,20 @@
 import React, {FC, useCallback, useEffect, useState} from "react";
-import {Button, Modal, Text, Textarea} from "@nextui-org/react";
+import {Button, Modal, Text, Textarea, Input} from "@nextui-org/react";
 import styles from '../styles/create_position_modal.module.css'
 import { position } from '../public/interfaces/position.interface'
 import {getPosition} from "../services/positions-service";
+import DeleteIcon from "../pages/club-view/components/DeleteIcon";
+
 
 type UpdateModalBodyProps = {
   positionId: string;
   onDismiss: () => void;
   onSubmit: (position_id: string, position: position) => void;
   show: boolean;
+  readonly: boolean;
 };
 
-export const UpdateModalBody: FC<UpdateModalBodyProps> = ({positionId, onDismiss, onSubmit, show}) => {
+export const UpdateModalBody: FC<UpdateModalBodyProps> = ({positionId, onDismiss, onSubmit, show, readonly}) => {
   const [clubId, setClubId] = useState<string>('')
   const [name, setName] = useState<string>('')
   const [description, setDescription] = useState<string>('')
@@ -27,6 +30,18 @@ export const UpdateModalBody: FC<UpdateModalBodyProps> = ({positionId, onDismiss
   function addSkill() {
     skills.push('')
     setSkills([...skills])
+  }
+
+  function removeQuestion(pos:number) {
+    let tempQuestions = questions
+    tempQuestions.splice(pos, 1)
+    setQuestions([...tempQuestions])
+  }
+
+  function removeSkill(pos:number) {
+    let tempSkills = skills
+    tempSkills.splice(pos, 1)
+    setSkills([...tempSkills])
   }
 
   const fetchPosition = useCallback(async () => {
@@ -58,121 +73,136 @@ export const UpdateModalBody: FC<UpdateModalBodyProps> = ({positionId, onDismiss
   // fetch the position metadata on modal load
   useEffect(() => {
     void fetchPosition()
-  }, [fetchPosition])
+  }, [fetchPosition, show])
 
   const questionList = questions.map((question, i) => {
     return (
       <div className={styles.questionContainer} id={'question' + (i + 1)}>
         <Text className={styles.inputLabel}>{'Question ' + (i + 1)}</Text>
-        <input
-          type={'text'}
-          className={styles.question}
-          value={question}
-          onChange={({ target }) => {
-            questions[i] = (target as HTMLInputElement).value
-            setQuestions([...questions])
-          }}
-        />
+        <div className={styles.questionLine}>
+          <Input
+            readOnly={readonly}
+            type={'text'}
+            className={styles.question}
+            value={question}
+            onChange={({ target }) => {
+              questions[i] = (target as HTMLInputElement).value
+              setQuestions([...questions])
+            }}
+          />
+          {!readonly &&
+            <Button flat icon={<DeleteIcon size={20} fill="#FF0080" height={undefined} width={undefined} />} color={'error'} auto onPress={() => removeQuestion(i)}/>
+          }
+        </div>
       </div>
     )
   })
 
   const skillList = skills.map((skill, i) => {
     return (
-      <div className={styles.skillContainer} id={'question' + (i + 1)}>
-        <Text className={styles.inputLabel}>{'Question ' + (i + 1)}</Text>
-        <input
-          type={'text'}
-          className={styles.skill}
-          value={skill}
-          onChange={({ target }) => {
-            skills[i] = (target as HTMLInputElement).value
-            setSkills([...skills])
-          }}
-        />
+      <div className={styles.questionContainer} id={'question' + (i + 1)}>
+        <Text className={styles.inputLabel}>{'Skill ' + (i + 1)}</Text>
+        <div className={styles.questionLine}>
+          <Input
+            readOnly={readonly}
+            type={'text'}
+            className={styles.question}
+            value={skill}
+            onChange={({ target }) => {
+              skills[i] = (target as HTMLInputElement).value
+              setSkills([...skills])
+            }}
+          />
+          {!readonly &&
+            <Button flat icon={<DeleteIcon size={20} fill="#FF0080" height={undefined} width={undefined} />} color={'error'} auto onPress={() => removeSkill(i)}/>
+          }
+        </div>
       </div>
     )
   })
 
-  if (!show) {
-    return null
-  }
+
   return (
-    <div className={styles.modal}>
-      <div className={styles.body}>
-        <h1 className={styles.header}>Edit Position Posting: {positionId}</h1>
-        <form className={styles.positionContainer}>
-          <Text className={styles.inputLabel}>Position Title:</Text>
-          <input
-            type={'text'}
-            key={'title'}
-            value={name}
-            className={styles.title}
-            onChange={({ target }) => setName((target as HTMLInputElement).value)}
-          />
-          <Text className={styles.inputLabel}>Position Description:</Text>
-          <Textarea
-            key={'description'}
-            value={description}
-            className={styles.description}
-            onChange={({ target }) =>
-              setDescription((target as HTMLInputElement).value)
-            }
-          />
-          <Text className={styles.inputLabel}>Openings Available:</Text>
-          <input
-            type={'text'}
-            pattern={'[0-9]*'}
-            value={numOpenings}
-            key={'openings'}
-            className={styles.openings}
-            onChange={({ target }) =>
-              setNumOpenings(parseInt((target as HTMLInputElement).value))
-            }
-          />
-          <Text className={styles.subsectionHeader} key={'questionsHeader'}>
-            Questions:
+    <Modal open={show} closeButton aria-labelledby={"Position Modal"} onClose={onDismiss}>
+      <div>
+        <Modal.Header>
+          <Text b size={22}>
+            {readonly ? "View Position" : "Edit Position"}
           </Text>
-
-          {questionList}
-
-          <Button
-            className={styles.addQuestion}
-            size={'sm'}
-            onPress={() => addQuestion()}
-          >
-            Add Question
+        </Modal.Header>
+        <Modal.Body>
+          <form className={styles.updateForm}>
+            <div className={styles.field}>
+              <Text >Position Name: </Text>
+              <Input
+                readOnly={readonly}
+                width={'100%'}
+                value={name}
+                onChange={({ target }) =>
+                  setName((target as HTMLInputElement).value)
+                }
+              />
+            </div>
+            <div className={styles.field}>
+              <Text>Description: </Text>
+              <Textarea
+                readOnly={readonly}
+                width={'100%'}
+                value={description}
+                onChange={({ target }) =>
+                  setDescription((target as HTMLInputElement).value)
+                }
+              />
+            </div>
+            <div className={styles.field}>
+              <Text># of Openings: </Text>
+              <Input
+                readOnly={readonly}
+                width={'100%'}
+                type={'text'}
+                pattern={'[0-9]*'}
+                value={numOpenings || ""}
+                onChange={({ target }) =>
+                  setNumOpenings(parseInt((target as HTMLInputElement).value))
+                }
+              />
+            </div>
+            <div className={styles.field}>
+              <Text b>Application Questions: </Text>
+              {questionList}
+              {!readonly &&
+                <Button flat bordered color={'primary'} auto
+                        onPress={() => addQuestion()}
+                >
+                  Add Question
+                </Button>
+              }
+            </div>
+            <div className={styles.field}>
+              <Text b>Skills: </Text>
+              {skillList}
+              {!readonly &&
+                <Button flat bordered color={'primary'} auto
+                        onPress={() => addSkill()}
+                >
+                  Add Skill
+                </Button>
+              }
+            </div>
+          </form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button flat bordered color={'error'} auto onPress={onDismiss}>
+            Close
           </Button>
-
-          <Text className={styles.subsectionHeader} key={'questionsHeader'}>
-            Skills:
-          </Text>
-
-          {skillList}
-
-          <Button
-            className={styles.addSkill}
-            size={'sm'}
-            onPress={() => addSkill()}
-          >
-            Add Skill
-          </Button>
-          <Button
-            className={styles.cancelButton}
-            size={'sm'}
-            onClick={onDismiss}
-          >
-            Cancel
-          </Button>
-          <Button
-            className={styles.submitButton}
-            size={'sm'}
-            onClick={() => onSubmit(positionId, {"_id": positionId, clubId, name, description, numberOfOpenings: numOpenings, q: questions, skills})}
-          >
-            Submit
-          </Button>
-        </form>
+          {!readonly &&
+            <Button flat bordered color={'primary'} auto
+                    onPress={() => onSubmit(positionId, {"_id": positionId, clubId, name, description, numberOfOpenings: numOpenings, q: questions, skills})}>
+              Update
+            </Button>
+          }
+        </Modal.Footer>
       </div>
-    </div>
+    </Modal>
   );
 };
