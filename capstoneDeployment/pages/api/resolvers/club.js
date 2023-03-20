@@ -196,6 +196,7 @@ module.exports = {
     },
     deleteExec: async (_, {clubId, execId}) =>{
       const wasDeleted = (await Club.update({"_id": clubId},{$pull: {"exec._id": execId }})).modifiedCount
+      console.log(wasDeleted)
       return wasDeleted
     },
   },
