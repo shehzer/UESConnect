@@ -4,6 +4,7 @@ import client from '../../../components/apollo-client'
 import APILoadingScreen from '../loading-screen'
 import StudentHeader from '../student-header'
 import { useState, useRef, useEffect, localStorage } from 'react'
+import validator from "validator";
 
 export default function StudentPositions(props) {
   const [positionData, setPositionData] = useState({})
@@ -31,17 +32,24 @@ export default function StudentPositions(props) {
 
   const submit = (e) => {
     e.preventDefault()
-    applicationUpload({ variables: {
-      file: filename,
-      applicationInput: {
-        description: positionData.description,
-        email: userEmail,
-        name: userName,
-        positionID: positionId,
-        qA: userQA,
-      },
-    }})
-    
+    if (!validator.isEmail(userEmail)) {
+      alert('Please Enter a Valid Email')
+    } else {
+      applicationUpload({
+        variables: {
+          file: filename,
+          applicationInput: {
+            description: positionData.description,
+            email: userEmail,
+            name: userName,
+            positionID: positionId,
+            qA: userQA,
+          },
+        }
+      })
+      alert('Thank you for applying!')
+      window.location.reload(false);
+    }
   }
 
   const handleReadMore = () => {
@@ -106,7 +114,7 @@ export default function StudentPositions(props) {
         alert(e.message)
       })
   }
-  
+
   const submitApplication = gql`
       mutation Mutation($file: Upload, $applicationInput: ApplicationInput) {
         createApplication(file: $file, applicationInput: $applicationInput) {
@@ -116,13 +124,13 @@ export default function StudentPositions(props) {
     `
   const [applicationUpload] = useMutation(submitApplication, {
     onCompleted: (data) => console.log(data),
-    onError: (err)=>{console.log(err, "i am erroring on application upload")}
-});
+    onError: (err) => { console.log(err, "i am erroring on application upload") }
+  });
 
   return (
-    <div className="flex flex-col bg-slate-200 w-full h-full text-slate-800 items-center ">
+    <div className="flex flex-col bg-white w-full h-full text-slate-800 items-center ">
       <StudentHeader></StudentHeader>
-      <div className="rounded overflow-hidden w-4/5 shadow-lg my-4 p-4 flex flex-col text-slate-800 text-sm bg-slate-50">
+      <div className="rounded overflow-hidden w-3/5 shadow-lg my-4 p-4 flex flex-col text-slate-800 text-sm bg-slate-200">
         <div className="flex flex-col space-y-1">
           <div className="text-4xl font-bold self-center">
             {positionData.name}
@@ -131,6 +139,7 @@ export default function StudentPositions(props) {
             Positions Avilable: {positionData.numberOfOpenings}
           </div>
           <div className="flex self-center space-x-2 pb-2">
+            <span className="text-slate-800 font-bold text-lg" >Skills:</span>
             {positionData.skills != undefined
               ? positionData.skills.map((skill) =>
                 skill !== null ? (
@@ -146,9 +155,10 @@ export default function StudentPositions(props) {
               : ''}
           </div>
         </div>
-        <div className="px-2 mb-3 flex flex-col self-center">
+        <div className="px-2 py-3 flex flex-col selfs-center">
+          <span className="text-slate-800 font-bold text-lg" >Role Description:</span>
           <div
-            className={` text-sm text-center self-center ${isReadMore && 'line-clamp-2'
+            className={` text-sm self-center ${isReadMore && 'line-clamp-2'
               }`}
           >
             {' '}
@@ -162,31 +172,16 @@ export default function StudentPositions(props) {
             {isReadMore ? 'Read More...' : 'Read Less...'}
           </button>
         </div>
-        <form>
-          <div className="flex flex-col items-center justify-center">
-            <label htmlFor="resume" className="mb-2 font-bold text-gray-700">
-              Upload Your Resume
-            </label>
-            <input
-              type="file"
-              id="resume"
-              name="resume"
-              className="py-2 px-4 border border-gray-400 rounded-lg shadow-md text-gray-700 font-medium"
-              onChange={handleFileInputChange}
-            />
-          </div>
-        </form>
-        <div className="flex self-center space-x-2 pt-3">
-          <div className="flex flex-col self-center">
-            <label className="form-label inline-block mb-2 text-lg font-bold self-center">
-              {' '}
-              Full Name
-            </label>
-            <input
-              type="name"
-              className="
+        <div className="flex flex-col">
+          <label className="form-label inline-block text-lg font-bold">
+            {' '}
+            Full Name
+          </label>
+          <input
+            type="text"
+            className="
         form-control
-        w-full
+        w-2/5
         px-3
         py-1.5
         text-base
@@ -197,22 +192,22 @@ export default function StudentPositions(props) {
         transition
         ease-in-out
         m-0
-        focus:text-slate-700 focus:bg-white focus:border-blue-600 focus:outline-none
+        focus:text-slate-700 focus:bg-white focus:border-slate-800 focus:outline-none
       "
-              id="Name"
-              placeholder="Gabor Simon"
-              onChange={(event) => handleNameChange(event)}
-            />
-          </div>
-          <div className="flex flex-col self-center">
-            <label className="form-label inline-block mb-2 text-lg font-bold self-center">
-              Email
-            </label>
-            <input
-              type="email"
-              className="
+            id="Name"
+            placeholder="Gabor Simon"
+            onChange={(event) => handleNameChange(event)}
+          />
+        </div>
+        <div className="flex flex-col pt-2">
+          <label className="form-label inline-block text-lg font-bold">
+            Email
+          </label>
+          <input
+            type="email"
+            className="
         form-control
-        w-full
+        w-2/5
         px-3
         py-1.5
         text-base
@@ -223,13 +218,12 @@ export default function StudentPositions(props) {
         transition
         ease-in-out
         m-0
-        focus:text-slate-700 focus:bg-white focus:border-blue-600 focus:outline-none
+        focus:text-slate-700 focus:bg-white focus:border-slate-800 focus:outline-none
       "
-              id="Email"
-              placeholder="gsimon@uwo.ca"
-              onChange={(event) => handleEmailChange(event)}
-            />
-          </div>
+            id="Email"
+            placeholder="gsimon@uwo.ca"
+            onChange={(event) => handleEmailChange(event)}
+          />
         </div>
         <div className="flex flex-col">
           {isLoading ? (
@@ -239,11 +233,11 @@ export default function StudentPositions(props) {
               {userQA.map((form, index) => {
                 return (
                   <div className="flex flex-col self-center" key={index}>
-                    <div className="font-bold text-lg self-center pb-3 pt-4">
+                    <div className="font-bold text-lg pt-2">
                       {form.question}
                     </div>
                     <textarea
-                      className="form-control w-full px-3 py-1.5 text-base text-slate-600 bg-white bg-clip-padding border border-solid border-slate-300 rounded
+                      className="form-control w-full px-3 py-1 text-base text-slate-600 bg-white bg-clip-padding border border-solid border-slate-300 rounded
                                         transition
                                         ease-in-out
                                         m-0
@@ -251,7 +245,7 @@ export default function StudentPositions(props) {
                                       "
                       id={form.question}
                       rows="3"
-                      placeholder="Answer for Question"
+                      placeholder="Answer"
                       name="answer"
                       onChange={(event) => handleFormChange(event, index)}
                     ></textarea>
@@ -260,6 +254,18 @@ export default function StudentPositions(props) {
               })}
             </form>
           )}
+          <div className="flex flex-col w-2/5 py-2">
+            <label htmlFor="resume" className="font-bold text-gray-700 text-lg">
+              Upload Your Resume
+            </label>
+            <input
+              type="file"
+              id="resume"
+              name="resume"
+              className="py-2 px-4 border border-gray-400 rounded-lg shadow-md text-gray-700 font-medium bg-white cursor-pointer"
+              onChange={handleFileInputChange}
+            />
+          </div>
           <button
             className="slef-center bg-slate-600 hover:bg-slate-300 hover:text-slate-800 text-slate-50 rounded-md px-5 py-2 my-2 text-2xl font-bold"
             onClick={submit}

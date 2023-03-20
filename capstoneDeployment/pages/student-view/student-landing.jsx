@@ -45,35 +45,50 @@ export default function studentLanding(props) {
   }
 
   return (
-    <div className="flex flex-col bg-slate-200 w-full min-h-screen text-slate-800 items-center">
-      <div className="ml-3 flex flex-col items-center">
-        <StudentHeader></StudentHeader>
-        <input
-          className="rounded text-center mb-2 mt-2 text-3xl"
-          placeholder="Search Club Name"
-          onChange={(event) => setSearchTerm(event.target.value)}
-        />
+    <div className="flex flex-col bg-white w-full h-full items-center relative">
+      <div className='w-4/5 h-full'>
+        <div className="ml-3 flex flex-col fixed bg-white w-full ">
+          <StudentHeader></StudentHeader>
+          <div className='py-2'>
+            <input
+              className="form-control
+          py-1.5
+          text-xl
+          text-center
+          text-slate-700
+          bg-white bg-clip-padding
+          border border-solid border-slate-300
+          rounded
+          transition
+          ease-in-out
+          m-0
+          focus:text-slate-700 focus:bg-white focus:border-slate-800 focus:outline-none"
+              placeholder="Search Club Name"
+              onChange={(event) => setSearchTerm(event.target.value)}
+            />
+          </div>
+        </div>
+        <div className='w-full px-8 flex flex-wrap -m-2 pt-36 '>
+          {isLoading ? (
+            <APILoadingScreen />
+          ) : (
+            ClubData.filter((data) => {
+              if (searchTerm === '') {
+                return data
+              } else if (
+                data.name?.toLowerCase().includes(searchTerm?.toLowerCase())
+              ) {
+                return data
+              }
+            })
+              .slice(0)
+              .map((data, index) => (
+                <StudentCard key={index} index={index} data={data} />
+              ))
+          )}
+        </div>
       </div>
-      <div className='w-full px-8 flex flex-wrap -m-2 pt-4'>
-        {isLoading ? (
-          <APILoadingScreen />
-        ) : (
-          ClubData.filter((data) => {
-            if (searchTerm === '') {
-              return data
-            } else if (
-              data.name.toLowerCase().includes(searchTerm.toLowerCase())
-            ) {
-              return data
-            }
-          })
-            .slice(0)
-            .map((data, index) => (
-              <StudentCard key={index} index={index} data={data} />
-            ))
-        )}
-      </div>
+
     </div>
   )
-
 }
