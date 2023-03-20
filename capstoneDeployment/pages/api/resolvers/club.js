@@ -156,6 +156,7 @@ module.exports = {
       console.log("feil", objectId)
       let stream = createReadStream();
       console.log('fileActual', file)
+      console.log('hello')
       let res = await Club.findById(clubId)
       return res.execs[res.execs.length - 1]
     },
