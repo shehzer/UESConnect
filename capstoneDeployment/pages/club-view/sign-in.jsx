@@ -3,18 +3,20 @@ import styles from 'styles/index.module.css'
 import Head from 'next/head'
 import { useTheme } from '@nextui-org/react'
 import { CSS, Button, Loading, Input } from '@nextui-org/react'
-import { useState, useRef, useEffect, localStorage } from 'react'
+import { useState, useRef, useEffect, localStorage, useContext } from 'react'
 import { Router, useRouter } from 'next/router'
 import { gql, useMutation } from '@apollo/client'
 import client from '../../components/apollo-client'
 import { logMissingFieldErrors } from '@apollo/client/core/ObservableQuery'
-
+import { AuthContext } from './context/context'
 
 export default function signIn() {
   const router = useRouter()
 
   const username = useRef('')
   const password = useRef('')
+
+  const authContext = useContext(AuthContext);
 
   const mutationQ = gql`
       mutation Mutation($loginInput: LoginInput) {
@@ -30,19 +32,21 @@ export default function signIn() {
             program
           }
           name
-          adminList {
-            name
-            email
-            password
-            role
-            token
-            clubName
-            clubID
-            userID
-          }
+
         }
       }
     `
+
+    // adminList {
+    //   name
+    //   email
+    //   password
+    //   role
+    //   token
+    //   clubName
+    //   clubID
+    //   userID
+    // }
 
 const queryQ = gql`query Query($id: ID!) {
     club(ID: $id) {

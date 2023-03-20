@@ -3,7 +3,7 @@ import styles from 'styles/club-landing.module.css'
 import Head from 'next/head'
 import { useTheme } from '@nextui-org/react'
 import { css, Button } from '@nextui-org/react'
-import { useState, useEffect, useRef, localStorage } from 'react'
+import { useState, useEffect, useRef, localStorage, useContext } from 'react'
 import ClubInfo from './club-info'
 import ClubApps from './club-apps'
 import ClubTeams from './club-team'
@@ -12,7 +12,7 @@ import { ClubPositions } from "../../components/modal-positions";
 import { ApplicationPage } from '../../components/club-applications'
 import { Input, Spacer, Text } from '@nextui-org/react'
 import { Router, useRouter } from 'next/router'
-
+import { AuthContext } from './context/context'
 
 export async function getServerSideProps(context) {
   return {
@@ -35,6 +35,15 @@ export default function clubLanding(props) {
   const [department, setDep] = useState(props.department)
   const [description, setDes] = useState(props.description)
   const [team, setTeam] = useState(JSON.parse(props.execs))
+
+  const authContext = useContext(AuthContext);
+
+  // useEffect(() => {
+  //     // checks if the user is authenticated
+  //     !authContext.isUserAuthenticated() 
+  //     ? router.push("/sign-in")
+  //     : "";
+  //   }, []);
 
   const updateInfo = (newInfo) => {
     setName(newInfo.name)

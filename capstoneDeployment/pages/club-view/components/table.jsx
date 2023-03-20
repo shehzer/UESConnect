@@ -87,7 +87,7 @@ export default function table(props) {
     toggleLow()
   }
 
-  function confirmEdit()
+  function saveEdit()
   {
     let temp = team.map((element, index)=>({...element}))
 
@@ -111,12 +111,6 @@ export default function table(props) {
 
     setTeam([...newArr])
     toggleLow()
-  }
-
-  function saveAll()
-  {
-    let sendTeam = team.map((element, index)=>({...element}))
-    props.save(sendTeam)
   }
 
 
@@ -215,10 +209,6 @@ export default function table(props) {
         Add Team Member
     </Button>
 
-    <Button onPress={saveAll} className="my-10 bg-green-600">
-        Save
-    </Button>
-
     <Modal
         closeButton
         aria-labelledby="team-editor"
@@ -278,7 +268,7 @@ export default function table(props) {
       
       }
         <Modal.Footer aria-labelledby="team-footer" >
-           {editAction!="delete"?<Button  bordered color='primary' onPress={handleConfirm}>Confirm</Button>:
+           {editAction!="delete"?<Button className='bg-blue-600' onPress={handleConfirm}>Save</Button>:
            <Button className="bg-rose-600" color='error' onPress={handleConfirm}>DELETE</Button> }
             <Button  bordered color='error' onPress={toggleLow}>Cancel</Button>
 

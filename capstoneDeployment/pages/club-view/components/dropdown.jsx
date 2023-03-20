@@ -34,7 +34,7 @@ export default function DropDown(props) {
 
   return (
     <Dropdown >
-      <Dropdown.Button className="bg-blue-600" >{selection}</Dropdown.Button>
+      <Dropdown.Button className="bg-purple-600" >{selection}</Dropdown.Button>
       <Dropdown.Menu 
       aria-label="Dynamic Actions" 
       selectionMode="single"
