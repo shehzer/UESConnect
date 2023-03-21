@@ -3,6 +3,7 @@ import { gql } from '@apollo/client'
 import client from '../../components/apollo-client'
 import PositionsTable from './positions-table'
 import StudentExecCard from './student-exec'
+import APILoadingScreen from './loading-screen'
 
 const ClubPopUP = (props) => {
   const [isReadMore, setIsReadMore] = useState(true) //state to check if user has selected readmore
@@ -13,7 +14,7 @@ const ClubPopUP = (props) => {
 
   const [positionData, setPositionData] = useState([])
   const [clubData, setClubData] = useState({})
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const clubName = props.clubName
   const clubId = props.clubId
 
@@ -108,14 +109,14 @@ const ClubPopUP = (props) => {
           ))
           : ''}
       </div>
-      <div className="self-center w-full p-2">
-        {isLoading ? (
-          <APILoadingScreen />
-        ) : (
+      {isLoading ? (
+        <APILoadingScreen />
+      ) : (
+        <div className="self-center w-full p-2">{
           positionData.length != 0 ? (<PositionsTable positions={positionData}></PositionsTable>) :
-            (<div className='text-center w-full text-xl font-bold'>No Avaialble Positions</div>)
-        )}
-      </div>
+            (<div className='text-center w-full text-xl font-bold'>No Avaialble Positions</div>)}
+        </div>
+      )}
     </div>
   )
 }

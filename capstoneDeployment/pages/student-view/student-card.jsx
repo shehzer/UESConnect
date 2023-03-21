@@ -22,8 +22,7 @@ export default function StudentCard(props) {
   }
 
   return (
-    <div className="rounded-lg overflow-hidden my-4 mx-2 bg-slate-200 text-slate-800 flex flex-col hover:bg-slate-300 shadow-lg grow w-1/5 hover:animate-wiggle"
-    >
+    <div className="rounded-lg bg-white overflow-hidden m-2 text-slate-800 flex flex-col hover:bg-gray-50 shadow-lg grow hover:animate-wiggle border border-gray-100 hover:border-gray-300">
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={handleCloseModal}
@@ -33,21 +32,23 @@ export default function StudentCard(props) {
       >
         <div className="w-full h-full flex flex-col items-center justify-center opacity-100 shadow-xl rounded-lg ">
           <ClubPopUP clubName={props.data.name} clubId={props.data._id} />
-          <button className='text-slate-800 my-2 w-full bg-slate-200 rounded-md' onClick={handleCloseModal}>Close</button>
+          <button className='text-slate-800 my-2 w-full bg-white rounded-md' onClick={handleCloseModal}>Close</button>
         </div>
       </Modal>
-      <div onClick={handleOpenModal} className="cursor-pointer h-full flex flex-col p-2">
+      <div onClick={handleOpenModal} className="cursor-pointer h-full flex flex-col">
+
         <h1 className="px-2 text-2xl font-bold cursor-pointer">
           {props.data.name}
         </h1>
         {props.data.department ? (<div className="py-1 mx-2 mt-1 text-sm text-gray-900 bg-slate-100 rounded-xl font-semibold w-24 text-center">
           {props.data.department}
         </div>) : null}
-        <div className="px-2 pt-2 mb-3 flex-col flex h-full">
-          <div className={`text-sm ${isReadMore && 'line-clamp-4'}`}>
+
+        <div className="px-2 pt-2 mb-3 flex-col flex h-full text-slate-500">
+          <div className={`text-sm ${isReadMore && 'line-clamp-3'}`}>
             {props.data.description}
           </div>
-          <button onClick={handleReadMore} className="bg-none rounded text-sm font-bold hover:text-slate-500 text-left pt-1">
+          <button onClick={handleReadMore} className="bg-none rounded text-sm font-bold hover:text-slate-800 text-left pt-1">
             {isReadMore ? 'Read More...' : 'Read Less...'}
           </button>
         </div>

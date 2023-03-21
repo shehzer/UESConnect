@@ -8,7 +8,7 @@ import validator from "validator";
 
 export default function StudentPositions(props) {
   const [positionData, setPositionData] = useState({})
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [isReadMore, setIsReadMore] = useState(true) //state to check if user has selected readmore
   const [userQA, setUserQA] = useState([{ question: '', answer: '' }])
   const [userEmail, setUserEmail] = useState('')
@@ -129,9 +129,11 @@ export default function StudentPositions(props) {
 
   return (
     <div className="flex flex-col bg-white w-full h-full text-slate-800 items-center ">
-      <StudentHeader></StudentHeader>
-      <div className="rounded overflow-hidden w-3/5 shadow-lg my-4 p-4 flex flex-col text-slate-800 text-sm bg-slate-200">
-        <div className="flex flex-col space-y-1">
+      <div className='w-4/5 pt-2'>
+        <StudentHeader></StudentHeader>
+      </div>
+      <div className="rounded overflow-hidden w-4/5 shadow-lg my-4 p-4 flex flex-col text-slate-800 text-sm bg-slate-200">
+        <div className="flex flex-col">
           <div className="text-4xl font-bold self-center">
             {positionData.name}
           </div>
@@ -155,7 +157,7 @@ export default function StudentPositions(props) {
               : ''}
           </div>
         </div>
-        <div className="px-2 py-3 flex flex-col selfs-center">
+        <div className="py-3 flex flex-col selfs-center">
           <span className="text-slate-800 font-bold text-lg" >Role Description:</span>
           <div
             className={` text-sm self-center ${isReadMore && 'line-clamp-2'
@@ -167,7 +169,7 @@ export default function StudentPositions(props) {
           </div>
           <button
             onClick={handleReadMore}
-            className=" hover:text-slate-500 bg-none rounded text-sm font-bold self-center"
+            className=" hover:text-slate-500 bg-none rounded text-sm font-bold self-center text-left"
           >
             {isReadMore ? 'Read More...' : 'Read Less...'}
           </button>
@@ -225,10 +227,11 @@ export default function StudentPositions(props) {
             onChange={(event) => handleEmailChange(event)}
           />
         </div>
-        <div className="flex flex-col">
-          {isLoading ? (
-            <APILoadingScreen></APILoadingScreen>
-          ) : (
+
+        {isLoading ? (
+          <APILoadingScreen></APILoadingScreen>
+        ) : (
+          <div className="flex flex-col">
             <form onSubmit={submit}>
               {userQA.map((form, index) => {
                 return (
@@ -253,27 +256,28 @@ export default function StudentPositions(props) {
                 )
               })}
             </form>
-          )}
-          <div className="flex flex-col w-2/5 py-2">
-            <label htmlFor="resume" className="font-bold text-gray-700 text-lg">
-              Upload Your Resume
-            </label>
-            <input
-              type="file"
-              id="resume"
-              name="resume"
-              className="py-2 px-4 border border-gray-400 rounded-lg shadow-md text-gray-700 font-medium bg-white cursor-pointer"
-              onChange={handleFileInputChange}
-            />
           </div>
-          <button
-            className="slef-center bg-slate-600 hover:bg-slate-300 hover:text-slate-800 text-slate-50 rounded-md px-5 py-2 my-2 text-2xl font-bold"
-            onClick={submit}
-          >
-            Submit
-          </button>
+        )}
+        <div className="flex flex-col w-2/5 py-2">
+          <label htmlFor="resume" className="font-bold text-gray-700 text-lg">
+            Upload Your Resume
+          </label>
+          <input
+            type="file"
+            id="resume"
+            name="resume"
+            className="py-2 px-4 border border-gray-400 rounded-lg shadow-md text-gray-700 font-medium bg-white cursor-pointer"
+            onChange={handleFileInputChange}
+          />
         </div>
+        <button
+          className="slef-center bg-slate-600 hover:bg-slate-300 hover:text-slate-800 text-slate-50 rounded-md px-5 py-2 my-2 text-2xl font-bold"
+          onClick={submit}
+        >
+          Submit
+        </button>
       </div>
     </div>
+
   )
 }
