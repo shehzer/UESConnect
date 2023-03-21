@@ -39,3 +39,7 @@ export const EyeIcon: React.FC<IconProps> = ({
     </svg>
   );
 };
+
+export default function EyeIconWrapper(props:IconProps) {
+  return <EyeIcon {...props} />;
+}
