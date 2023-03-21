@@ -39,7 +39,7 @@ export default function PositionsTable(props) {
                         {cellValue[0] != null
                             ?
                             cellValue.map((skill) => (
-                                <div className="self-center flex flex-row text-slate-50">
+                                <div className="self-center flex flex-row text-white">
                                     <div className="bg-slate-500 text-base font-bold rounded-md px-2">
                                         {skill.skill}
                                     </div>
@@ -51,14 +51,17 @@ export default function PositionsTable(props) {
                 );
             case "_id":
                 return (
-                    <div className="rounded shadow-md text-center">
-                        <Link
-                            className="hover:text-slate-500 font-bold self-center text-slate-800"
-                            href={href + cellValue}
-                        >
+
+                    <Link
+                        className=" font-bold self-center text-white"
+                        href={href + cellValue}
+                    >
+                        <div className="rounded shadow-md text-center bg-slate-500 hover:bg-slate-800">
                             Apply
-                        </Link>
-                    </div>
+                        </div>
+
+                    </Link>
+
 
                 );
             default:

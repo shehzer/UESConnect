@@ -6,14 +6,22 @@ import client from '../../components/apollo-client'
 import StudentHeader from './student-header'
 import Link from 'next/link'
 import { GrUserAdmin } from 'react-icons/gr'
-import {BiSearch} from 'react-icons/bi'
+import StudentFooter from './student-footer'
 
 
 export default function studentLanding(props) {
   const [ClubData, setClubData] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  const [showGreeting, setShowGreeting] = useState(false); // state for showing greeting popup
+  
   useEffect(() => {
+     // check local storage to see if user has previously visited
+     const hasVisited = localStorage.getItem('hasVisited');
+     if (!hasVisited) {
+       setShowGreeting(true);
+       localStorage.setItem('hasVisited', true);
+     }
     fetchClubs()
   }, [])
 
@@ -50,6 +58,7 @@ export default function studentLanding(props) {
 
   return (
     <div className="flex flex-col bg-gray-100 w-full h-full items-center relative">
+      {/* Greeting popup */}
       <div className='w-full h-16 fixed bg-white'></div>
       <div className="flex fixed bg-white h-16 justify-between centent-center w-4/5">
         <StudentHeader></StudentHeader>
@@ -82,6 +91,26 @@ export default function studentLanding(props) {
           </div>
         </div>
       </div>
+      {showGreeting && (
+        <div className="absolute w-full h-full bg-white bg-opacity-60 flex-col flex justify-center items-center">
+          <div className="bg-gray-800 text-white py-2 px-4 rounded-lg opacity-100">
+            <p className='py-1 text-xl font-bold'>Welcome to UES Connect! Your home to browse avaialable positions at Engineering clubs on Campus!</p>
+
+            <p className='py-1'>Click on a club to view the avaialable positions, then click 'apply' to apply!</p>
+
+            <div className='flex py-1'>
+            Click on <GrUserAdmin className='text-white text-3xl mx-2'></GrUserAdmin> if you are a club adminitrator to navigate to the Club View!
+              </div>
+            <button
+              className="bg-white text-gray-800 py-2 px-4 rounded-lg mt-2 self-center w-full font-bold hover:bg-slate-200"
+              onClick={() => setShowGreeting(false)}
+            >
+              Close
+            </button>
+          </div>
+          <div className='h-2/4 w-full '></div>
+        </div>
+      )}
       <div className='w-4/5 h-full'>
         {isLoading ? (
           <APILoadingScreen />
@@ -105,26 +134,7 @@ export default function studentLanding(props) {
           </div>
         }
       </div>
-      <footer className="bg-white w-full absolute bottom-0 left-0 h-12 flex justify-center text-slate-700 text-md">
-        <div className="flex items-center font-bold w-4/5 ml-2">
-          <p className="mr-1 font-bold">Built by:</p>
-          <Link href="" className='mr-1 hover:text-slate-500'>
-            Cole Bagshaw,
-          </Link>
-          <Link href=" " className='mr-1 hover:text-slate-500'>
-            David Esposto,
-          </Link>
-          <Link href="" className='mr-1 hover:text-slate-500'>
-            Gabor Simon,
-          </Link>
-          <Link href="" className='mr-1 hover:text-slate-500'>
-            Jasdeep Singh,
-          </Link>
-          <Link href="" className='mr-1 hover:text-slate-500'>
-            Shehzer Naumani
-          </Link>
-        </div>
-      </footer>
+      <StudentFooter></StudentFooter>
     </div>
   )
 }
