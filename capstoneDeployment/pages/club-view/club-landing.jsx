@@ -33,11 +33,39 @@ export default function clubLanding(props) {
   const [positionId, setPositionId] = useState('')
   const [positionName, setPositionName] = useState('')
 
-  const [ID, setID] = useState(props.id)
-  const [name, setName] = useState(props.name)
-  const [department, setDep] = useState(props.department)
-  const [description, setDes] = useState(props.description)
-  const [team, setTeam] = useState(JSON.parse(props.execs))
+  const [ID, setID] = useState()
+  const [name, setName] = useState()
+  const [department, setDep] = useState()
+  const [description, setDes] = useState()
+  const [team, setTeam] = useState()
+
+  const getClubExecs = gql
+  `query Query($id: ID!) {
+    club(ID: $id) {
+      _id
+      name
+      department
+      description
+      execs {
+        _id
+        headshotURL
+        name
+        program
+        role
+        year
+      }
+      logoURL
+    }
+  }
+  `
+
+
+  const [getClubInfo] = useMutation(getClub, {
+    onCompleted: (data) => {
+      console.log(data)
+    },
+    onError: (err)=>{console.log(err, "i am erroring on getting club info")}
+  });
 
 
 
@@ -48,24 +76,17 @@ export default function clubLanding(props) {
 
     jwt.verify(token, config.jwtSecret, (err, decoded)=>{
       console.log(err, decoded)
-
       if(err)
       {
         console.log(err)
-
-
-          router.push({
-    
-            pathname:'/club-view/sign-in',
-  
-          })
-          
+          router.push({pathname:'/club-view/sign-in'})
           alert("Your session has expired.")
-
       }
-
-
     });
+
+    console.log(props.clubID)
+
+
 
   },[])
 

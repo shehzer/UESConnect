@@ -30,34 +30,35 @@ export default function signIn() {
   const mutationQ = gql`
   mutation Mutation($loginInput: LoginInput) {
     loginUser(loginInput: $loginInput) {
+      _id
       token
       userRole
-      _id
-      name
-      department
-      description
-      logoURL
-      execs {
-        _id
-        name
-        role
-        year
-        program
-        headshotURL
-      }
-      adminList {
-        userID
-        name
-        email
-        password
-        role
-        token
-        clubName
-        clubID
-      }
     }
   }
-    `
+  
+  `
+    // name
+    // department
+    // description
+    // logoURL
+    // execs {
+    //   _id
+    //   name
+    //   role
+    //   year
+    //   program
+    //   headshotURL
+    // }
+    // adminList {
+    //   userID
+    //   name
+    //   email
+    //   password
+    //   role
+    //   token
+    //   clubName
+    //   clubID
+    // }
 
 const queryQ = gql`query Query($id: ID!) {
     club(ID: $id) {
@@ -75,6 +76,8 @@ const queryQ = gql`query Query($id: ID!) {
   }`
 
   const logIn = async function () {
+
+
     client
       .mutate({
         mutation: mutationQ,
@@ -89,64 +92,76 @@ const queryQ = gql`query Query($id: ID!) {
 
         console.log("initial", data)
 
-        let role = data.data.loginUser.userRole
+        // let role = data.data.loginUser.userRole
 
-        let payload = data.data.loginUser.adminList
+        // let payload = data.data.loginUser.adminList
 
         let token = data.data.loginUser.token
+        let ID = data.data.loginUser._id
 
 
         Cookies.set('token', token)
+
+
+        if(role!="MASTER")
+        {
+            router.push({
+              pathname: 'club-landing',
+              query: {
+                clubID: ID
+              },
+            })
+        }
 
      
 
 
 
-        if(role=="MASTER")
-        {
-          payload.map((item)=>(delete item.__typename))
+        // if(role=="MASTER")
+        // {
+        //   payload.map((item)=>(delete item.__typename))
    
-          router.push({
-            pathname: '../admin-view/admin-landing',
-            query: {
-              admins:JSON.stringify(payload)
-            },
-          })
+        //   router.push({
+        //     pathname: '../admin-view/admin-landing',
+        //     query: {
+        //       admins:JSON.stringify(payload)
+        //     },
+        //   })
 
-        }
-        else
-        {
-          let clubData = data.data.loginUser
-          client.query({
-            query: queryQ,
-            variables: {
-                id: clubData._id
-            },
-          })
-          .then((data2) => {
+        // }
+        // else
+        // {
+        //   let clubData = data.data.loginUser
+        //   client.query({
+        //     query: queryQ,
+        //     variables: {
+        //         id: clubData._id
+        //     },
+        //   })
+        //   .then((data2) => {
       
-            clubData.execs = data2.data.club.execs
-            clubData.logoURL = data2.data.club.execs.logoURL
-            console.log(clubData)
+        //     clubData.execs = data2.data.club.execs
+        //     clubData.logoURL = data2.data.club.execs.logoURL
+        //     console.log(clubData)
   
-          router.push({
-            pathname: 'club-landing',
-            query: {
-              id: clubData._id,
-              name: clubData.name,
-              department: clubData.department,
-              description: clubData.description,
-              execs: JSON.stringify(clubData.execs),
-            },
-          })
+        //   router.push({
+        //     pathname: 'club-landing',
+        //     query: {
+        //       id: clubData._id,
+        //       name: clubData.name,
+        //       department: clubData.department,
+        //       description: clubData.description,
+        //       execs: JSON.stringify(clubData.execs),
+        //     },
+        //   })
       
-          })
-          .catch((e) => {
-            alert(e.message)
-          })
+        //   })
+        //   .catch((e) => {
+        //     alert(e.message)
+        //   })
   
 
-        }
+        // }
 
       })
       .catch((e) => {

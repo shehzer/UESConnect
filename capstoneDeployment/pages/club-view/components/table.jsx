@@ -115,17 +115,19 @@ const handleFileChange = (e) => {
 function addUser()
 { 
 
-  if(file=='')
-  {
-    execUpload({variables:{file:file[0], clubId:props.clubID, execAdd:{name:name, role:role, year:year, program:program}}})
+  execUpload({variables:{file:file[0], clubId:props.clubID, execAdd:{name:name, role:role, year:year, program:program}}})
 
-  }
-  else
-  {
+  // if(file=='')
+  // {
+ 
 
-    execUpload({variables:{clubId:props.clubID, execAdd:{name:name, role:role, year:year, program:program}}})
+  // }
+  // else
+  // {
 
-  }
+  //   execUpload({variables:{clubId:props.clubID, execAdd:{name:name, role:role, year:year, program:program}}})
+
+  // }
 
   toggleLow()
 
