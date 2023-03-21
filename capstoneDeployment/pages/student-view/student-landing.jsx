@@ -62,7 +62,6 @@ export default function studentLanding(props) {
         query: getClubs,
       })
       .then((result) => {
-        console.log(result.data.getClubs)
         setClubData([...result.data.getClubs])
         setIsLoading(false)
       })
