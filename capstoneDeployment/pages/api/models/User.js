@@ -1,3 +1,4 @@
+import {isEmail} from 'validator'
 const mongoose = require('mongoose')
 mongoose.Promise = global.Promise
 
@@ -10,6 +11,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
+    validate: [isEmail, 'invalid email']
   },
   password: {
     type: String,
