@@ -1,5 +1,6 @@
 import { CreateModalBody }from '../../components/create_position_modal'
 import { UpdateModalBody } from '../../components/update_position_modal'
+import { ApplicationsModalBody } from '../../components/view_applications_modal'
 import { position } from '../../public/interfaces/position.interface'
 import {FC, ReactElement, useEffect, useState} from "react";
 import { Table, Row, Col, Tooltip, Text } from "@nextui-org/react";
@@ -7,6 +8,7 @@ import IconButtonWrapper from "./components/IconButton";
 import EditIconWrapper from "./components/EditIcon"
 import DeleteIconWrapper from "./components/DeleteIcon"
 import EyeIconWrapper from "./components/EyeIcon";
+import NoteIconWrapper from "./components/NoteIcon"
 
 import styles from '../../styles/modal-positions.module.css'
 
@@ -22,7 +24,7 @@ export type PositionProps = {
 }
 
 export default function ClubPostions({ID, applicationNavigator}: PositionProps): ReactElement{
-  const [sidebar, setSidebar] = useState(false);
+  const [selectedPositionName, setSelectedPositionName] = useState<string>("");
   const [selectedPosition, setSelectedPosition] = useState<string>("");
 
   const [page, setPage] = useState(1);
@@ -34,6 +36,7 @@ export default function ClubPostions({ID, applicationNavigator}: PositionProps):
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showUpdateModal, setShowUpdateModal] = useState(false)
   const [showViewModal, setShowViewModal] = useState(false)
+  const [showApplicationModal, setShowApplicationModal] = useState(false)
 
   const [positionArr, setPositionArr] = useState<position[]>([]);
 
@@ -81,6 +84,16 @@ export default function ClubPostions({ID, applicationNavigator}: PositionProps):
 
   const dismissViewModal = () => {
     setShowViewModal(false)
+  }
+
+  const presentApplicationModal = (positionId: string, positionName: string) => {
+    setSelectedPosition(positionId)
+    setSelectedPositionName(positionName)
+    setShowApplicationModal(true)
+  }
+
+  const dismissApplicationModal = () => {
+    setShowApplicationModal(false)
   }
 
   const presentCreateModal = () => {
@@ -150,6 +163,13 @@ export default function ClubPostions({ID, applicationNavigator}: PositionProps):
                   </IconButtonWrapper>
                 </Tooltip>
               </Col>
+              <Col css={{d: "flex"}}>
+                <Tooltip content="Applications">
+                  <IconButtonWrapper onClick={() => presentApplicationModal(pos._id, pos.name)}>
+                    <NoteIconWrapper size={20} fill="#979797" height={undefined} width={undefined} />
+                  </IconButtonWrapper>
+                </Tooltip>
+              </Col>
               <Col css={{ d: "flex" }}>
                 <Tooltip content="Edit">
                   <IconButtonWrapper onClick={() => presentUpdateModal(pos._id)}>
@@ -181,6 +201,7 @@ export default function ClubPostions({ID, applicationNavigator}: PositionProps):
       <CreateModalBody onDismiss={dismissCreateModal} onSubmit={handleCreateSubmit} show={showCreateModal} clubId={clubId}/>
       <UpdateModalBody positionId={selectedPosition} onDismiss={dismissUpdateModal} onSubmit={handleUpdateSubmit} show={showUpdateModal} readonly={false}/>
       <UpdateModalBody positionId={selectedPosition} onDismiss={dismissViewModal} onSubmit={() => null} show={showViewModal} readonly={true}/>
+      <ApplicationsModalBody position_id={selectedPosition} position_name={selectedPositionName} onDismiss={dismissApplicationModal} show={showApplicationModal}/>
       <header>
         <title>Position Postings</title>
       </header>
