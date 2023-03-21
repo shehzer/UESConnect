@@ -44,6 +44,14 @@ module.exports = gql`
   }
   
   type Club {
+    _id: String
+    name: String
+    department: String
+    description: String
+    execs: [Execs]
+  }
+
+  type LoginReturn {
     token: String
     userRole: String
     _id: String
