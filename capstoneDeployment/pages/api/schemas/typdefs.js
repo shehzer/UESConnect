@@ -48,6 +48,7 @@ module.exports = gql`
     name: String
     department: String
     description: String
+    logoURL: String
     execs: [Execs]
   }
 
