@@ -5,6 +5,7 @@ import APILoadingScreen from '../loading-screen'
 import StudentHeader from '../student-header'
 import { useState, useRef, useEffect, localStorage } from 'react'
 import validator from "validator";
+var sanitizer = require('sanitize')();
 
 export default function StudentPositions(props) {
   const [positionData, setPositionData] = useState({})
@@ -151,7 +152,7 @@ export default function StudentPositions(props) {
                     </div>
                   </div>
                 ) : (
-                  ''
+                  <span className="text-slate-800 font-bold text-lg" >None Specified</span>
                 ),
               )
               : ''}
