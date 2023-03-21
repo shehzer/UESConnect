@@ -172,7 +172,6 @@ module.exports = {
           ).modifiedCount
         }
         if (newEmail) {
-          console.log('we are changing email', newEmail)
           changedUser = await (
             await User.updateOne(user, { email: newEmail })
           ).modifiedCount
@@ -183,7 +182,7 @@ module.exports = {
             await User.updateOne(user, { password: encryptedPassword })
           ).modifiedCount
         }
-        return changedUser
+        return true
       }
       throw new ApolloError(
         'User does not exist or wrong password ',
