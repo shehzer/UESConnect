@@ -41,7 +41,19 @@ module.exports = {
       if (positionID == null) {
         return await Application.find().sort({ name: -1 }).limit(amount)
       }
-      return await Application.find({ positionID: positionID })
+      let appRes = await Application.find({ positionID: positionID })
+      for(const e of appRes){
+        let resumeURL = "No Resume"
+        try{
+          resumeURL = (await object.findOne({objId: e._id.toString(), objType: "resume"})).url
+          console.log("resumeURL --", resumeURL)
+        }catch{
+          console.log("no resume")
+        }
+        Object.assign(e, {resumeURL: resumeURL})
+        console.log(e)
+      }
+      return appRes
     },
   },
   Mutation: {

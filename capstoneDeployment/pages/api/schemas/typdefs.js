@@ -128,7 +128,7 @@ module.exports = gql`
     description: String
     qA: [QuestionAnswer]
     positionID: String
-    resumeID: String
+    resumeURL: String
   }
 
   type QuestionAnswer {
