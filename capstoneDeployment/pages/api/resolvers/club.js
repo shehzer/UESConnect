@@ -144,6 +144,7 @@ module.exports = {
         program: program,
       }
       let changedClub = await Club.updateOne({_id: clubId}, {$push: {execs: newExec}})
+      console.log("asdasd")
       console.log("asdads")
       let { filename, createReadStream} = await file.file;
       let res = await Club.findById(clubId)
