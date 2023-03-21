@@ -1,5 +1,4 @@
 //This is where the actual logic comes in
-
 const Position = require('../models/Position')
 
 module.exports = {
