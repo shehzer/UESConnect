@@ -23,7 +23,7 @@ module.exports = gql`
     createApplication(file: Upload, applicationInput: ApplicationInput): Application!
     deleteApplication(ID: ID!): Boolean!
     registerUser(registerInput: RegisterInput): User
-    loginUser(loginInput: LoginInput): Club
+    loginUser(loginInput: LoginInput): LoginReturn
     objectUploader(filename: Upload!, objType:String, objId: String): String!
     uploadFile(file: Upload!): Boolean
     addExec(file: Upload, clubId: String, execAdd: ExecAdd): Execs
@@ -56,12 +56,6 @@ module.exports = gql`
     token: String
     userRole: String
     _id: String
-    name: String
-    department: String
-    description: String
-    logoURL: String
-    execs: [Execs]
-    adminList: [User]
   }
 
   input RegisterInput {

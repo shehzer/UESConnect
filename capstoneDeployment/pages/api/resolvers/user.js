@@ -143,7 +143,7 @@ module.exports = {
 
         return {
           token: user.token,
-          role: user.role,
+          userRole: user.role,
           id: userClub.id,
           ...userClub._doc,
         }
