@@ -40,9 +40,10 @@ module.exports = {
       try{
         logoRes = logoRes[0].url
       } catch(error){
-        logoRes = null
+        logoRes = "https://stackdiary.com/140x100.png"
       }
       let finalRes = {
+        _id: res._id.toString()
         name: res.name,
         department: res.department,
         description: res.description,

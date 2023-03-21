@@ -13,6 +13,15 @@ export type application = {
   fields: Array<field>
 }
 
+export type applicationResponse = {
+  _id: string
+  name: string
+  email: string
+  description: string
+  resumeURL: string
+  qA: [{ answer: string; question: string }]
+}
+
 export type field = {
   id: string
   question: string

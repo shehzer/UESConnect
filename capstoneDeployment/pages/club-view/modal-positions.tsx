@@ -212,7 +212,7 @@ export default function ClubPostions({ID, applicationNavigator}: PositionProps):
 
         <div>
           <div className={styles.tableHolder}>
-            <Table aria-label="Example table with static content"
+            <Table aria-label="Positions Table"
                    css={{
                      height: "auto",
                      minWidth: "100%",
