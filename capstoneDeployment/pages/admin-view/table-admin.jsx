@@ -23,6 +23,17 @@ export default function tableAdmin(props) {
     const toggleHigh = ()=>{setVisible(true)}
     const toggleLow = ()=>{setVisible(false)}
 
+     
+
+    const columns = [
+      { name: "NAME", uid: "name" },
+      { name: "EMAIL", uid: "email" },
+      { name: "PASSWORD", uid: "password" },
+      { name: "CLUB", uid: "clubName"},
+      { name: "ROLE", uid: "role" },
+      { name: "ACTIONS", uid: "actions" },
+  ];
+
 
     const addQ = gql`
     mutation Mutation($registerInput: RegisterInput) {
@@ -67,20 +78,11 @@ export default function tableAdmin(props) {
       
       },
 
-      onError: (err)=>{}
+      onError: (err)=>{console.log(err)}
           });
- 
 
-    const columns = [
-        { name: "NAME", uid: "name" },
-        { name: "EMAIL", uid: "email" },
-        { name: "PASSWORD", uid: "password" },
-        { name: "CLUB", uid: "clubName"},
-        { name: "ROLE", uid: "role" },
-        { name: "ACTIONS", uid: "actions" },
-    ];
 
-  function editUser(user, index){
+  function setEdit(user, index){
     setName(user.name)
     setEmail(user.email)
     setPassword(user.password)
@@ -88,12 +90,12 @@ export default function tableAdmin(props) {
   
   }
 
-
   function clear()
   {
     setName('')
     setEmail('')
     setPassword('')
+    setClub('')
 
   }
 
@@ -150,7 +152,7 @@ export default function tableAdmin(props) {
 
     editAdmin({variables:{
       changeUserInput:{
-        email:"edit@gmail.com",
+        email:"change2Email@gmail.com",
         newEmail:"chichi@gmail.com",
         newName:"Chichi",
         newPassword:"justbebooty",
@@ -205,7 +207,7 @@ export default function tableAdmin(props) {
           <Row justify="center" align="center">
             <Col css={{ d: "flex" }}>
               <Tooltip placement="leftEnd" content="Edit user">
-                <IconButtonWrapper  onClick={() => {editUser(user, columnKey);  setAction('edit'); toggleHigh();} }>
+                <IconButtonWrapper  onClick={() => {setEdit(user, columnKey);  setAction('edit'); toggleHigh();} }>
                   <EditIconWrapper  size={20} fill="#979797" />
                 </IconButtonWrapper>
               </Tooltip>
