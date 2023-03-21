@@ -53,6 +53,8 @@ module.exports = {
 
         user.token = token
 
+        
+
         const url = `http://localhost:3000/confirmation/${token}`
 
         const options = {
@@ -111,6 +113,10 @@ module.exports = {
           { expiresIn: 3600 },
         )
         user.token = token
+
+        // Update token in db
+        await User.updateOne({ email }, { token: token })
+
         // return all the admins objects.
         if (user.role == 'MASTER') {
           console.log('THIS MAN IS A MASTER')
