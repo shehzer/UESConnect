@@ -158,31 +158,31 @@ module.exports = {
     },
     editUser: async (
       _,
-      { changeUserInput: { email, password, newName, newPassword, newEmail } },
+      { changeUserInput: { _id, password, newName, newPassword, newEmail } },
     ) => {
-      console.log(email, password, newName, newPassword, newEmail)
-      var changedUser = 0
+      console.log(_id, password, newName, newPassword, newEmail)
       // Check if user exists
-      const user = await User.findOne({ email })
+      const user = await User.findOne({ _id })
       console.log(user)
+      var changedUser = 0
       if (user && (await bcrypt.compare(password, user.password))) {
         if (newName) {
           changedUser = await (
-            await User.updateOne(user, { name: newName })
+            await User.updateOne({ _id: _id }, { name: newName })
           ).modifiedCount
         }
         if (newEmail) {
           changedUser = await (
-            await User.updateOne(user, { email: newEmail })
+            await User.updateOne({ _id: _id }, { email: newEmail })
           ).modifiedCount
         }
         if (newPassword) {
           var encryptedPassword = await bcrypt.hash(password, 10)
           changedUser = await (
-            await User.updateOne(user, { password: encryptedPassword })
+            await User.updateOne({ _id: _id }, { password: encryptedPassword })
           ).modifiedCount
         }
-        return true
+        return changedUser
       }
       throw new ApolloError(
         'User does not exist or wrong password ',
