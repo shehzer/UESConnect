@@ -19,34 +19,36 @@ export default function signIn() {
   const authContext = useContext(AuthContext);
 
   const mutationQ = gql`
-      mutation Mutation($loginInput: LoginInput) {
-        loginUser(loginInput: $loginInput) {
-          userRole
-          _id
-          department
-          description
-          execs {
-            name
-            role
-            year
-            program
-          }
-          name
-
-        }
+  mutation Mutation($loginInput: LoginInput) {
+    loginUser(loginInput: $loginInput) {
+      token
+      userRole
+      _id
+      name
+      department
+      description
+      logoURL
+      execs {
+        _id
+        name
+        role
+        year
+        program
+        headshotURL
       }
+      adminList {
+        userID
+        name
+        email
+        password
+        role
+        token
+        clubName
+        clubID
+      }
+    }
+  }
     `
-
-    // adminList {
-    //   name
-    //   email
-    //   password
-    //   role
-    //   token
-    //   clubName
-    //   clubID
-    //   userID
-    // }
 
 const queryQ = gql`query Query($id: ID!) {
     club(ID: $id) {
@@ -59,6 +61,7 @@ const queryQ = gql`query Query($id: ID!) {
         year
       }
       logoURL
+      
     }
   }`
 
@@ -81,9 +84,12 @@ const queryQ = gql`query Query($id: ID!) {
 
         let payload = data.data.loginUser.adminList
 
+        console.log(payload, "new payload")
+
         if(role=="MASTER")
         {
           payload.map((item)=>(delete item.__typename))
+   
           router.push({
             pathname: '../admin-view/admin-landing',
             query: {

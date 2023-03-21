@@ -38,6 +38,14 @@ export default function tableAdmin(props) {
       }
     }
     `
+
+
+    const editQ = gql`
+    mutation Mutation($changeUserInput: ChangeUserInput) {
+      editUser(changeUserInput: $changeUserInput)
+    }`
+
+
     const [adminUpload] = useMutation(addQ, {
       onCompleted: (data) => {
         console.log(data);
@@ -47,6 +55,19 @@ export default function tableAdmin(props) {
         setAdmin([...temp])
       
       },
+          });
+
+    const [editAdmin] = useMutation(editQ, {
+      onCompleted: (data) => {
+        console.log(data);
+
+        // let temp = admins.map((element, index)=>({...element}))
+        // temp.push(data.registerUser)
+        // setAdmin([...temp])
+      
+      },
+
+      onError: (err)=>{}
           });
  
 
@@ -63,6 +84,7 @@ export default function tableAdmin(props) {
     setName(user.name)
     setEmail(user.email)
     setPassword(user.password)
+    setClub(user.clubName)
   
   }
 
@@ -80,7 +102,7 @@ export default function tableAdmin(props) {
     switch(editAction)
     {
       case "edit":
-        confirmEdit()
+        editUser()
         break;
       case "delete":
         deleteUser()
@@ -111,6 +133,33 @@ export default function tableAdmin(props) {
 
 
 
+  }
+
+
+  function editUser()
+  {
+    // {
+    //   "changeUserInput": {
+    //     "email": "edit@gmail.com",
+    //     "newEmail": null,
+    //     "newName": "we changed name",
+    //     "newPassword": null,
+    //     "password": "password"
+    //   }
+    // }
+
+    editAdmin({variables:{
+      changeUserInput:{
+        email:"edit@gmail.com",
+        newEmail:"chichi@gmail.com",
+        newName:"Chichi",
+        newPassword:"justbebooty",
+        password:"password"
+
+      
+      }
+    }
+  })
   }
 
 
@@ -203,6 +252,8 @@ export default function tableAdmin(props) {
 
     <div>
 
+      <Button onPress={editUser}>Press me</Button>
+
     <Table
       aria-label="Example table with custom cells"
       css={{
@@ -285,9 +336,10 @@ export default function tableAdmin(props) {
             color="primary"
             size="lg"
             label="Club"
-            placeholder={clubName?clubName:"Club Name"}
+            placeholder={clubName}
             onChange={(e)=>{setClub(e.target.value)}}
             aria-labelledby="email"
+            disabled={editAction=='edit'}
            
           />
 

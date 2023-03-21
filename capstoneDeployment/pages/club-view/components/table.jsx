@@ -18,7 +18,7 @@ export default function table(props) {
   const [team, setTeam] = useState([...props.execs])
   const [visible, setVisible] = useState(false);
   const [editAction, setAction] = useState();
-  const [file, setFile] = useState();
+  const [file, setFile] = useState('');
   const toggleHigh = ()=>{setVisible(true)}
   const toggleLow = ()=>{setVisible(false)}
 
@@ -46,6 +46,7 @@ export default function table(props) {
     setYear('')
     setProgram('')
     setID('')
+    setFile('')
 
   }
 
@@ -79,6 +80,17 @@ export default function table(props) {
     }
   }`
 
+  const uploadExecWithoutFile = gql`mutation Mutation($clubId: String, $execAdd: ExecAdd) {
+    addExec(clubId: $clubId, execAdd: $execAdd) {
+      _id
+      name
+      program
+      role
+      year
+      headshotURL
+    }
+  }`
+
   const [execUpload] = useMutation(uploadExec, {
     onCompleted: (data) => {
       let temp = team.map((element, index)=>({...element}))
@@ -102,7 +114,17 @@ const handleFileChange = (e) => {
 function addUser()
 { 
 
-  execUpload({variables:{file:file[0], clubId:props.clubID, execAdd:{name:name, role:role, year:year, program:program}}})
+  if(file=='')
+  {
+    execUpload({variables:{file:file[0], clubId:props.clubID, execAdd:{name:name, role:role, year:year, program:program}}})
+
+  }
+  else
+  {
+
+    execUpload({variables:{clubId:props.clubID, execAdd:{name:name, role:role, year:year, program:program}}})
+
+  }
 
   toggleLow()
 
@@ -117,89 +139,91 @@ function deleteUser()
   toggleLow()
 }
 
-  function saveEdit()
-  {
-    let temp = team.map((element, index)=>({...element}))
+function saveEdit()
+{
+  let temp = team.map((element, index)=>({...element}))
 
-    console.log(id, name, role, program, year)
-
-
-    const newArr = temp.map((element, index)=>{
-
-      if(id==element._id)
-      {
-        element.name=name
-        element.year=year
-        element.role=role
-        element.program=program
-      }
-
-      return element
-    })
-
-    console.log(newArr)
-
-    setTeam([...newArr])
-    toggleLow()
-  }
+  console.log(id, name, role, program, year)
 
 
-  function renderCell(user, columnKey){
+  const newArr = temp.map((element, index)=>{
 
-    const cellValue = user[columnKey];
-    
-    switch (columnKey) {
-      case "name":
-        return (
-          <User src={user.headshotURL}  name={cellValue} css={{ p: 0 }} >
-         
-          </User>
-        );
-      case "role":
-        return (
-          <Col>
-            <Row>
-              <Text b size={14} css={{ tt: "capitalize" }}>
-                {cellValue}
-              </Text>
-            </Row>
-            <Row>
-              <Text b size={13} css={{ tt: "capitalize", color: "$accents7" }}>
-                {user.team}
-              </Text>
-            </Row>
-          </Col>
-        );
-      case "year":
-        return <StyledBadgeWrapper type={user.status}>{cellValue}</StyledBadgeWrapper>;
-
-      case "actions":
-        return (
-          <Row justify="center" align="center">
-            <Col css={{ d: "flex" }}>
-              <Tooltip  content="Edit user">
-                <IconButtonWrapper  onClick={() => {editUser(user, columnKey);  setAction('edit'); toggleHigh();} }>
-                  <EditIconWrapper  size={20} fill="#979797" />
-                </IconButtonWrapper>
-              </Tooltip>
-            </Col>
-            <Col css={{ d: "flex" }}>
-              <Tooltip
-                content="Delete user"
-                color="error"
-                onClick={() => {editUser(user, columnKey); setAction('delete'); toggleHigh();  }}
-              >
-                <IconButtonWrapper >
-                  <DeleteIconWrapper size={20} fill="#FF0080" />
-                </IconButtonWrapper>
-              </Tooltip>
-            </Col>
-          </Row>
-        );
-      default:
-        return cellValue;
+    if(id==element._id)
+    {
+      element.name=name
+      element.year=year
+      element.role=role
+      element.program=program
     }
-  };
+
+    return element
+  })
+
+  console.log(newArr)
+
+  setTeam([...newArr])
+  toggleLow()
+}
+
+
+function renderCell(user, columnKey){
+
+  const cellValue = user[columnKey];
+  
+  switch (columnKey) {
+    case "name":
+      return (
+        <User src={user.headshotURL}  name={cellValue} css={{ p: 0 }} >
+        
+        </User>
+      );
+    case "role":
+      return (
+        <Col>
+          <Row>
+            <Text b size={14} css={{ tt: "capitalize" }}>
+              {cellValue}
+            </Text>
+          </Row>
+          <Row>
+            <Text b size={13} css={{ tt: "capitalize", color: "$accents7" }}>
+              {user.team}
+            </Text>
+          </Row>
+        </Col>
+      );
+    case "year":
+      return <StyledBadgeWrapper type={user.status}>{cellValue}</StyledBadgeWrapper>;
+
+    case "actions":
+      return (
+        <Row justify="center" align="center">
+          <Col css={{ d: "flex" }}>
+            <Tooltip  content="Edit user">
+              <IconButtonWrapper  onClick={() => {editUser(user, columnKey);  setAction('edit'); toggleHigh();} }>
+                <EditIconWrapper  size={20} fill="#979797" />
+              </IconButtonWrapper>
+            </Tooltip>
+          </Col>
+          <Col css={{ d: "flex" }}>
+            <Tooltip
+              content="Delete user"
+              color="error"
+              onClick={() => {editUser(user, columnKey); setAction('delete'); toggleHigh();  }}
+            >
+              <IconButtonWrapper >
+                <DeleteIconWrapper size={20} fill="#FF0080" />
+              </IconButtonWrapper>
+            </Tooltip>
+          </Col>
+        </Row>
+      );
+    default:
+      return cellValue;
+  }
+};
+
+
   return (
 
     <div>
@@ -305,7 +329,8 @@ function deleteUser()
       
       }
         <Modal.Footer aria-labelledby="team-footer" >
-           {editAction!="delete"?<Button className='bg-blue-600' onPress={handleConfirm}>Save</Button>:
+           {editAction!="delete"?<Button className='bg-blue-600' onPress={handleConfirm} 
+           disabled={!(name&&role&&year&&program)}>Save</Button>:
            <Button className="bg-rose-600" color='error' onPress={handleConfirm}>DELETE</Button> }
             <Button  bordered color='error' onPress={toggleLow}>Cancel</Button>
 
