@@ -15,6 +15,7 @@ export default function tableAdmin(props) {
     const [match, setMatch] = useState(false)
     const [password2, setPass2] = useState('')
     const [clubName, setClub] = useState('')
+    const [id, setID] = useState('')
   
     const [admins, setAdmin] = useState([...JSON.parse(props.clubAdmins)])
 
@@ -57,6 +58,7 @@ export default function tableAdmin(props) {
     }`
 
 
+
     const [adminUpload] = useMutation(addQ, {
       onCompleted: (data) => {
         console.log(data);
@@ -72,7 +74,13 @@ export default function tableAdmin(props) {
       onCompleted: (data) => {
         console.log(data);
 
-        // let temp = admins.map((element, index)=>({...element}))
+        if(data.editUser)
+        {
+          let temp = admins.map((element, index)=>({...element}))
+
+        }
+
+ 
         // temp.push(data.registerUser)
         // setAdmin([...temp])
       
@@ -142,23 +150,21 @@ export default function tableAdmin(props) {
   {
     // {
     //   "changeUserInput": {
-    //     "email": "edit@gmail.com",
-    //     "newEmail": null,
-    //     "newName": "we changed name",
-    //     "newPassword": null,
+    //     "_id": "6418ebe469eb18967eb8e9ee",
+    //     "newEmail": "new@gmail.com",
+    //     "newName": "new323email",
+    //     "newPassword": "password",
     //     "password": "password"
     //   }
     // }
 
     editAdmin({variables:{
       changeUserInput:{
-        email:"change2Email@gmail.com",
-        newEmail:"chichi@gmail.com",
-        newName:"Chichi",
-        newPassword:"justbebooty",
+        _id: "6418ebe469eb18967eb8e9ee",
+        newEmail:"shehzerisgay@gmail.com",
+        newName:"shezy",
+        newPassword:"jasdasdl;mas;saf",
         password:"password"
-
-      
       }
     }
   })

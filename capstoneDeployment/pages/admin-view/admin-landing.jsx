@@ -9,6 +9,9 @@ import client from '../../components/apollo-client'
 import { logMissingFieldErrors } from '@apollo/client/core/ObservableQuery'
 import styles from 'styles/admin.module.css'
 import TableAdmin from './table-admin'
+import Cookies from 'js-cookie'
+const jwt = require('jsonwebtoken')
+const config = require('../../pages/api/config/default.json')
 
 
 
@@ -22,6 +25,26 @@ export async function getServerSideProps(context) {
 export default function amdinLanding(props) {
 
   const [adminList, setList] = useState([...JSON.parse(props.admins)])
+  const router = useRouter()
+
+
+  useEffect(()=>{
+    let token = Cookies.get('token')
+
+    jwt.verify(token, config.jwtSecret, (err, decoded)=>{
+      console.log(err, decoded)
+
+      if(decoded.role!="MASTER")
+      {
+        router.push({
+          pathname:'/club-view/sign-in',
+
+        })
+
+      }
+    });
+
+  },[])
 
   
 

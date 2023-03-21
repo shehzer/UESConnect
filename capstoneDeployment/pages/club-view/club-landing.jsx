@@ -12,7 +12,10 @@ import ClubPositions from "./modal-positions";
 import { ApplicationPage } from '../../components/club-applications'
 import { Input, Spacer, Text } from '@nextui-org/react'
 import { Router, useRouter } from 'next/router'
-import { AuthContext } from '../../components/context/context'
+import Cookies from 'js-cookie'
+const jwt = require('jsonwebtoken')
+const config = require('../../pages/api/config/default.json')
+
 
 export async function getServerSideProps(context) {
   return {
@@ -36,14 +39,37 @@ export default function clubLanding(props) {
   const [description, setDes] = useState(props.description)
   const [team, setTeam] = useState(JSON.parse(props.execs))
 
-  const authContext = useContext(AuthContext);
 
-  // useEffect(() => {
-  //     // checks if the user is authenticated
-  //     !authContext.isUserAuthenticated() 
-  //     ? router.push("/sign-in")
-  //     : "";
-  //   }, []);
+
+
+  useEffect(()=>{
+
+    let token = Cookies.get('token')
+
+    jwt.verify(token, config.jwtSecret, (err, decoded)=>{
+      console.log(err, decoded)
+
+      if(err)
+      {
+        console.log(err)
+
+
+          router.push({
+    
+            pathname:'/club-view/sign-in',
+  
+          })
+          
+          alert("Your session has expired.")
+
+      }
+
+
+    });
+
+  },[])
+
+
 
   const updateInfo = (newInfo) => {
     setName(newInfo.name)

@@ -8,7 +8,10 @@ import { Router, useRouter } from 'next/router'
 import { gql, useMutation } from '@apollo/client'
 import client from '../../components/apollo-client'
 import { logMissingFieldErrors } from '@apollo/client/core/ObservableQuery'
-import { AuthContext } from '../../components/context/context'
+const jwt = require('jsonwebtoken')
+const config = require('../../pages/api/config/default.json')
+import Cookies from 'js-cookie'
+
 
 export default function signIn() {
   const router = useRouter()
@@ -22,7 +25,7 @@ export default function signIn() {
     }
   }
 
-  const authContext = useContext(AuthContext);
+
 
   const mutationQ = gql`
   mutation Mutation($loginInput: LoginInput) {
@@ -90,7 +93,14 @@ const queryQ = gql`query Query($id: ID!) {
 
         let payload = data.data.loginUser.adminList
 
-        console.log(payload, "new payload")
+        let token = data.data.loginUser.token
+
+
+        Cookies.set('token', token)
+
+     
+
+
 
         if(role=="MASTER")
         {
@@ -137,13 +147,6 @@ const queryQ = gql`query Query($id: ID!) {
   
 
         }
-
-
-
-
-
-
-
 
       })
       .catch((e) => {
