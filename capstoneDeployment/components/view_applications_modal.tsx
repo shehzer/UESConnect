@@ -65,7 +65,7 @@ export const ApplicationsModalBody: FC<ApplicationModalProps> = ({
   }, [fetchApplications])
 
   return (
-    <Modal closeButton aria-labelledby={'View Applications Modal'} open={show} onClose={onDismiss}>
+    <Modal width={'70%'} closeButton aria-labelledby={'View Applications Modal'} open={show} onClose={onDismiss}>
       <div className={styles.body}>
         <h1 className={styles.header}>
           Applications for position: {positionName}

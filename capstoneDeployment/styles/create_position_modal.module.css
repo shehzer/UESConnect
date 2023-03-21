@@ -11,6 +11,7 @@
 }
 .updateForm {
     min-width: 250px;
+    width: 90%;
     margin-left: auto;
     margin-right: auto;
     margin-top: 10px;
@@ -40,6 +41,7 @@
 
 .contentContainer {
     min-width: 250px;
+    width: 90%;
     background-color: #222222;
     padding: 10px;
     border-radius: 10px;
@@ -64,4 +66,13 @@
     border-radius: 5px;
     background-color: #16181a;
     width: 100%;
+}
+
+.questionContainer {
+    padding-left: 25px;
+}
+
+.questionLine {
+    display: flex;
+    justify-content: space-between;
 }
