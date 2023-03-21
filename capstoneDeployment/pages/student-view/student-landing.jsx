@@ -7,23 +7,27 @@ import StudentHeader from './student-header'
 import Link from 'next/link'
 import { GrUserAdmin } from 'react-icons/gr'
 import StudentFooter from './student-footer'
-
+import { RiAdminLine, RiInformationLine } from 'react-icons/ri'
 
 export default function studentLanding(props) {
   const [ClubData, setClubData] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [showGreeting, setShowGreeting] = useState(false); // state for showing greeting popup
-  
+
   useEffect(() => {
-     // check local storage to see if user has previously visited
-     const hasVisited = localStorage.getItem('hasVisited');
-     if (!hasVisited) {
-       setShowGreeting(true);
-       localStorage.setItem('hasVisited', true);
-     }
+    // check local storage to see if user has previously visited
+    const hasVisited = localStorage.getItem('hasVisited');
+    if (!hasVisited) {
+      setShowGreeting(true);
+      localStorage.setItem('hasVisited', true);
+    }
     fetchClubs()
   }, [])
+
+  function openInfo(){
+    setShowGreeting(true)
+  }
 
   function fetchClubs() {
     const getClubs = gql`
@@ -77,14 +81,21 @@ export default function studentLanding(props) {
           transition
           ease-in-out
           self-center
-          focus:text-slate-700 focus:bg-white focus:border-slate-800 focus:outline-none mr-6
+          focus:text-slate-700 focus:bg-white focus:border-slate-800 focus:outline-none mr-2
           w-72"
             placeholder="&#x1F50E;&#xFE0E; Club Name / Department"
             onChange={(event) => setSearchTerm(event.target.value)}
           />
           <div class="group flex relative">
+            <button onClick={openInfo}>
+              <RiInformationLine className='text-2xl mr-2' color="black"></RiInformationLine>
+            </button>
+            <span class="group-hover:opacity-100 transition-opacity bg-slate-500 px-1 text-sm text-gray-100 rounded-md absolute left-1/2 
+    -translate-x-1/2 translate-y-full opacity-0 m-4 mx-auto">Site Info</span>
+          </div>
+          <div class="group flex relative">
             <Link href="/club-view/sign-in" className='text-slate-700 hover:text-slate-100 text-2xl flex content-center'>
-              <GrUserAdmin></GrUserAdmin>
+              <RiAdminLine color="black"></RiAdminLine>
               <span class="group-hover:opacity-100 transition-opacity bg-slate-500 px-1 text-sm text-gray-100 rounded-md absolute left-1/2 
     -translate-x-1/2 translate-y-full opacity-0 m-4 mx-auto">Club Admin</span>
             </Link>
@@ -95,12 +106,10 @@ export default function studentLanding(props) {
         <div className="absolute w-full h-full bg-white bg-opacity-60 flex-col flex justify-center items-center">
           <div className="bg-gray-800 text-white py-2 px-4 rounded-lg opacity-100">
             <p className='py-1 text-xl font-bold'>Welcome to UES Connect! Your home to browse avaialable positions at Engineering clubs on Campus!</p>
-
             <p className='py-1'>Click on a club to view the avaialable positions, then click 'apply' to apply!</p>
-
             <div className='flex py-1'>
-            Click on <GrUserAdmin className='text-white text-3xl mx-2'></GrUserAdmin> if you are a club adminitrator to navigate to the Club View!
-              </div>
+              Click on <RiAdminLine color='white' className='text-white text-3xl mx-2'></RiAdminLine> if you are a club adminitrator to navigate to the Club View!
+            </div>
             <button
               className="bg-white text-gray-800 py-2 px-4 rounded-lg mt-2 self-center w-full font-bold hover:bg-slate-200"
               onClick={() => setShowGreeting(false)}
