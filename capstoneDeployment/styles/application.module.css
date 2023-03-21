@@ -1,20 +1,17 @@
 .header {
-  font-size: 40px;
-  font-weight: bold;
-  padding: 10px 10px 10px 20px;
+  padding: 10px 10px 10px 10px;
 }
-.body {
+.container {
   margin: 25px;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  align-items: normal;
+  align-items: center;
 }
 
 .question,
 .ans {
   font-size: 20px;
-  padding: 5px 5px 0px 50px;
+  padding: 0px 0px 0px 0px;
 }
 
 .qaContainer {
@@ -58,5 +55,22 @@ textarea.answer {
   border: 0px white solid;
   border-radius: 25px;
   background-color: #16181a;
-  width: 50%;
+  width: 100%;
+}
+
+.title {
+  margin-bottom: 10px;
+}
+
+.body {
+  min-width: 250px;
+  width: 100%;
+  background-color: #222222;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.fieldBlock {
+  margin-top: 20px;
+  margin-bottom: 20px;
 }

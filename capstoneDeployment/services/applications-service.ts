@@ -6,6 +6,7 @@ export async function getApplications(position_id: string) {
   const query = gql`
     query Query($positionId: String) {
       getApplications(positionID: $positionId) {
+        _id
         name
         email
         description

@@ -1,43 +1,32 @@
 import React, { FC } from 'react'
 import styles from '../styles/application.module.css'
-import { application, field } from '../public/interfaces/position.interface'
+import { applicationResponse, field } from '../public/interfaces/position.interface'
+import {Text, Modal } from '@nextui-org/react'
 
 export type ApplicationProps = {
-  application: application
+  application: applicationResponse
 }
 
 export const ApplicationPage: FC<ApplicationProps> = ({ application }) => {
   // handles conditional for different input types during render
-  function renderInput(
-    questionId: field['id'],
-    answerType: field['answerType'],
-  ) {
-    if (answerType === 'textarea') {
-      return <textarea key={questionId + 't'} className={styles.answer} />
-    } else
-      return (
-        <input
-          type={answerType}
-          key={questionId + 't'}
-          className={styles.answer}
-        />
-      )
-  }
-  const questionList = application.fields.map((field) => {
+  const questionList = application.qA.map((q, i) => {
     return (
       <div className={styles.questionSection}>
-        <label key={field.id + 'q'} className={styles.question}>
-          {field.question}
-        </label>
-
-        {renderInput(field.id, field.answerType)}
+        <Text b key={q.question + 'i'} className={styles.question}>
+          {q.question}
+        </Text>
+        <Text>
+          {q.answer}
+        </Text>
       </div>
     )
   })
   return (
-    <div className={styles.body}>
-      <h1 className={styles.header}>Application {application.id}</h1>
-      <form>{questionList}</form>
-    </div>
+    <Modal>
+      <div className={styles.body}>
+        <Text b size={25} className={styles.header}>Application {application._id}</Text>
+        <form>{questionList}</form>
+      </div>
+    </Modal>
   )
 }
