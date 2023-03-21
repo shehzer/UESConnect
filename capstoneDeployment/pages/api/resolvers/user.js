@@ -172,6 +172,7 @@ module.exports = {
           ).modifiedCount
         }
         if (newEmail) {
+          console.log('we are changing email', newEmail)
           changedUser = await (
             await User.updateOne(user, { email: newEmail })
           ).modifiedCount
