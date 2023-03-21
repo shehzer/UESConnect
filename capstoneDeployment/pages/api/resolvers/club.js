@@ -183,15 +183,29 @@ module.exports = {
         name: name,
         role: role,
         year: year,
-        program,
+        program: program,
       }
       console.log(clubId)
+      let { filename, createReadStream} = await file.file;
+      let stream = createReadStream();
+      let fullName = `${_id}${filename}`
+      let resAWS = await uploadToS3(fullName,stream)
       let changedClub = await Club.updateOne({"_id": clubId, "execs._id": execUpdate._id}, {$set: {"execs.$" : execUpdate}})
+      let objChange = await object.updateOne({objId: _id, objType: "headshot"},{$set:{"url": resAWS.Location}})
       let res = await Club.findById(clubId)
       console.log(res)
       for(const e of res.execs){
         if(e._id == _id){
-          return e
+           let newerExec = {
+            _id: e._id,
+            name: e.name,
+            role: e.role,
+            year: e.year,
+            program: e.program,
+            headshotURL: resAWS.Location
+           }
+           console.log("this is the newer", newerExec)
+           return newerExec
         }
       }
     },

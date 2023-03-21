@@ -27,7 +27,7 @@ module.exports = gql`
     objectUploader(filename: Upload!, objType:String, objId: String): String!
     uploadFile(file: Upload!): Boolean
     addExec(file: Upload, clubId: String, execAdd: ExecAdd): Execs
-    editExec(file: Upload, clubId: String, execInput: ExecsInput): Exec
+    editExec(file: Upload, clubId: String, execInput: ExecsInput): Execs
     deleteExec(clubId: String, execId: String): Boolean!
     deleteUser(email: String): Boolean!
     editUser(changeUserInput: ChangeUserInput): Boolean!
