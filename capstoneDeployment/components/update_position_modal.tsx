@@ -82,6 +82,7 @@ export const UpdateModalBody: FC<UpdateModalBodyProps> = ({positionId, onDismiss
         <div className={styles.questionLine}>
           <Input
             readOnly={readonly}
+            width={'85%'}
             type={'text'}
             className={styles.question}
             value={question}
@@ -106,6 +107,7 @@ export const UpdateModalBody: FC<UpdateModalBodyProps> = ({positionId, onDismiss
           <Input
             readOnly={readonly}
             type={'text'}
+            width={'85%'}
             className={styles.question}
             value={skill}
             onChange={({ target }) => {
@@ -123,7 +125,7 @@ export const UpdateModalBody: FC<UpdateModalBodyProps> = ({positionId, onDismiss
 
 
   return (
-    <Modal open={show} closeButton aria-labelledby={"Position Modal"} onClose={onDismiss}>
+    <Modal width={'35%'} open={show} closeButton aria-labelledby={"Position Modal"} onClose={onDismiss}>
       <div>
         <Modal.Header>
           <Text b size={22}>

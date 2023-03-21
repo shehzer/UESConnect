@@ -44,6 +44,7 @@ export const CreateModalBody: FC<CreateModalBodyProps> = ({ onDismiss, onSubmit,
         <div className={styles.questionLine}>
           <Input
             type={'text'}
+            width={'85%'}
             className={styles.question}
             onChange={({ target }) => {
               questions[i] = (target as HTMLInputElement).value
@@ -63,6 +64,7 @@ export const CreateModalBody: FC<CreateModalBodyProps> = ({ onDismiss, onSubmit,
         <div className={styles.questionLine}>
           <Input
             type={'text'}
+            width={'85%'}
             className={styles.question}
             onChange={({ target }) => {
               skills[i] = (target as HTMLInputElement).value
@@ -76,7 +78,7 @@ export const CreateModalBody: FC<CreateModalBodyProps> = ({ onDismiss, onSubmit,
   })
 
   return (
-    <Modal closeButton aria-labelledby={'Create Position Modal'} open={show} onClose={onDismiss}>
+    <Modal width={'35%'} closeButton aria-labelledby={'Create Position Modal'} open={show} onClose={onDismiss}>
       <div>
         <Modal.Header>
           <Text b size={22}>
