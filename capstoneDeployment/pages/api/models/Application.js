@@ -6,7 +6,6 @@ const applicationSchema = new mongoose.Schema({
   description: String,
   qA: [{ question: String, answer: String }],
   positionID: String,
-  resumeID: String,
 })
 
 module.exports =

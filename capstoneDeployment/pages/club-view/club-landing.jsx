@@ -8,7 +8,7 @@ import ClubInfo from './club-info'
 import ClubApps from './club-apps'
 import ClubTeams from './club-team'
 // import { ClubPositions } from './club-positions'
-import { ClubPositions } from "../../components/modal-positions";
+import ClubPositions from "./modal-positions";
 import { ApplicationPage } from '../../components/club-applications'
 import { Input, Spacer, Text } from '@nextui-org/react'
 import { Router, useRouter } from 'next/router'

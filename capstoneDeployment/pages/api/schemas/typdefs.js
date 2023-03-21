@@ -20,17 +20,31 @@ module.exports = gql`
     createPosition(positionInput: PositionInput): Position!
     deletePosition(ID: ID!): Boolean!
     editPosition(ID: ID!, positionInput: PositionInput): Boolean
-    createApplication(applicationInput: ApplicationInput): Application!
+    createApplication(file: Upload, applicationInput: ApplicationInput): Application!
     deleteApplication(ID: ID!): Boolean!
     registerUser(registerInput: RegisterInput): User
     loginUser(loginInput: LoginInput): Club
     objectUploader(filename: Upload!, objType:String, objId: String): String!
     uploadFile(file: Upload!): Boolean
-    addExec(file: Upload!, clubId: String, execAdd: ExecAdd): Execs
-    editExec(file: Upload!, clubId: String, execInput: ExecsInput): Exec
+    addExec(file: Upload, clubId: String, execAdd: ExecAdd): Execs
+    editExec(file: Upload, clubId: String, execInput: ExecsInput): Exec
+    deleteExec(clubId: String, execId: String): Boolean!
+    deleteUser(email: String): Boolean!
+    editUser(changeUserInput: ChangeUserInput): Boolean!
+
   }
 
+  input ChangeUserInput {
+    email: String! 
+    password: String!
+    newName: String
+    newPassword: String
+    newEmail: String
+    
+  }
+  
   type Club {
+    token: String
     userRole: String
     _id: String
     name: String
@@ -157,7 +171,6 @@ module.exports = gql`
     description: String
     qA: [QuestionAnswerInput]
     positionID: String
-    resumeID: String
   }
 
   input QuestionAnswerInput {

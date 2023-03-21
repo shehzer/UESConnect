@@ -100,6 +100,7 @@ export default function table(props) {
     },
     onError: (err)=>{console.log(err, "i am erroring on exec upload")}
 });
+
 const handleFileChange = (e) => {
   const file = e.target.files;
   console.log(file, "from handleFileChange")

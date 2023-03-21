@@ -8,8 +8,6 @@ const config = require('../config/default.json')
 const transporter = require('../email/transporter')
 import { Router, useRouter } from 'next/router'
 
-
-
 /**
  *
  * Upon login I want to be able to
@@ -20,7 +18,7 @@ module.exports = {
     registerUser: async (
       _,
       { registerInput: { name, email, password, role, clubName } },
-    ) =>{
+    ) => {
       // See if user already exists
       console.log(name, email, role, password)
       email = email.toLowerCase()
@@ -55,14 +53,14 @@ module.exports = {
 
         user.token = token
 
-        const url = `http://localhost:3000/confirmation/${token}`;
+        const url = `http://localhost:3000/confirmation/${token}`
 
         const options = {
           from: user,
           to: email,
           subject: 'Confirm Email!',
-          html: `Please click this email to confirm your email: <a href="${url}">${url}</a>`
-          }
+          html: `Please click this email to confirm your email: <a href="${url}">${url}</a>`,
+        }
 
         await transporter.sendMail(options, function (err, info) {
           console.log('Sent: ' + info.response)
@@ -99,7 +97,8 @@ module.exports = {
     loginUser: async (_, { loginInput: { email, password } }) => {
       // Check if user exists
       const user = await User.findOne({ email })
-      console.log(user.confirmed)
+      console.log(user)
+      // console.log(user.confirmed)
       // if (!user.confirmed) {
       //   throw new Error('Please confirm your email to login')
       // }
@@ -112,39 +111,84 @@ module.exports = {
           { expiresIn: 3600 },
         )
         user.token = token
-       // return all the admins objects.
-        if(user.role == "MASTER") {
-          console.log("THIS MAN IS A MASTER")
-          const adminUsers = await User.find({ role: "ADMIN" })
+        // return all the admins objects.
+        if (user.role == 'MASTER') {
+          console.log('THIS MAN IS A MASTER')
+          const adminUsers = await User.find({ role: 'ADMIN' })
           adminUsers.forEach(
-            element => 
-            element.userID = element._id
+            (element) => (element.userID = element._id),
             // console.log(element._id)
             // console.log(element.userID)
             // element.userID = element._id
-            );
-          // console.log(user._id)
+          )
+          console.log(user.token)
           return {
+            token: user.token,
             userRole: user.role,
-            adminList: adminUsers
-          }       
+            adminList: adminUsers,
+          }
         }
         // Find associated Club
         const clubID = user.clubID
 
-        // 
+        //
         const userClub = await Club.findById(clubID)
         console.log(user.role)
 
         return {
+          token: user.token,
           role: user.role,
           id: userClub.id,
-          ...userClub._doc
+          ...userClub._doc,
         }
       }
       throw new ApolloError('Incorrect password', 'INCORRECT_PASSWORD')
 
       // Create new Token
+    },
+    deleteUser: async (_, { email }) => {
+      // Check if user exists
+      const user = await User.findOne({ email })
+      // Check if we got a user
+      if (user) {
+        const wasDeleted = (await User.deleteOne(user)).deletedCount
+        return wasDeleted
+      }
+      throw new ApolloError('User does not exist ', 'INVALID_USER')
+    },
+    editUser: async (
+      _,
+      { changeUserInput: { email, password, newName, newPassword, newEmail } },
+    ) => {
+      console.log(email, password, newName, newPassword, newEmail)
+      var changedUser = 0
+      // Check if user exists
+      const user = await User.findOne({ email })
+      console.log(user)
+      if (user && (await bcrypt.compare(password, user.password))) {
+        if (newName) {
+          changedUser = await (
+            await User.updateOne(user, { name: newName })
+          ).modifiedCount
+        }
+        if (newEmail) {
+          console.log('we are changing email', newEmail)
+          changedUser = await (
+            await User.updateOne(user, { email: newEmail })
+          ).modifiedCount
+        }
+        if (newPassword) {
+          var encryptedPassword = await bcrypt.hash(password, 10)
+          changedUser = await (
+            await User.updateOne(user, { password: encryptedPassword })
+          ).modifiedCount
+        }
+        return changedUser
+      }
+      throw new ApolloError(
+        'User does not exist or wrong password ',
+        'INVALID_Entry',
+      )
     },
   },
   Query: {

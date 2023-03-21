@@ -144,6 +144,7 @@ module.exports = {
         program: program,
       }
       let changedClub = await Club.updateOne({_id: clubId}, {$push: {execs: newExec}})
+      console.log("asdasd")
       console.log("asdads")
       let { filename, createReadStream} = await file.file;
       let res = await Club.findById(clubId)
@@ -193,6 +194,16 @@ module.exports = {
           return e
         }
       }
+    },
+    deleteExec: async (_, {clubId, execId}) =>{
+      const wasDeleted = (await Club.update({"_id": clubId}, {$pull: {'execs':{"_id": execId}}})).modifiedCount
+      try{
+        let newQuery = await Object.deleteOne({ objId: execId, objType: "headshot" })
+      }catch{
+        console.log("No picture")
+      }
+        console.log(wasDeleted)
+      return wasDeleted
     },
   },
 };
