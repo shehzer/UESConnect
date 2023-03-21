@@ -10,6 +10,7 @@ export async function getApplications(position_id: string) {
         name
         email
         description
+        resumeURL
         qA {
           answer
           question

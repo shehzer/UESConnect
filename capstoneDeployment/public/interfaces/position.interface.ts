@@ -18,6 +18,7 @@ export type applicationResponse = {
   name: string
   email: string
   description: string
+  resumeURL: string
   qA: [{ answer: string; question: string }]
 }
 

@@ -5,7 +5,7 @@ import {Text, Modal, Table, Col, Row, Tooltip} from '@nextui-org/react'
 import { ApplicationModalBody } from "./application_modal";
 import IconButtonWrapper from "../pages/club-view/components/IconButton";
 import EyeIconWrapper from "../pages/club-view/components/EyeIcon";
-import NoteIconWrapper from "../pages/club-view/components/NoteIcon";
+import DownloadIconWrapper from "../pages/club-view/components/DownloadIcon";
 import {applicationResponse} from "../public/interfaces/position.interface";
 import EditIconWrapper from "../pages/club-view/components/EditIcon";
 import DeleteIconWrapper from "../pages/club-view/components/DeleteIcon";
@@ -33,6 +33,7 @@ export const ApplicationsModalBody: FC<ApplicationModalProps> = ({
     name: "",
     email: "",
     description: "",
+    resumeURL: "",
     qA: [{ answer: "", question: "" }]
   })
   const [showApplicationModal, setShowApplicationModal] = useState<boolean>(false)
@@ -43,6 +44,10 @@ export const ApplicationsModalBody: FC<ApplicationModalProps> = ({
     {name: "DESCRIPTION", uid: "description"},
     {name: "ACTIONS", uid: "actions"}
   ]
+
+  const handleDownload = function(downloadURL: string){
+
+  }
 
   const displayApplicationModal = function(applic:applicationResponse){
     setSelectedApplication(applic)
@@ -95,11 +100,16 @@ export const ApplicationsModalBody: FC<ApplicationModalProps> = ({
                 </Tooltip>
               </Col>
               <Col css={{d: "flex"}}>
-                <Tooltip content="Download">
-                  <IconButtonWrapper onClick={() => null}>
-                    <NoteIconWrapper size={20} fill="#979797" height={undefined} width={undefined} />
-                  </IconButtonWrapper>
-                </Tooltip>
+                {applic.resumeURL !== "No Resume" &&
+                <a href={applic.resumeURL}>
+                    <Tooltip content="Download Resume">
+                        <IconButtonWrapper onClick={() => null}>
+                            <DownloadIconWrapper size={20} fill="#979797" height={undefined} width={undefined} />
+                        </IconButtonWrapper>
+                    </Tooltip>
+                </a>
+                }
+
               </Col>
             </Row>
           </Col>
