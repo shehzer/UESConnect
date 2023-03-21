@@ -43,7 +43,7 @@ module.exports = {
         logoRes = "https://stackdiary.com/140x100.png"
       }
       let finalRes = {
-        _id: res._id.toString()
+        _id: res._id.toString(),
         name: res.name,
         department: res.department,
         description: res.description,
