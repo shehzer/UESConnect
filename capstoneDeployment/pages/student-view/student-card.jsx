@@ -26,13 +26,13 @@ export default function StudentCard(props) {
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={handleCloseModal}
-        className="bg-white w-3/5 h-3/4 mx-auto my-auto rounded-lg shadow-lg flex items-center justify-center opacity-100"
+        className="bg-white w-4/5 h-4/5 mx-auto my-auto rounded-lg shadow-lg flex items-center justify-center opacity-100"
         overlayClassName="fixed inset-0 flex justify-center items-center"
         portalClassName="opacity-100 bg-black"
       >
         <div className="w-full h-full flex flex-col items-center justify-center opacity-100 shadow-xl rounded-lg ">
           <ClubPopUP clubName={props.data.name} clubId={props.data._id} />
-          <button className='text-slate-800 my-2 w-full bg-white rounded-md' onClick={handleCloseModal}>Close</button>
+          <button className='text-slate-800 py-2 w-full bg-white rounded-md font-bold hover:bg-slate-200' onClick={handleCloseModal}>Close</button>
         </div>
       </Modal>
       <div onClick={handleOpenModal} className="cursor-pointer h-full flex flex-col">
