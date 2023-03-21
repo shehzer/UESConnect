@@ -35,7 +35,7 @@ module.exports = gql`
   }
 
   input ChangeUserInput {
-    email: String! 
+    _id: String!
     password: String!
     newName: String
     newPassword: String
