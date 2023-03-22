@@ -10,6 +10,7 @@ import { gql, useMutation, useQuery } from '@apollo/client'
 import client from '../../components/apollo-client'
 import { Router, useRouter } from 'next/router'
 import Cookies from 'js-cookie'
+import Dropdown from './dropdown-club'
 const jwt = require('jsonwebtoken')
 import graphql from 'graphql'
 const validator = require('validator');
@@ -68,6 +69,7 @@ export default function clubInfo(props) {
 const setItems = async()=>{
 
   let result = await getItems()
+
   setDep(result.data.club.department)
   setDes(result.data.club.description)
   setClubName(result.data.club.name)
@@ -131,6 +133,7 @@ useEffect(()=>{
 const save = async function () {
   
   setLoad(true)
+  console.log(department)
 
   const mutationQ = gql`
     mutation Mutation($id: ID!, $clubInput: ClubInput) {
@@ -183,8 +186,10 @@ const save = async function () {
             }}
           />
         </div>
+        <Text size='large' >Set Your Engineering Department</Text>
         <div className={styles.infoBox}>
-          <Input
+
+          {/* <Input
             id="club-department"
             bordered
             width="40%"
@@ -196,7 +201,9 @@ const save = async function () {
             onChange={(e) => {
               setDep(e.target.value)
             }}
-          />
+          /> */}
+
+          <Dropdown type="program" initial={department} save={setDep}/>
         </div>
 
         <div className={styles.imageBox}>
