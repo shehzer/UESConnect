@@ -7,7 +7,6 @@ import { useState, useEffect, useRef, localStorage, useContext } from 'react'
 import ClubInfo from './club-info'
 import ClubApps from './club-apps'
 import ClubTeams from './club-team'
-// import { ClubPositions } from './club-positions'
 import ClubPositions from "./modal-positions";
 import { ApplicationPage } from '../../components/club-applications'
 import { Input, Spacer, Text } from '@nextui-org/react'
@@ -23,6 +22,7 @@ export async function getServerSideProps(context) {
   }
 }
 
+
 export default function clubLanding(props) {
   const router = useRouter()
   const [infoVisible, setInfoVis] = useState(true)
@@ -32,44 +32,10 @@ export default function clubLanding(props) {
 
   const [positionId, setPositionId] = useState('')
   const [positionName, setPositionName] = useState('')
-
-  const [ID, setID] = useState()
-  const [name, setName] = useState()
-  const [department, setDep] = useState()
-  const [description, setDes] = useState()
-  const [team, setTeam] = useState()
-
-  const getClubExecs = gql
-  `query Query($id: ID!) {
-    club(ID: $id) {
-      _id
-      name
-      department
-      description
-      execs {
-        _id
-        headshotURL
-        name
-        program
-        role
-        year
-      }
-      logoURL
-    }
-  }
-  `
+  const [ID, setID] = useState(props.clubID)
 
 
-  const [getClubInfo] = useMutation(getClub, {
-    onCompleted: (data) => {
-      console.log(data)
-    },
-    onError: (err)=>{console.log(err, "i am erroring on getting club info")}
-  });
-
-
-
-
+ 
   useEffect(()=>{
 
     let token = Cookies.get('token')
@@ -84,44 +50,10 @@ export default function clubLanding(props) {
       }
     });
 
-    console.log(props.clubID)
-
-
 
   },[])
 
 
-
-  const updateInfo = (newInfo) => {
-    setName(newInfo.name)
-    setDep(newInfo.department)
-    setDes(newInfo.description)
-
-    router.push({
-      pathname: 'club-landing',
-      query: {
-        id: props.id,
-        name: newInfo.name,
-        department: newInfo.department,
-        description: newInfo.description,
-        execs: JSON.stringify(team),
-      },
-    })
-  }
-
-  const updateTeam = (newTeam) => {
-    setTeam([...newTeam])
-    router.push({
-      pathname: 'club-landing',
-      query: {
-        id: props.id,
-        name: name,
-        department: department,
-        description: description,
-        execs: JSON.stringify([...newTeam]),
-      },
-    })
-  }
 
 
 
@@ -172,6 +104,7 @@ export default function clubLanding(props) {
     }
   }
 
+  console.log(name)
   return (
     <div>
       <div className={styles.topBar}>
@@ -217,11 +150,7 @@ export default function clubLanding(props) {
       <div id="pages">
         {infoVisible && (
           <ClubInfo
-            update={updateInfo}
-            ID={ID}
-            name={name}
-            description={description}
-            department={department}
+            ID={props.clubID}
           ></ClubInfo>
         )}
         {positionVis && (
@@ -231,7 +160,7 @@ export default function clubLanding(props) {
           ></ClubPositions>
         )}
         {teamVisible && (
-          <ClubTeams update={updateTeam} ID={ID} team={team}></ClubTeams>
+          <ClubTeams ID={props.clubID} ></ClubTeams>
         )}
         {appVis && (
           <ApplicationPage

@@ -13,9 +13,6 @@ import Table from './components/table'
 export default function clubTeam(props) {
 
 
-
-
-
   function save(newTeam) {
 
     let sendTeam = newTeam.map((item)=>({...item}))

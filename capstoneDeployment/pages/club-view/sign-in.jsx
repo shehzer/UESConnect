@@ -92,7 +92,7 @@ const queryQ = gql`query Query($id: ID!) {
 
         console.log("initial", data)
 
-        // let role = data.data.loginUser.userRole
+        let role = data.data.loginUser.userRole
 
         // let payload = data.data.loginUser.adminList
 

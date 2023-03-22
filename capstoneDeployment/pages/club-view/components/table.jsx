@@ -4,7 +4,7 @@ import  IconButtonWrapper  from "./IconButton";
 import  EditIconWrapper  from "./EditIcon";
 import  DeleteIconWrapper  from "./DeleteIcon";
 import {useState, React, useEffect} from 'react'
-import { Modal, Button,  Input,  Checkbox } from "@nextui-org/react";
+import { Modal, Button,  Input,  Checkbox, Loading} from "@nextui-org/react";
 import Dropdown from './dropdown'
 import { gql, useMutation } from '@apollo/client'
 import client from '../../../components/apollo-client'
@@ -15,12 +15,13 @@ export default function table(props) {
   const [year, setYear] = useState('')
   const [program, setProgram] = useState('')
   const [id, setID] = useState('')
-  const [team, setTeam] = useState([...props.execs])
+  const [team, setTeam] = useState([])
   const [visible, setVisible] = useState(false);
   const [editAction, setAction] = useState();
   const [file, setFile] = useState('');
   const toggleHigh = ()=>{setVisible(true)}
   const toggleLow = ()=>{setVisible(false)}
+  const [loading, setLoading] = useState(false)
 
   const columns = [
       { name: "NAME", uid: "name" },
@@ -80,6 +81,25 @@ export default function table(props) {
     }
   }`
 
+  const getClubExecs= gql`
+  query Query($id: ID!) {
+    club(ID: $id) {
+      _id
+      name
+      department
+      description
+      execs {
+        _id
+        headshotURL
+        name
+        program
+        role
+        year
+      }
+      logoURL
+    }
+  }`
+
   const uploadExecWithoutFile = gql`mutation Mutation($clubId: String, $execAdd: ExecAdd) {
     addExec(clubId: $clubId, execAdd: $execAdd) {
       _id
@@ -96,9 +116,10 @@ export default function table(props) {
       let temp = team.map((element, index)=>({...element}))
       temp.push(data.addExec)
       setTeam([...temp])
+      setLoading(false)
     
     },
-    onError: (err)=>{console.log(err, "i am erroring on exec upload")}
+    onError: (err)=>{console.log(err, "i am erroring on exec upload"); setLoading(false)}
 });
 
 const handleFileChange = (e) => {
@@ -114,20 +135,9 @@ const handleFileChange = (e) => {
 
 function addUser()
 { 
+  setLoading(true)
 
   execUpload({variables:{file:file[0], clubId:props.clubID, execAdd:{name:name, role:role, year:year, program:program}}})
-
-  // if(file=='')
-  // {
- 
-
-  // }
-  // else
-  // {
-
-  //   execUpload({variables:{clubId:props.clubID, execAdd:{name:name, role:role, year:year, program:program}}})
-
-  // }
 
   toggleLow()
 
@@ -167,6 +177,48 @@ function saveEdit()
   setTeam([...newArr])
   toggleLow()
 }
+
+
+const setItems = async()=>{
+
+  let result = await getItems()
+  setTeam([...result.data.club.execs])
+ 
+
+}
+
+const getItems = async()=>
+{
+  return client
+  .query({
+    query: getClubExecs,
+    variables: {
+      id: props.clubID,
+    },
+ 
+  })
+  .then((result) => {
+
+    console.log(result)
+
+
+    return result
+   
+
+  })
+  .catch((e) => {
+    alert(e.message)
+  })
+
+}
+
+useEffect(()=>{
+
+  console.log(props.ID)
+
+  setItems()
+
+},[])
 
 
 function renderCell(user, columnKey){
@@ -263,7 +315,9 @@ function renderCell(user, columnKey){
     </Table>
 
     <Button   onPress={()=>{clear(); setAction('add');toggleHigh() }} className="my-10 bg-blue-600">
-        Add Team Member
+    
+        {loading && <Loading type="spinner" color="currentColor" size="md" />}
+            {!loading && 'Add Team Member'}
     </Button>
 
     <Modal

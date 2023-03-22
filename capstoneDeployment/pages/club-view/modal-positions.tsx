@@ -120,6 +120,7 @@ export default function ClubPostions({ID, applicationNavigator}: PositionProps):
   };
 
   useEffect(() => {
+    console.log("i am running coles page")
     void searchPositions()
   }, [])
 

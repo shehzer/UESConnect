@@ -3,6 +3,7 @@ import {
   InMemoryCache,
   ApolloLink,
   HttpLink,
+  DefaultOptions
 } from '@apollo/client'
 import { onError } from '@apollo/client/link/error'
 
@@ -16,12 +17,25 @@ const link = onError(({ graphQLErrors, networkError }) => {
   if (networkError) console.log(`[Network error]: ${networkError}`)
 })
 
+const defaultOptions = {
+  watchQuery: {
+    fetchPolicy: 'no-cache',
+    errorPolicy: 'ignore',
+  },
+  query: {
+    fetchPolicy: 'no-cache',
+    errorPolicy: 'all',
+  },
+}
+
 const client = new ApolloClient({
   cache: new InMemoryCache(),
   link: ApolloLink.from([
     link,
     new HttpLink({ uri: 'https://capstone-rosy-nine.vercel.app/api/graphql' }),
+    
   ]),
+  defaultOptions: defaultOptions,
 
 })
 
