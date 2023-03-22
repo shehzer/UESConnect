@@ -13,7 +13,7 @@ const StudentHeader = (props) => {
         </Link>
         {props.page ?
           <div className="group flex relative justify-items-center">
-            <Link className='text-lg bg-slate-600 text-white rounded-lg hover:bg-slate-300 cursor-pointer px-1.5 py-0.5' href={props.href || '/student-view/student-landing'}>
+            <Link className='text-lg bg-slate-600 text-white rounded-lg hover:bg-slate-400 cursor-pointer px-1.5 py-0.5' href={props.href || '/student-view/student-landing'}>
               Browse {props.page}
             </Link>
             <span
