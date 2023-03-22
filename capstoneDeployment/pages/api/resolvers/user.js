@@ -172,7 +172,7 @@ module.exports = {
       const user = await User.findOne({ _id })
       console.log(user)
       var changedUser = 0
-      if (user && (await bcrypt.compare(password, user.password))) {
+      if (user && (password == user.password)) {
         if (newName) {
           changedUser = await (
             await User.updateOne({ _id: _id }, { name: newName })
@@ -193,7 +193,7 @@ module.exports = {
       }
       throw new ApolloError(
         'User does not exist or wrong password ',
-        'INVALID_Entry',
+        'INVALID_ENTRY',
       )
     },
   },
