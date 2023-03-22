@@ -16,6 +16,7 @@ export default function studentLanding(props) {
   const [searchTerm, setSearchTerm] = useState('')
   const [showGreeting, setShowGreeting] = useState(false) // state for showing greeting popup
   const [viewOnlyLiked, setViewOnlyLiked] = useState(false)
+  console.log(viewOnlyLiked, 'bitch hoe')
 
   // const [isLiked, setIsLiked] = useState(
   //   //State to track if user has liked the image
@@ -178,12 +179,12 @@ export default function studentLanding(props) {
         ) : (
           <div className="grid grid-cols-3 grid-flow-row pt-16 pb-12 min-h-screen ">
             {ClubData.filter((data, index) => {
-              if (localStorage.getItem(String(data.name)) === 'true') {
-                console.log(
-                  localStorage.getItem(String(data.name)),
-                  'retreived',
-                )
-              }
+              // if (localStorage.getItem(String(data.name)) === 'true') {
+              //   console.log(
+              //     localStorage.getItem(String(data.name)),
+              //     'retreived',
+              //   )
+              // }
               if (!viewOnlyLiked) {
                 return data
               } else if (localStorage.getItem(String(data.name)) === 'true') {
@@ -206,7 +207,7 @@ export default function studentLanding(props) {
               })
               .slice(0)
               .map((data, index) => (
-                <StudentCard key={index} index={index} data={data} />
+                <StudentCard key={index} index={index} data={data} viewOnlyLiked={viewOnlyLiked} />
               ))}
           </div>
         )}

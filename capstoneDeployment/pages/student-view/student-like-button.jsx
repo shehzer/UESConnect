@@ -10,7 +10,7 @@ export default function LikeButton( {name} ) {
   React.useEffect(() => {
     //retrieve saved likes from local storage when a page reloads
     localStorage.setItem(String(name), isLiked);
-    
+    console.log(isLiked, 'out the bonies')
   }, [isLiked]);
 
   const handleLike = (event) => {
