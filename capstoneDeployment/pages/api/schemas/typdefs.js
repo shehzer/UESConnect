@@ -11,6 +11,8 @@ module.exports = gql`
     getApplications(amount: Int, positionID: String): [Application]
     user(id: ID!): User
     getObjects(objType: String, objId: String): [Object]
+    getAdminList(name: String): adminReturn
+
   }
 
   type Mutation {
@@ -56,6 +58,10 @@ module.exports = gql`
     token: String
     userRole: String
     _id: String
+  }
+
+  type adminReturn {
+    adminList: [User]
   }
 
   input RegisterInput {

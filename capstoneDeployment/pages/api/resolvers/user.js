@@ -197,6 +197,15 @@ module.exports = {
     },
   },
   Query: {
+    getAdminList: async (_,{name} ) => {
+      const adminUsers = await User.find({ role: 'ADMIN' })
+      adminUsers.forEach(
+        (element) => (element.userID = element._id),
+      )
+      return {
+        adminList: adminUsers
+      }
+    },
     user: (_, { ID }) => User.findById(ID),
   },
 }
