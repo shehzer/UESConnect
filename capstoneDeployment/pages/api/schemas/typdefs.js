@@ -11,6 +11,8 @@ module.exports = gql`
     getApplications(amount: Int, positionID: String): [Application]
     user(id: ID!): User
     getObjects(objType: String, objId: String): [Object]
+    getAdminList(name: String): adminReturn
+
   }
 
   type Mutation {
@@ -31,7 +33,7 @@ module.exports = gql`
     deleteExec(clubId: String, execId: String): Boolean!
     deleteUser(email: String): Boolean!
     editUser(changeUserInput: ChangeUserInput): Boolean!
-
+    uploadClubLogo( file: Upload, clubId: String): String
   }
 
   input ChangeUserInput {
@@ -56,6 +58,10 @@ module.exports = gql`
     token: String
     userRole: String
     _id: String
+  }
+
+  type adminReturn {
+    adminList: [User]
   }
 
   input RegisterInput {

@@ -74,7 +74,20 @@ module.exports = {
     },
     getClubs: async (_, { amount }) => {
       if (amount == null) {
-        return await Club.find()
+        let allClubs = await Club.find()
+        for(const club of allClubs){
+          let clubLogo = "https://stackdiary.com/140x100.png"
+          try{
+            let queryForLogo = await object.findOne({objType: "logo", objId: club._id})
+            clubLogo = queryForLogo.url
+            Object.assign(club, {logoURL: clubLogo})
+            console.log("this is the actual Club with a URL,", club)
+          }catch{
+            Object.assign(club, {logoURL: clubLogo})
+            console.log("this is the dummy url,", club)
+          }
+        }
+        return allClubs
       }
       return await Club.find().sort({ department: -1 }).limit(amount)
     },
@@ -145,32 +158,36 @@ module.exports = {
         program: program,
       }
       let changedClub = await Club.updateOne({_id: clubId}, {$push: {execs: newExec}})
-      console.log("asdasd")
       console.log("asdads")
-      let { filename, createReadStream} = await file.file;
-      let res = await Club.findById(clubId)
-      let objectId = res.execs[res.execs.length - 1]._id.toString()
-      let objectType = "headshot"
-      let stream = createReadStream();
-      let fullName = `${objectId}${filename}`
-      let resAWS = await uploadToS3(fullName,stream)
-      let createdObject = new object({
-        filename: resAWS.key,
-        url: resAWS.Location,
-        objType: objectType,
-        objId: objectId,
-      })
-
-      console.log("createdObject", createdObject)
-      const result = await createdObject.save() //This is where MongoDB actually saves
-      console.log("this is result", result)
+      let headshot = "https://stackdiary.com/140x100.png"
+      if(file){
+        console.log("file was not created")
+        let { filename, createReadStream} = await file.file;
+        let res = await Club.findById(clubId)
+        let objectId = res.execs[res.execs.length - 1]._id.toString()
+        let objectType = "headshot"
+        let stream = createReadStream();
+        let fullName = `${objectId}${filename}`
+        let resAWS = await uploadToS3(fullName,stream)
+        let createdObject = new object({
+          filename: resAWS.key,
+          url: resAWS.Location,
+          objType: objectType,
+          objId: objectId,
+        })
+        console.log("createdObject", createdObject)
+        const result = await createdObject.save() //This is where MongoDB actually saves
+        console.log("this is result", result)
+        headshot = result.url
+      }
+      let res = await Club.findOne({_id: clubId})
       let newerExec = {
         _id: res.execs[res.execs.length - 1]._id.toString(),
         name: res.execs[res.execs.length - 1].name,
         role: res.execs[res.execs.length - 1].role,
         year: res.execs[res.execs.length - 1].year,
         program: res.execs[res.execs.length - 1].program,
-        headshotURL: resAWS.Location,
+        headshotURL: headshot,
       }
       console.log("newer stuff", newerExec)
       return newerExec
@@ -187,12 +204,40 @@ module.exports = {
         program: program,
       }
       console.log(clubId)
-      let { filename, createReadStream} = await file.file;
-      let stream = createReadStream();
-      let fullName = `${_id}${filename}`
-      let resAWS = await uploadToS3(fullName,stream)
       let changedClub = await Club.updateOne({"_id": clubId, "execs._id": execUpdate._id}, {$set: {"execs.$" : execUpdate}})
-      let objChange = await object.updateOne({objId: _id, objType: "headshot"},{$set:{"url": resAWS.Location}})
+      let headshotURL = "https://stackdiary.com/140x100.png"
+      
+      if(file){
+        console.log("we are here")
+        let { filename, createReadStream} = await file.file;
+        let stream = createReadStream();
+        let fullName = `${_id}${filename}`
+        let resAWS = await uploadToS3(fullName,stream)
+          let objChange = await object.updateOne({objId: _id, objType: "headshot"},{$set:{"url": resAWS.Location}})
+          if(objChange.modifiedCount ==0){
+            const objectNewer = new object({
+              filename: filename,
+              url: resAWS.Location,
+              objType: "headshot",
+              objId: _id,
+            })
+            let newObj = await objectNewer.save()
+            headshotURL = newObj.url
+            console.log("this is if it is net new",newObj)
+
+          }
+          console.log("this is if it changed", objChange)
+          if(headshotURL == "https://stackdiary.com/140x100.png"){
+            headshotURL = objChange.url
+        }
+      }
+      else{
+        try{
+          headshotURL = (await object.findOne({objType:"headshot", objId: _id})).url
+        }catch{
+          console.log("headshot does not exist")
+        }
+      }
       let res = await Club.findById(clubId)
       console.log(res)
       for(const e of res.execs){
@@ -203,9 +248,8 @@ module.exports = {
             role: e.role,
             year: e.year,
             program: e.program,
-            headshotURL: resAWS.Location
+            headshotURL: headshotURL
            }
-           console.log("this is the newer", newerExec)
            return newerExec
         }
       }
@@ -219,6 +263,36 @@ module.exports = {
       }
         console.log(wasDeleted)
       return wasDeleted
+    },
+    uploadClubLogo: async(
+      _,
+      {file, clubId}
+    ) =>{
+      let objectResponse = await object.findOne({objType: "logo", objId: clubId})
+      let { filename, createReadStream} = await file.file;
+      let stream = createReadStream();
+      let fullName = `${clubId}${filename}`
+      let resAWS = await uploadToS3(fullName,stream)
+      console.log(objectResponse)
+      try{
+        console.log(objectResponse.url)
+        let objChange = await object.updateOne({objId: clubId, objType: "logo"},{$set:{"url": resAWS.Location}})
+        console.log(objChange)
+
+      }catch{
+        console.log("we in here")
+        let createdObject = new object({
+          filename: resAWS.key,
+          url: resAWS.Location,
+          objType: "logo",
+          objId: clubId,
+        })
+  
+        console.log("createdObject", createdObject)
+        const result = await createdObject.save() //This is where MongoDB actually saves
+        console.log("this is result", result)
+      }
+      return resAWS.Location
     },
   },
 };

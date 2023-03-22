@@ -31,6 +31,7 @@ const ClubPopUP = (props) => {
               department
               description
               name
+              logoURL
               execs {
                 _id
                 name
@@ -88,9 +89,15 @@ const ClubPopUP = (props) => {
   return (
 
     <div className="flex-col flex h-full overflow-y-auto overflow-x-auto text-slate-800 p-3">
-      <h1 className="px-2 text-3xl font-bold text-gray-900 self-center">
-        {clubName}
-      </h1>
+      <div className='flex self-center'>
+        <img
+          className="h-10 w-10 rounded-full"
+          src={clubData.logoURL}
+        ></img>
+        <h1 className="px-2 text-3xl font-bold text-gray-900 self-center">
+          {clubName}
+        </h1>
+      </div>
       {clubData.department ? (<div className="py-1 px-2 mt-1 text-sm text-gray-900 self-center bg-slate-100 rounded-lg font-semibold">
         {clubData.department}
       </div>) : null}
