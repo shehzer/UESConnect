@@ -12,32 +12,99 @@ export default function tableAdmin(props) {
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const [match, setMatch] = useState(false)
     const [password2, setPass2] = useState('')
     const [clubName, setClub] = useState('')
+    const [oldPass, setOld] = useState('')
+    const [id, setID] = useState('')
   
-    const [admins, setAdmin] = useState([...JSON.parse(props.clubAdmins)])
+    const [admins, setAdmin] = useState([])
 
     const [visible, setVisible] = useState(false);
     const [editAction, setAction] = useState();
     const toggleHigh = ()=>{setVisible(true)}
     const toggleLow = ()=>{setVisible(false)}
+    const columns = [
+      { name: "NAME", uid: "name" },
+      { name: "EMAIL", uid: "email" },
+      { name: "PASSWORD", uid: "password" },
+      { name: "CLUB", uid: "clubName"},
+      { name: "ROLE", uid: "role" },
+      { name: "ACTIONS", uid: "actions" },
+  ];
 
 
-    const addQ = gql`
-    mutation Mutation($registerInput: RegisterInput) {
-      registerUser(registerInput: $registerInput) {
-        clubID
-        clubName
-        email
+  const getAdmins = gql`
+  query Query($name: String) {
+    getAdminList(name: $name) {
+      adminList {
+        userID
         name
+        email
         password
         role
         token
-        userID
+        clubName
+        clubID
       }
     }
-    `
+  }`
+
+  const deleteAdminM = gql`
+  mutation DeleteUser($id: ID!) {
+    deleteUser(ID: $id)
+  }`
+
+  const addQ = gql`
+  mutation Mutation($registerInput: RegisterInput) {
+    registerUser(registerInput: $registerInput) {
+      clubID
+      clubName
+      email
+      name
+      password
+      role
+      token
+      userID
+    }
+  }
+  `
+
+
+  const editQ = gql`
+  mutation Mutation($changeUserInput: ChangeUserInput) {
+    editUser(changeUserInput: $changeUserInput) {
+      userID
+      name
+      email
+      password
+      role
+      token
+      clubName
+      clubID
+    }
+  }
+  `
+
+  const setItems = async()=>
+  {
+    let result = await getItems()
+    setAdmin([...result.data.getAdminList.adminList])
+  }
+
+  const getItems = async()=>{
+    return client.query({query:getAdmins, variables:{name:null}}).then((data)=>{
+      console.log(data)
+      return data
+    })
+
+  }
+  useEffect(()=>{
+
+    setItems()
+
+  },[])
+
+
     const [adminUpload] = useMutation(addQ, {
       onCompleted: (data) => {
         console.log(data);
@@ -47,31 +114,73 @@ export default function tableAdmin(props) {
         setAdmin([...temp])
       
       },
+      onError: (err)=>{alert(err)}
           });
- 
 
-    const columns = [
-        { name: "NAME", uid: "name" },
-        { name: "EMAIL", uid: "email" },
-        { name: "PASSWORD", uid: "password" },
-        { name: "CLUB", uid: "clubName"},
-        { name: "ROLE", uid: "role" },
-        { name: "ACTIONS", uid: "actions" },
-    ];
+    
 
-  function editUser(user, index){
+    const [deleteAdmin] = useMutation(deleteAdminM, {
+      onCompleted: (data) => {
+        console.log(data);
+        let temp = admins.filter((element, index)=>(element.userID!=id))
+        console.log(temp)
+        setAdmin([...temp])
+
+      
+      },
+      onError: (err)=>{alert(err)}
+          });
+
+    const [editAdmin] = useMutation(editQ, {
+      onCompleted: (data) => {
+        console.log(data);
+
+        let temp = admins.map((element, index)=>({...element}))
+
+
+        const newArr = temp.map((element, index)=>{
+    
+          if(id==element.userID)
+          {
+            element.name= data.editUser.name
+            element.userID = data.editUser.userID
+            element.clubID = data.editUser.clubID
+            element.clubName = data.editUser.clubName
+            element.role = data.editUser.role
+            element.password = data.editUser.password
+            element.token = data.editUser.token
+            element.email = data.editUser.email
+          }
+    
+          return element
+        })
+
+        setAdmin([...newArr])
+    
+      },
+
+      onError: (err)=>{console.log(err)}
+          });
+
+
+  function setEdit(user, index){
     setName(user.name)
     setEmail(user.email)
-    setPassword(user.password)
+    setClub(user.clubName)
+    setPassword('')
+    setPass2('')
+    setID(user.userID)
+    setOld(user.password)
   
   }
-
 
   function clear()
   {
     setName('')
     setEmail('')
     setPassword('')
+    setPass2('')
+    setClub('')
 
   }
 
@@ -80,7 +189,7 @@ export default function tableAdmin(props) {
     switch(editAction)
     {
       case "edit":
-        confirmEdit()
+        editUser()
         break;
       case "delete":
         deleteUser()
@@ -90,7 +199,6 @@ export default function tableAdmin(props) {
         break;
       default:
         return ""
-      
     }
 
     toggleLow()
@@ -100,30 +208,31 @@ export default function tableAdmin(props) {
 
   function addUser()
   { 
-
     let qInput = {registerInput:{clubName:clubName, email:email, name:name, password:password, role:"ADMIN"}}
-
     console.log(qInput)
-
-
-
     adminUpload({variables:qInput})
-
-
-
   }
 
+
+  function editUser()
+  {
+    editAdmin({variables:{
+      changeUserInput:{
+        _id: id,
+        newEmail:email,
+        newName:name,
+        newPassword:password,
+        password:oldPass
+      }
+    }
+  })
+  }
 
   function deleteUser()
   {
-    let temp = team.filter((element, index)=>(element._id!=id))
-    console.log(temp)
-    console.log("hello")
-    setTeam([...temp])
-
+    console.log("I am deleting", id)
+    deleteAdmin({variables:{id:id}})
   }
-
-
 
 
   function renderCell(user, columnKey){
@@ -156,7 +265,7 @@ export default function tableAdmin(props) {
           <Row justify="center" align="center">
             <Col css={{ d: "flex" }}>
               <Tooltip placement="leftEnd" content="Edit user">
-                <IconButtonWrapper  onClick={() => {editUser(user, columnKey);  setAction('edit'); toggleHigh();} }>
+                <IconButtonWrapper  onClick={() => {setEdit(user, columnKey);  setAction('edit'); toggleHigh();} }>
                   <EditIconWrapper  size={20} fill="#979797" />
                 </IconButtonWrapper>
               </Tooltip>
@@ -166,7 +275,7 @@ export default function tableAdmin(props) {
                 content="Delete user"
                 color="error"
                 placement="leftEnd"
-                onClick={() => {editUser(user, columnKey); setAction('delete'); toggleHigh();  }}
+                onClick={() => {setEdit(user, columnKey); setAction('delete'); toggleHigh();  }}
               >
                 <IconButtonWrapper >
                   <DeleteIconWrapper size={20} fill="#FF0080" />
@@ -202,6 +311,8 @@ export default function tableAdmin(props) {
   return (
 
     <div>
+
+      <Button onPress={editUser}>Press me</Button>
 
     <Table
       aria-label="Example table with custom cells"
@@ -247,7 +358,7 @@ export default function tableAdmin(props) {
       >
         <Modal.Header aria-labelledby="team-header" >
           <Text id="modal-title" size={18}>
-            Team Editor
+            Admin Editor
           </Text>
         </Modal.Header>
        {editAction!="delete"?
@@ -285,9 +396,10 @@ export default function tableAdmin(props) {
             color="primary"
             size="lg"
             label="Club"
-            placeholder={clubName?clubName:"Club Name"}
+            placeholder={clubName}
             onChange={(e)=>{setClub(e.target.value)}}
             aria-labelledby="email"
+            disabled={editAction=='edit'}
            
           />
 
@@ -297,8 +409,7 @@ export default function tableAdmin(props) {
             fullWidth
             color="primary"
             size="lg"
-            label="Password"
-            placeholder={password?password:"Password"}
+            label={editAction=='edit'?"New Password":"Password"}
             onChange={(e)=>{setPassword(e.target.value)}}
             aria-labelledby="password"
            
@@ -330,7 +441,7 @@ export default function tableAdmin(props) {
             color="primary"
             size="lg"
             disabled
-            placeholder={name}
+            placeholder={clubName}
             aria-labelledby="team-program"
           />
       </Modal.Body>
@@ -339,7 +450,8 @@ export default function tableAdmin(props) {
       
       }
         <Modal.Footer aria-labelledby="team-footer" >
-           {editAction!="delete"?<Button className="bg-blue-600"  onPress={handleConfirm} disabled={password!=password2 || password==""}>Confirm</Button>:
+           {editAction!="delete"?<Button className="bg-blue-600"  onPress={handleConfirm} 
+           disabled={editAction=="edit"?password!=password2:password!=password2||password==''}>Confirm</Button>:
            <Button className="bg-rose-600" color='error' onPress={handleConfirm}>DELETE</Button> }
             <Button  bordered color='error' onPress={toggleLow}>Cancel</Button>
 

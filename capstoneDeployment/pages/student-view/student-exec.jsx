@@ -15,7 +15,7 @@ const StudentExecCard = (props) => {
         </div>
         <div className="ml-3">
           <p className="text-sm font-medium text-skin-inverted">
-            <a className="hover:underline">{props.data.name}</a>
+            <a className="">{props.data.name}</a>
           </p>
           <div className="flex space-x-1 text-xs">
             <span className="">{props.data.role}</span>

@@ -29,7 +29,7 @@ export const ApplicationPage: FC<ApplicationProps> = ({
   const applicationList = applicationsArr.map((application, i) => {
     const questionList = application.qA.map((question, i) => {
       return (
-        <div className={styles.qaContainer}>
+        <div key={'question' + (i+1)} className={styles.qaContainer}>
           <Text className={styles.label}>Question:</Text>
           <Text className={styles.question}>{question.question}</Text>
           <Text className={styles.label}>Answer:</Text>

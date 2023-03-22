@@ -4,37 +4,99 @@ import  IconButtonWrapper  from "./IconButton";
 import  EditIconWrapper  from "./EditIcon";
 import  DeleteIconWrapper  from "./DeleteIcon";
 import {useState, React, useEffect} from 'react'
-import { Modal, Button,  Input,  Checkbox } from "@nextui-org/react";
+import { Modal, Button,  Input,  Checkbox, Loading} from "@nextui-org/react";
 import Dropdown from './dropdown'
 import { gql, useMutation } from '@apollo/client'
 import client from '../../../components/apollo-client'
 
-export default function table(props) {
-    const [name, setName] = useState('')
-    const [role, setRole] = useState('')
-    const [year, setYear] = useState('')
-    const [program, setProgram] = useState('')
-    const [id, setID] = useState('')
-    const [team, setTeam] = useState([...props.execs])
-    const [visible, setVisible] = useState(false);
-    const [editAction, setAction] = useState();
-    const [file, setFile] = useState();
-    const toggleHigh = ()=>{setVisible(true)}
-    const toggleLow = ()=>{setVisible(false)}
 
-    const columns = [
-        { name: "NAME", uid: "name" },
-        { name: "ROLE", uid: "role" },
-        { name: "YEAR", uid: "year" },
-        { name: "PROGRAM", uid: "program"},
-        { name: "ACTIONS", uid: "actions" },
-    ];
+
+export default function table(props) {
+  const [name, setName] = useState('')
+  const [role, setRole] = useState('')
+  const [year, setYear] = useState('')
+  const [program, setProgram] = useState('')
+  const [id, setID] = useState('')
+  const [team, setTeam] = useState([])
+  const [visible, setVisible] = useState(false);
+  const [editAction, setAction] = useState();
+  const [file, setFile] = useState('');
+  const toggleHigh = ()=>{setVisible(true)}
+  const toggleLow = ()=>{setVisible(false)}
+  const [loading, setLoading] = useState(false)
+
+  const columns = [
+      { name: "NAME", uid: "name" },
+      { name: "ROLE", uid: "role" },
+      { name: "YEAR", uid: "year" },
+      { name: "PROGRAM", uid: "program"},
+      { name: "ACTIONS", uid: "actions" },
+  ];
+
+  const uploadExec = gql`mutation Mutation($file: Upload!, $clubId: String, $execAdd: ExecAdd) {
+    addExec(file: $file, clubId: $clubId, execAdd: $execAdd) {
+      _id
+      name
+      program
+      role
+      year
+      headshotURL
+    }
+  }`
+
+  const uploadExecNoFile = gql`mutation Mutation($clubId: String, $execAdd: ExecAdd) {
+    addExec(clubId: $clubId, execAdd: $execAdd) {
+      _id
+      name
+      program
+      role
+      year
+      headshotURL
+    }
+  }`
+
+  const getClubExecs= gql`
+  query Query($id: ID!) {
+    club(ID: $id) {
+      _id
+      name
+      department
+      description
+      execs {
+        _id
+        headshotURL
+        name
+        program
+        role
+        year
+      }
+      logoURL
+    }
+  }`
+
+  const editExecs = gql`mutation EditExec($file: Upload, $clubId: String, $execInput: ExecsInput) {
+    editExec(file: $file, clubId: $clubId, execInput: $execInput) {
+      _id
+      headshotURL
+      name
+      program
+      role
+      year
+    }
+  }`
+
+
+
+  const deleteExecM = gql`mutation Mutation($clubId: String, $execId: String) {
+    deleteExec(clubId: $clubId, execId: $execId)
+  }`
 
   function editUser(user, index){
     setName(user.name)
     setRole(user.role)
     setYear(user.year)
     setProgram(user.program)
+    setFile('')
     setID(user._id)
   }
 
@@ -46,6 +108,7 @@ export default function table(props) {
     setYear('')
     setProgram('')
     setID('')
+    setFile('')
 
   }
 
@@ -68,74 +131,47 @@ export default function table(props) {
     }
   }
 
-  const uploadExec = gql`mutation Mutation($file: Upload!, $clubId: String, $execAdd: ExecAdd) {
-    addExec(file: $file, clubId: $clubId, execAdd: $execAdd) {
-      _id
-      name
-      program
-      role
-      year
-      headshotURL
-    }
-  }`
-
-  const [execUpload] = useMutation(uploadExec, {
-    onCompleted: (data) => console.log(data),
-    onError: (err)=>{console.log(err, "i am erroring on exec upload")}
+  const [deleteExec] = useMutation(deleteExecM, {
+    onCompleted: (data) => {
+      let temp = team.filter((element, index)=>(element._id!=id))
+      console.log(temp)
+      setTeam([...temp])
+      setLoading(false)
+    
+    },
+    onError: (err)=>{console.log(err, "i am erroring on deletung an exec"); setLoading(false)}
 });
 
-const handleFileChange = (e) => {
-  const file = e.target.files;
-  console.log(file, "from handleFileChange")
-
-  if (!file) return;
-  setFile(file)
-
-};
-   
-
-
-  function addUser()
-  { 
-    console.log(file[0], "on uploading")
-
-    console.log(file, props.clubID, {name:name, role:role, year:year, program:program} )
-
-    execUpload({variables:{file:file[0], clubId:props.clubID, execAdd:{name:name, role:role, year:year, program:program}}});
-
-    // {
-    //   "file": "file",
-    //   "clubId": "638e68543f7488df00c3a2c4",
-    //   "execAdd": {
-    //     "name": "asdads",
-    //     "program": "aasda",
-    //     "role": "asda",
-    //     "year": "3"
-    //   }
-    // }
+  const [execUpload] = useMutation(uploadExec, {
+    onCompleted: (data) => {
+      let temp = team.map((element, index)=>({...element}))
+      temp.push(data.addExec)
+      setTeam([...temp])
+      setLoading(false)
+    
+    },
+    onError: (err)=>{console.log(err, "i am erroring on exec upload"); setLoading(false)}
+});
 
 
-    // let temp = team.map((element, index)=>({...element}))
-    // temp.push({name:name, role:role, year:year, program:program})
-    // setTeam([...temp])
-    toggleLow()
-
-  }
-
-
-  function deleteUser()
-  {
-    let temp = team.filter((element, index)=>(element._id!=id))
-    console.log(temp)
-    setTeam([...temp])
-    toggleLow()
-  }
-
-  function saveEdit()
-  {
+const [execUploadNoFile] = useMutation(uploadExecNoFile, {
+  onCompleted: (data) => {
     let temp = team.map((element, index)=>({...element}))
+    temp.push(data.addExec)
+    setTeam([...temp])
+    setLoading(false)
+  
+  },
+  onError: (err)=>{console.log(err, "i am erroring on exec uploadNoFile"); setLoading(false)}
+});
 
-    console.log(id, name, role, program, year)
+const [editExec] = useMutation(editExecs, {
+  onCompleted: (data) => {
+
+    console.log(data)
+    let payload = data.editExec
+    console.log(payload.headshotURL)
+    let temp = team.map((element, index)=>({...element}))
 
 
     const newArr = temp.map((element, index)=>{
@@ -146,6 +182,41 @@ const handleFileChange = (e) => {
         element.year=year
         element.role=role
         element.program=program
+        element.headshotURL = data.editExec.headshotURL
+      }
+
+      return element
+    })
+
+    console.log(newArr)
+
+    setTeam([...newArr])
+    setLoading(false)
+    toggleLow()
+  
+  },
+  onError: (err)=>{console.log(err, "i am erroring on execEditFile"); setLoading(false)}
+});
+
+
+const [editExecNoF] = useMutation(editExecs, {
+  onCompleted: (data) => {
+
+    console.log(data)
+    let payload = data.editExec
+    console.log(payload.headshotURL)
+    let temp = team.map((element, index)=>({...element}))
+
+
+    const newArr = temp.map((element, index)=>{
+
+      if(id==element._id)
+      {
+        element.name=name
+        element.year=year
+        element.role=role
+        element.program=program
+        element.headshotURL = data.editExec.headshotURL
       }
 
       return element
@@ -155,65 +226,176 @@ const handleFileChange = (e) => {
 
     setTeam([...newArr])
     toggleLow()
+    setLoading(false)
+  
+  },
+  onError: (err)=>{console.log(err, "i am erroring on editing exec with no file "); setLoading(false)}
+});
+
+const handleFileChange = (e) => {
+  const file = e.target.files;
+  console.log(file[0], "from handleFileChange")
+
+  if (!file) return;
+  setFile(file[0])
+
+};
+   
+
+
+function addUser()
+{ 
+  setLoading(true)
+
+
+  if(file!=undefined||file!='')
+  {
+    execUpload({variables:{file:file, clubId:props.clubID, execAdd:{name:name, role:role, year:year, program:program}}})
+  }
+  else
+  {
+    execUploadNoFile({variables:{clubId:props.clubID, execAdd:{name:name, role:role, year:year, program:program}}})
   }
 
 
-  function renderCell(user, columnKey){
 
-    const cellValue = user[columnKey];
-    
-    switch (columnKey) {
-      case "name":
-        return (
-          <User src={user.headshotURL}  name={cellValue} css={{ p: 0 }} >
-         
-          </User>
-        );
-      case "role":
-        return (
-          <Col>
-            <Row>
-              <Text b size={14} css={{ tt: "capitalize" }}>
-                {cellValue}
-              </Text>
-            </Row>
-            <Row>
-              <Text b size={13} css={{ tt: "capitalize", color: "$accents7" }}>
-                {user.team}
-              </Text>
-            </Row>
-          </Col>
-        );
-      case "year":
-        return <StyledBadgeWrapper type={user.status}>{cellValue}</StyledBadgeWrapper>;
+  toggleLow()
 
-      case "actions":
-        return (
-          <Row justify="center" align="center">
-            <Col css={{ d: "flex" }}>
-              <Tooltip  content="Edit user">
-                <IconButtonWrapper  onClick={() => {editUser(user, columnKey);  setAction('edit'); toggleHigh();} }>
-                  <EditIconWrapper  size={20} fill="#979797" />
-                </IconButtonWrapper>
-              </Tooltip>
-            </Col>
-            <Col css={{ d: "flex" }}>
-              <Tooltip
-                content="Delete user"
-                color="error"
-                onClick={() => {editUser(user, columnKey); setAction('delete'); toggleHigh();  }}
-              >
-                <IconButtonWrapper >
-                  <DeleteIconWrapper size={20} fill="#FF0080" />
-                </IconButtonWrapper>
-              </Tooltip>
-            </Col>
+}
+
+
+function deleteUser()
+{
+  deleteExec({variables:{clubId:props.clubID, execId:id}})
+
+  toggleLow()
+
+}
+
+function confirmEdit()
+{
+
+  console.log(name, id, year, program)
+  console.log(file)
+  setLoading(true)
+
+  if(file=='https://stackdiary.com/140x100.png'||file==''||file==undefined)
+  {
+
+    console.log("entering wrong file")
+
+    editExecNoF({variables:{clubId:props.clubID, execInput:{_id:id,name:name, role:role, year:year, program:program}}})
+
+  }
+  else
+  {
+    editExec({variables:{file:file, clubId:props.clubID, execInput:{_id:id,name:name, role:role, year:year, program:program}}})
+
+  }
+
+}
+
+
+const setItems = async()=>{
+
+  let result = await getItems()
+  setTeam([...result.data.club.execs])
+ 
+
+}
+
+const getItems = async()=>
+{
+  return client
+  .query({
+    query: getClubExecs,
+    variables: {
+      id: props.clubID,
+    },
+ 
+  })
+  .then((result) => {
+
+    console.log(result)
+
+
+    return result
+   
+
+  })
+  .catch((e) => {
+    alert(e.message)
+  })
+
+}
+
+useEffect(()=>{
+
+  console.log(props.ID)
+
+  setItems()
+
+},[])
+
+
+function renderCell(user, columnKey){
+
+  const cellValue = user[columnKey];
+  
+  switch (columnKey) {
+    case "name":
+      return (
+        <User src={user.headshotURL}  name={cellValue} css={{ p: 0 }} >
+        
+        </User>
+      );
+    case "role":
+      return (
+        <Col>
+          <Row>
+            <Text b size={14} css={{ tt: "capitalize" }}>
+              {cellValue}
+            </Text>
           </Row>
-        );
-      default:
-        return cellValue;
-    }
-  };
+          <Row>
+            <Text b size={13} css={{ tt: "capitalize", color: "$accents7" }}>
+              {user.team}
+            </Text>
+          </Row>
+        </Col>
+      );
+    case "year":
+      return <StyledBadgeWrapper type={user.status}>{cellValue}</StyledBadgeWrapper>;
+
+    case "actions":
+      return (
+        <Row justify="center" align="center">
+          <Col css={{ d: "flex" }}>
+            <Tooltip  content="Edit user">
+              <IconButtonWrapper  onClick={() => {editUser(user, columnKey);  setAction('edit'); toggleHigh();} }>
+                <EditIconWrapper  size={20} fill="#979797" />
+              </IconButtonWrapper>
+            </Tooltip>
+          </Col>
+          <Col css={{ d: "flex" }}>
+            <Tooltip
+              content="Delete user"
+              color="error"
+              onClick={() => {editUser(user, columnKey); setAction('delete'); toggleHigh();  }}
+            >
+              <IconButtonWrapper >
+                <DeleteIconWrapper size={20} fill="#FF0080" />
+              </IconButtonWrapper>
+            </Tooltip>
+          </Col>
+        </Row>
+      );
+    default:
+      return cellValue;
+  }
+};
+
+
   return (
 
     <div>
@@ -250,7 +432,9 @@ const handleFileChange = (e) => {
     </Table>
 
     <Button   onPress={()=>{clear(); setAction('add');toggleHigh() }} className="my-10 bg-blue-600">
-        Add Team Member
+    
+        {loading && <Loading type="spinner" color="currentColor" size="md" />}
+            {!loading && 'Add Team Member'}
     </Button>
 
     <Modal
@@ -260,7 +444,7 @@ const handleFileChange = (e) => {
         onClose={toggleLow}
       >
         <Modal.Header aria-labelledby="team-header" >
-          <Text id="modal-title" size={18}>
+          <Text id="modal-title" size={18} >
             Team Editor
           </Text>
         </Modal.Header>
@@ -272,21 +456,23 @@ const handleFileChange = (e) => {
             clearable
             bordered
             fullWidth
-            color="primary"
             size="lg"
             placeholder= {name?name:"Name"}
             onChange={(e)=>{setName(e.target.value)}}
+            label="Name"
+            
+      
   
           />
           <Input
             clearable
             bordered
             fullWidth
-            color="primary"
             size="lg"
             placeholder={role?role:"Role"}
             onChange={(e)=>{setRole(e.target.value)}}
             aria-labelledby="role"
+            label="Role"
            
           />
           <Text style={{alignSelf:"center"}} >Year</Text>
@@ -298,6 +484,7 @@ const handleFileChange = (e) => {
               <input
           type="file"
           name="GraphQLUploadForMedium"
+          accept="image/*"
           onChange={handleFileChange}
         />
 
@@ -319,7 +506,11 @@ const handleFileChange = (e) => {
       
       }
         <Modal.Footer aria-labelledby="team-footer" >
-           {editAction!="delete"?<Button className='bg-blue-600' onPress={handleConfirm}>Save</Button>:
+           {editAction!="delete"?<Button className='bg-blue-600' onPress={handleConfirm} 
+           disabled={!(name&&role&&year&&program)}>
+            {loading && <Loading type="spinner" color="currentColor" size="md" />}
+            {!loading && 'Save'}
+            </Button>:
            <Button className="bg-rose-600" color='error' onPress={handleConfirm}>DELETE</Button> }
             <Button  bordered color='error' onPress={toggleLow}>Cancel</Button>
 

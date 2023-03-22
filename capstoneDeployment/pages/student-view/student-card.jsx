@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import Modal from 'react-modal'
 import ClubPopUP from './clubPopUp'
-import LikeButton from './student-like-button'
 import { FaHeart } from "react-icons/fa";
 
 Modal.setAppElement('#__next')
@@ -9,9 +8,6 @@ Modal.setAppElement('#__next')
 export default function StudentCard(props) {
   const [isReadMore, setIsReadMore] = useState(true)
   const [modalIsOpen, setIsOpen] = useState(false)
-
-  console.log(props.viewOnlyLiked, 'console this hoe' + props.data.name)
-
   const [isLiked, setIsLiked] = useState(
     //State to track if user has liked the image
     localStorage.getItem(String(props.data.name)) === "true" //sets the localStorage key to the index of the image
@@ -88,7 +84,7 @@ export default function StudentCard(props) {
               {/* if state isLiked is true than the like button will fill red*/}
               <button
                 onClick={handleLike}
-                className={` flex justify-center p-2 mr-4 mt-4 text-black hover:text-red-400 ${isLiked && "text-red-600 text-4xl"
+                className={` flex sm:opacity-0 lg:opacity-100 justify-center p-2 mr-4 mt-4 text-black hover:text-red-400 ${isLiked && "text-red-600 text-4xl"
                   } bg-none`}
               >
                 <FaHeart className="text-2xl" />
@@ -96,15 +92,16 @@ export default function StudentCard(props) {
             </div>) : null}
         </div>
         <div className="pr-6 pl-6 pt-2 pb-1 mb-3 flex-col flex h-full text-slate-500">
-          <div className={`text-sm ${isReadMore && 'line-clamp-2'} ${props.viewOnlyLiked && 'line-clamp-4'}`}>
+          <div className={`text-sm ${isReadMore && 'line-clamp-2'} ${props.viewOnlyLiked && 'line-clamp-none'}`}>
             {props.data.description}
           </div>
-          <button
+          {props.viewOnlyLiked ? null : <button
             onClick={handleReadMore}
             className="bg-none rounded text-sm font-bold hover:text-slate-800 text-left pt-1"
           >
             {isReadMore ? 'Read More...' : 'Read Less...'}
-          </button>
+          </button>}
+
         </div>
       </div>
     </div>

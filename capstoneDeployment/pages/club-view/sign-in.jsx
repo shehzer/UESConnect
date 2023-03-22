@@ -8,13 +8,16 @@ import { Router, useRouter } from 'next/router'
 import { gql, useMutation } from '@apollo/client'
 import client from '../../components/apollo-client'
 import { logMissingFieldErrors } from '@apollo/client/core/ObservableQuery'
-import { AuthContext } from '../../components/context/context'
+const jwt = require('jsonwebtoken')
+const config = require('../../pages/api/config/default.json')
+import Cookies from 'js-cookie'
 
-export default function signIn() {
+
+export default function signIn(props) {
   const router = useRouter()
 
-  const username = useRef('')
-  const password = useRef('')
+  const [username, setUser] = useState('')
+  const [password, setPass] = useState('')
 
   const handleKeyDown = function(event){
     if(event.key === 'Enter') {
@@ -22,38 +25,16 @@ export default function signIn() {
     }
   }
 
-  const authContext = useContext(AuthContext);
-
   const mutationQ = gql`
-      mutation Mutation($loginInput: LoginInput) {
-        loginUser(loginInput: $loginInput) {
-          userRole
-          _id
-          department
-          description
-          execs {
-            name
-            role
-            year
-            program
-          }
-          name
-
-        }
-      }
-    `
-
-    // adminList {
-    //   name
-    //   email
-    //   password
-    //   role
-    //   token
-    //   clubName
-    //   clubID
-    //   userID
-    // }
-
+  mutation Mutation($loginInput: LoginInput) {
+    loginUser(loginInput: $loginInput) {
+      _id
+      token
+      userRole
+    }
+  }
+  
+  `
 const queryQ = gql`query Query($id: ID!) {
     club(ID: $id) {
       execs {
@@ -65,84 +46,57 @@ const queryQ = gql`query Query($id: ID!) {
         year
       }
       logoURL
+      
     }
   }`
 
   const logIn = async function () {
+
+
     client
       .mutate({
         mutation: mutationQ,
         variables: {
           loginInput: {
-            email: username.current.value,
-            password: password.current.value,
+            email: username,
+            password: password
           },
         },
       })
       .then((data) => {
 
+
         console.log("initial", data)
-
         let role = data.data.loginUser.userRole
+        let token = data.data.loginUser.token
+        let ID = data.data.loginUser._id
+        Cookies.set('token', token)
 
-        let payload = data.data.loginUser.adminList
 
-        if(role=="MASTER")
+        if(role!="MASTER")
         {
-          payload.map((item)=>(delete item.__typename))
-          router.push({
-            pathname: '../admin-view/admin-landing',
-            query: {
-              admins:JSON.stringify(payload)
-            },
-          })
-
+            router.push({
+              pathname: 'club-landing',
+              query: {
+                clubID: ID
+              },
+            })
         }
         else
         {
-          let clubData = data.data.loginUser
-          client.query({
-            query: queryQ,
-            variables: {
-                id: clubData._id
-            },
-          })
-          .then((data2) => {
-      
-            clubData.execs = data2.data.club.execs
-            clubData.logoURL = data2.data.club.execs.logoURL
-            console.log(clubData)
-  
           router.push({
-            pathname: 'club-landing',
-            query: {
-              id: clubData._id,
-              name: clubData.name,
-              department: clubData.department,
-              description: clubData.description,
-              execs: JSON.stringify(clubData.execs),
-            },
-          })
-      
-          })
-          .catch((e) => {
-            alert(e.message)
-          })
-  
+            pathname: '../admin-view/admin-landing',
 
+          })
+          
         }
-
-
-
-
-
-
-
 
       })
       .catch((e) => {
         alert(e.message)
       })
+
+    
   }
 
   return (
@@ -164,21 +118,23 @@ const queryQ = gql`query Query($id: ID!) {
         style={{ display: 'flex', flexDirection: 'column', marginTop: '50px' }}
       >
         <Input
-          ref={username}
           className=" bg-black mb-8"
           color="primary"
           size="xl"
           bordered
           label="Email Address"
+          value={username}
+          onChange={(e)=>{setUser(e.target.value)}}
         />
         <Input.Password
           onKeyDown={handleKeyDown}
-          ref={password}
           className="bg-black mb-8"
           size="xl"
           color="primary"
           bordered
           label="Password"
+          onChange={(e)=>{setPass(e.target.value)}}
+          value={password}
         />
 
         <Button  className='bg-blue-600' onPress={logIn}>

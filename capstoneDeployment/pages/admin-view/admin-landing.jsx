@@ -9,6 +9,9 @@ import client from '../../components/apollo-client'
 import { logMissingFieldErrors } from '@apollo/client/core/ObservableQuery'
 import styles from 'styles/admin.module.css'
 import TableAdmin from './table-admin'
+import Cookies from 'js-cookie'
+const jwt = require('jsonwebtoken')
+const config = require('../../pages/api/config/default.json')
 
 
 
@@ -21,19 +24,46 @@ export async function getServerSideProps(context) {
 
 export default function amdinLanding(props) {
 
-  const [adminList, setList] = useState([...JSON.parse(props.admins)])
+  const router = useRouter()
 
-  
 
-  function addAdmin()
+  useEffect(()=>{
+    let token = Cookies.get('token')
+
+    jwt.verify(token, config.jwtSecret, (err, decoded)=>{
+      console.log(err, decoded)
+      if(!decoded)
+      {
+        router.push({pathname:'/club-view/sign-in'})
+
+      }
+      else if(err)
+      {
+          router.push({pathname:'/club-view/sign-in'})
+          alert("Your session has expired.")
+      }
+      else if(decoded.role!="MASTER")
+      {
+        router.push({
+          pathname:'/club-view/sign-in',
+
+        })
+
+      }
+    });
+
+  },[])
+
+
+
+
+  function logout()
   {
+    Cookies.set('token','')
 
+    router.push({pathname:'/club-view/sign-in'})
   }
-
-
-
-
-
+  
 
   return (
 
@@ -46,6 +76,7 @@ export default function amdinLanding(props) {
           className="bg-[#0072F5]"
           style={{ position: 'absolute', top: 0, right: 10 }}
           size="xs"
+          onPress={logout}
         >
           Log Out
         </Button>

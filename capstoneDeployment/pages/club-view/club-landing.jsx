@@ -7,18 +7,21 @@ import { useState, useEffect, useRef, localStorage, useContext } from 'react'
 import ClubInfo from './club-info'
 import ClubApps from './club-apps'
 import ClubTeams from './club-team'
-// import { ClubPositions } from './club-positions'
 import ClubPositions from "./modal-positions";
 import { ApplicationPage } from '../../components/club-applications'
 import { Input, Spacer, Text } from '@nextui-org/react'
 import { Router, useRouter } from 'next/router'
-import { AuthContext } from '../../components/context/context'
+import Cookies from 'js-cookie'
+const jwt = require('jsonwebtoken')
+const config = require('../../pages/api/config/default.json')
+
 
 export async function getServerSideProps(context) {
   return {
     props: context.query, // will be passed to the page component as props
   }
 }
+
 
 export default function clubLanding(props) {
   const router = useRouter()
@@ -29,53 +32,16 @@ export default function clubLanding(props) {
 
   const [positionId, setPositionId] = useState('')
   const [positionName, setPositionName] = useState('')
+  const [ID, setID] = useState(props.clubID)
 
-  const [ID, setID] = useState(props.id)
-  const [name, setName] = useState(props.name)
-  const [department, setDep] = useState(props.department)
-  const [description, setDes] = useState(props.description)
-  const [team, setTeam] = useState(JSON.parse(props.execs))
 
-  const authContext = useContext(AuthContext);
 
-  // useEffect(() => {
-  //     // checks if the user is authenticated
-  //     !authContext.isUserAuthenticated() 
-  //     ? router.push("/sign-in")
-  //     : "";
-  //   }, []);
+  function logout()
+  {
+    Cookies.set('token','')
 
-  const updateInfo = (newInfo) => {
-    setName(newInfo.name)
-    setDep(newInfo.department)
-    setDes(newInfo.description)
-
-    router.push({
-      pathname: 'club-landing',
-      query: {
-        id: props.id,
-        name: newInfo.name,
-        department: newInfo.department,
-        description: newInfo.description,
-        execs: JSON.stringify(team),
-      },
-    })
+    router.push({pathname:'/club-view/sign-in'})
   }
-
-  const updateTeam = (newTeam) => {
-    setTeam([...newTeam])
-    router.push({
-      pathname: 'club-landing',
-      query: {
-        id: props.id,
-        name: name,
-        department: department,
-        description: description,
-        execs: JSON.stringify([...newTeam]),
-      },
-    })
-  }
-
 
 
   function navigateApplications(position_id, position_name) {
@@ -125,6 +91,7 @@ export default function clubLanding(props) {
     }
   }
 
+  console.log(name)
   return (
     <div>
       <div className={styles.topBar}>
@@ -135,6 +102,7 @@ export default function clubLanding(props) {
           className="bg-[#0072F5]"
           style={{ position: 'absolute', top: 0, right: 10 }}
           size="xs"
+          onPress={logout}
         >
           Log Out
         </Button>
@@ -170,11 +138,7 @@ export default function clubLanding(props) {
       <div id="pages">
         {infoVisible && (
           <ClubInfo
-            update={updateInfo}
-            ID={ID}
-            name={name}
-            description={description}
-            department={department}
+            ID={props.clubID}
           ></ClubInfo>
         )}
         {positionVis && (
@@ -184,7 +148,7 @@ export default function clubLanding(props) {
           ></ClubPositions>
         )}
         {teamVisible && (
-          <ClubTeams update={updateTeam} ID={ID} team={team}></ClubTeams>
+          <ClubTeams ID={props.clubID} ></ClubTeams>
         )}
         {appVis && (
           <ApplicationPage

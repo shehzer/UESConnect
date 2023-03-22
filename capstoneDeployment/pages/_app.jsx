@@ -46,7 +46,7 @@ export default function App({ Component, pageProps }) {
 });
   return (
     isBrowser && (
-      <NextUIProvider theme={theme}>
+    <NextUIProvider theme={theme}>
       <ApolloProvider client={client}>
       <Component {...pageProps} />
       </ApolloProvider>

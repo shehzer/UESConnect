@@ -2,14 +2,19 @@ import Link from 'next/link'
 import styles from 'styles/club-info.module.css'
 import Head from 'next/head'
 import { useTheme } from '@nextui-org/react'
-import { CSS, Button, Input, Text, Textarea, Loading } from '@nextui-org/react'
+import { CSS, Button, Input, Text, Textarea, Loading,Image } from '@nextui-org/react'
 import { useState, useRef, useEffect, localStorage } from 'react'
 import ImageProcess from './image-processing'
 import useSWR from 'swr'
-import { gql, useMutation } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import client from '../../components/apollo-client'
 import { Router, useRouter } from 'next/router'
+import Cookies from 'js-cookie'
+const jwt = require('jsonwebtoken')
 import graphql from 'graphql'
+const validator = require('validator');
+const config = require('../../pages/api/config/default.json')
+
 
 export default function clubInfo(props) {
   const [clubName, setClubName] = useState(
@@ -18,71 +23,144 @@ export default function clubInfo(props) {
   const [department, setDep] = useState(
     props.department == undefined ? 'Insert Department!' : props.department,
   )
+  const router = useRouter()
   const [description, setDes] = useState(
     props.description == undefined ? 'Insert Description!' : props.description,
   )
-  const [images, setImages] = useState([])
   const [load, setLoad] = useState(false)
-  const router = useRouter()
+  const[logo, setLogo] = useState('')
 
-  const UPLOAD_FILE = gql`
-mutation UploadFile($file: Upload!) {
-  uploadFile(file: $file)
+
+
+  const UPLOAD_FILE = gql`mutation UploadClubLogo($file: Upload, $clubId: String) {
+    uploadClubLogo(file: $file, clubId: $clubId)
+  }`;
+
+
+  const [fileUpload] = useMutation(UPLOAD_FILE, {onCompleted: (data) => {
+    
+    console.log(data)
+    setLogo(data.uploadClubLogo)
+
+  }});
+  const handleFileChange = (e) => 
+  {
+    const file = e.target.files;
+
+    if (!file) return;
+    fileUpload({ variables: { file:file[0], clubId:props.ID } });
+  }; 
+
+
+  const getClubExecs= gql`
+  query Query($id: ID!) {
+    club(ID: $id) {
+      _id
+      name
+      department
+      description
+      logoURL
+    }
+  }`
+
+
+
+const setItems = async()=>{
+
+  let result = await getItems()
+  setDep(result.data.club.department)
+  setDes(result.data.club.description)
+  setClubName(result.data.club.name)
+  setLogo(result.data.club.logoURL)
+
 }
-`;
 
-  const [fileUpload] = useMutation(UPLOAD_FILE, {
-    onCompleted: (data) => console.log(data),
-});
-const handleFileChange = (e) => {
-  const file = e.target.files;
-  console.log("from club-info", file)
-
-  if (!file) return;
-  fileUpload({ variables: { file } });
-};
-   
+const getItems = async()=>
+{
+  return client
+  .query({
+    query: getClubExecs,
+    variables: {
+      id: props.ID,
+    },
+ 
   
+  })
+  .then((result) => {
+
+    console.log(result)
+
+
+    return result
    
 
-  const save = async function () {
+  })
+  .catch((e) => {
+    alert(e.message)
+  })
+
+}
+
+useEffect(()=>{
+
+
+  let token = Cookies.get('token')
+
+    jwt.verify(token, config.jwtSecret, (err, decoded)=>{
+    if(!decoded||err||decoded.role!="ADMIN"||Object.keys(props).length==0)
+    {
+      router.push({pathname:'/club-view/sign-in'})
+
+    }
+    else
+    {
+      setItems()
+    }
+  }
+  )
+
+  
+
+},[])
    
-    setLoad(true)
 
-    const mutationQ = gql`
-      mutation Mutation($id: ID!, $clubInput: ClubInput) {
-        editClub(ID: $id, clubInput: $clubInput)
-      }
-    `
 
-    client
-      .mutate({
-        mutation: mutationQ,
-        variables: {
-          id: props.ID,
-          clubInput: {
-            name: clubName,
-            department: department,
-            description: description,
-          },
-        },
-      })
-      .then((result) => {
-        console.log(result)
-        setLoad(false)
-        props.update({
+
+
+
+const save = async function () {
+  
+  setLoad(true)
+
+  const mutationQ = gql`
+    mutation Mutation($id: ID!, $clubInput: ClubInput) {
+      editClub(ID: $id, clubInput: $clubInput)
+    }
+  `
+
+  client
+    .mutate({
+      mutation: mutationQ,
+      variables: {
+        id: props.ID,
+        clubInput: {
           name: clubName,
           department: department,
           description: description,
-        })
+        },
+      },
+    })
+    .then((result) => {
+   
+      setLoad(false)
+  
+    })
+    .catch((e) => {
+      alert(e.message)
+      setLoad(false)
+    })
 
-        
-      })
-      .catch((e) => {
-        alert(e.message)
-        setLoad(false)
-      })
-  }
+}
 
   return (
     <div className={styles.container}>
@@ -121,19 +199,21 @@ const handleFileChange = (e) => {
           />
         </div>
 
-
-
-
-
         <div className={styles.imageBox}>
           <Text size="larger">Set Your Club Logo</Text>
 
-          <input
-      type="file"
-      name="GraphQLUploadForMedium"
-      onChange={handleFileChange}
-    />
+          <input type="file" name="GraphQLUploadForMedium" accept="image/*" onChange={handleFileChange} />
+
+
         </div>
+
+        <div className={styles.imageBox}>
+
+        <img src={logo} alt="logo" style={{width:100, height:100}} />
+
+        </div>
+
+
         <div className={styles.infoBox}>
           <Textarea
             onChange={(e) => {

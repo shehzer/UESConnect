@@ -6,6 +6,9 @@ const clubSchema = new mongoose.Schema({
   department: String,
   description: String,
   execs: [{ name: String, role: String, year: String, program: String }],
+  userID: {
+    type: String,
+  },
 })
 
 module.exports = mongoose.models.Club || mongoose.model('Club', clubSchema)

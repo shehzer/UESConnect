@@ -8,6 +8,7 @@ const config = require('../config/default.json')
 const transporter = require('../email/transporter')
 import { Router, useRouter } from 'next/router'
 
+
 /**
  *
  * Upon login I want to be able to
@@ -82,6 +83,7 @@ module.exports = {
         name: clubName,
         department: null,
         description: null,
+        userID: user._id
       })
 
       const clubRes = await newClub.save() //This is where MongoDB actually saves
@@ -152,9 +154,10 @@ module.exports = {
 
       // Create new Token
     },
-    deleteUser: async (_, { email }) => {
+    deleteUser: async (_, { ID: _id }) => {
       // Check if user exists
-      const user = await User.findOne({ email })
+      const user = await User.findOne({ _id })
+      console.log(user)
       // Check if we got a user
       if (user) {
         const wasDeleted = (await User.deleteOne(user)).deletedCount
@@ -171,28 +174,44 @@ module.exports = {
       const user = await User.findOne({ _id })
       console.log(user)
       var changedUser = 0
-      if (user && (await bcrypt.compare(password, user.password))) {
+      var flag = false
+      if (user && password == user.password) {
         if (newName) {
+          flag = true
           changedUser = await (
             await User.updateOne({ _id: _id }, { name: newName })
           ).modifiedCount
         }
         if (newEmail) {
+          flag = true
           changedUser = await (
             await User.updateOne({ _id: _id }, { email: newEmail })
           ).modifiedCount
         }
         if (newPassword) {
-          var encryptedPassword = await bcrypt.hash(password, 10)
+          flag = true
+          var encryptedPassword = await bcrypt.hash(newPassword, 10)
           changedUser = await (
             await User.updateOne({ _id: _id }, { password: encryptedPassword })
           ).modifiedCount
         }
-        return changedUser
+        if (flag) {
+          const newUser = await User.findOne({ _id })
+          return {
+            userID: newUser.id,
+            ...newUser._doc,
+          }
+        }
+        else {
+          throw new ApolloError(
+            'No fields were changed',
+            'INVALID_ENTRY',
+          )
+        }
       }
       throw new ApolloError(
         'User does not exist or wrong password ',
-        'INVALID_Entry',
+        'INVALID_ENTRY',
       )
     },
   },
