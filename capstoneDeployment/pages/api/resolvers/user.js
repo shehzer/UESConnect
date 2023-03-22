@@ -152,9 +152,10 @@ module.exports = {
 
       // Create new Token
     },
-    deleteUser: async (_, { email }) => {
+    deleteUser: async (_, { ID: _id }) => {
       // Check if user exists
-      const user = await User.findOne({ email })
+      const user = await User.findOne({ _id })
+      console.log(user)
       // Check if we got a user
       if (user) {
         const wasDeleted = (await User.deleteOne(user)).deletedCount
@@ -171,7 +172,7 @@ module.exports = {
       const user = await User.findOne({ _id })
       console.log(user)
       var changedUser = 0
-      if (user && (await bcrypt.compare(password, user.password))) {
+      if (user && (password == user.password)) {
         if (newName) {
           changedUser = await (
             await User.updateOne({ _id: _id }, { name: newName })
@@ -192,7 +193,7 @@ module.exports = {
       }
       throw new ApolloError(
         'User does not exist or wrong password ',
-        'INVALID_Entry',
+        'INVALID_ENTRY',
       )
     },
   },

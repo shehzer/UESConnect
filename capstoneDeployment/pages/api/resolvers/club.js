@@ -223,23 +223,20 @@ module.exports = {
             })
             let newObj = await objectNewer.save()
             headshotURL = newObj.url
-            console.log("this is if it is net new",newObj)
 
           }
-          console.log("this is if it changed", objChange)
           if(headshotURL == "https://stackdiary.com/140x100.png"){
-            headshotURL = objChange.url
+            headshotURL = resAWS.Location
         }
       }
       else{
         try{
           headshotURL = (await object.findOne({objType:"headshot", objId: _id})).url
         }catch{
-          console.log("headshot does not exist")
+          headshotURL = "https://stackdiary.com/140x100.png"
         }
       }
       let res = await Club.findById(clubId)
-      console.log(res)
       for(const e of res.execs){
         if(e._id == _id){
            let newerExec = {
