@@ -88,7 +88,7 @@ const ClubPopUP = (props) => {
   }
   return (
 
-    <div className="flex-col flex h-full overflow-y-auto overflow-x-auto text-slate-800 p-3 border-gray-300" >
+    <div className="flex-col flex h-full w-full overflow-y-auto overflow-x-auto text-slate-800 p-3 border-gray-300" >
       <div className='flex self-center'>
         <img
           className="h-10 w-10 rounded-full"
@@ -117,7 +117,7 @@ const ClubPopUP = (props) => {
             (<div className='text-center w-full text-xl font-bold'>No Avaialble Positions</div>)}
         </div>
       )}
-      <div className="flex flex-wrap self-center bg-white space-x-2 px-4">
+      <div className="flex w-full flex-wrap self-center bg-white space-x-2 px-4">
         <div className='w-full h-12 py-4 font-bold text-xl'>Executive team:</div>
         {clubData.execs
           ? clubData.execs.map((exec) => (
