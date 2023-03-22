@@ -8,9 +8,6 @@ Modal.setAppElement('#__next')
 export default function StudentCard(props) {
   const [isReadMore, setIsReadMore] = useState(true)
   const [modalIsOpen, setIsOpen] = useState(false)
-
-  console.log(props.viewOnlyLiked, 'console this hoe' + props.data.name)
-
   const [isLiked, setIsLiked] = useState(
     //State to track if user has liked the image
     localStorage.getItem(String(props.data.name)) === "true" //sets the localStorage key to the index of the image

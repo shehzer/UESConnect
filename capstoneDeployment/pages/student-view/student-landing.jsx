@@ -124,7 +124,7 @@ export default function studentLanding(props) {
               ></RiInformationLine>
             </button>
             <span
-              class="group-hover:opacity-100 transition-opacity bg-slate-500 text-sm text-gray-100 rounded-md absolute 
+              className="group-hover:opacity-100 transition-opacity bg-slate-500 text-sm text-gray-100 rounded-md absolute 
      opacity-0 w-16 text-center left-1/2 
     -translate-x-1/2 translate-y-14"
             >
