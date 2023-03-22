@@ -84,16 +84,6 @@ export default function table(props) {
   }`
 
 
-  const editExecsNoFile = gql`mutation EditExec($clubId: String, $execInput: ExecsInput) {
-    editExec(clubId: $clubId, execInput: $execInput) {
-      _id
-      headshotURL
-      name
-      program
-      role
-      year
-    }
-  }`
 
   const deleteExec = gql`mutation Mutation($clubId: String, $execId: String) {
     deleteExec(clubId: $clubId, execId: $execId)
@@ -170,8 +160,6 @@ const [editExec] = useMutation(editExecs, {
     console.log(payload.headshotURL)
     let temp = team.map((element, index)=>({...element}))
 
-    console.log(id, name, role, program, year)
-
 
     const newArr = temp.map((element, index)=>{
 
@@ -181,7 +169,7 @@ const [editExec] = useMutation(editExecs, {
         element.year=year
         element.role=role
         element.program=program
-        element.file = payload.headshotURL
+        element.headshotURL = data.editExec.headshotURL
       }
 
       return element
@@ -196,6 +184,38 @@ const [editExec] = useMutation(editExecs, {
   onError: (err)=>{console.log(err, "i am erroring on execEditFile"); setLoading(false)}
 });
 
+
+const [editExecNoF] = useMutation(editExecs, {
+  onCompleted: (data) => {
+
+    console.log(data)
+    let payload = data.editExec
+    console.log(payload.headshotURL)
+    let temp = team.map((element, index)=>({...element}))
+
+
+    const newArr = temp.map((element, index)=>{
+
+      if(id==element._id)
+      {
+        element.name=name
+        element.year=year
+        element.role=role
+        element.program=program
+        element.headshotURL = data.editExec.headshotURL
+      }
+
+      return element
+    })
+
+    console.log(newArr)
+
+    setTeam([...newArr])
+    toggleLow()
+  
+  },
+  onError: (err)=>{console.log(err, "i am erroring on editing exec with no file "); setLoading(false)}
+});
 
 const handleFileChange = (e) => {
   const file = e.target.files;
@@ -243,8 +263,12 @@ function confirmEdit()
   console.log(name, id, year, program)
   console.log(file)
 
-  if(file=='https://stackdiary.com/140x100.png')
+  if(file=='https://stackdiary.com/140x100.png'||file==''||file==undefined)
   {
+
+    console.log("entering wrong file")
+
+    editExecNoF({variables:{clubId:props.clubID, execInput:{_id:id,name:name, role:role, year:year, program:program}}})
 
   }
   else

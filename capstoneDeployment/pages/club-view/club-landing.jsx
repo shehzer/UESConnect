@@ -35,20 +35,49 @@ export default function clubLanding(props) {
   const [ID, setID] = useState(props.clubID)
 
 
+
+  function logout()
+  {
+    Cookies.set('token','')
+
+    router.push({pathname:'/club-view/sign-in'})
+  }
+
+
  
   useEffect(()=>{
 
     let token = Cookies.get('token')
 
     jwt.verify(token, config.jwtSecret, (err, decoded)=>{
-      console.log(err, decoded)
-      if(err)
+
+      console.log(decoded)
+      if(!decoded)
       {
-        console.log(err)
+        router.push({pathname:'/club-view/sign-in'})
+        return
+      }
+      else if(err)
+      {
+    
           router.push({pathname:'/club-view/sign-in'})
           alert("Your session has expired.")
+          return
+  
       }
+      else if(decoded.role!="ADMIN")
+      {
+        router.push({
+          pathname:'/club-view/sign-in',
+  
+        })
+  
+      }
+  
     });
+
+    
+
 
 
   },[])
@@ -115,6 +144,7 @@ export default function clubLanding(props) {
           className="bg-[#0072F5]"
           style={{ position: 'absolute', top: 0, right: 10 }}
           size="xs"
+          onPress={logout}
         >
           Log Out
         </Button>

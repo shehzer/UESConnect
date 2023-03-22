@@ -17,7 +17,7 @@ export default function tableAdmin(props) {
     const [clubName, setClub] = useState('')
     const [id, setID] = useState('')
   
-    const [admins, setAdmin] = useState([...JSON.parse(props.clubAdmins)])
+    const [admins, setAdmin] = useState([])
 
     const [visible, setVisible] = useState(false);
     const [editAction, setAction] = useState();
@@ -34,6 +34,52 @@ export default function tableAdmin(props) {
       { name: "ROLE", uid: "role" },
       { name: "ACTIONS", uid: "actions" },
   ];
+
+
+  const getAdmins = gql`
+  query Query($name: String) {
+    getAdminList(name: $name) {
+      adminList {
+        userID
+        name
+        email
+        password
+        role
+        token
+        clubName
+        clubID
+      }
+    }
+  }`
+
+
+  const setItems = async()=>
+  {
+
+    let result = await getItems()
+
+    setAdmin([...result.data.getAdminList.adminList])
+
+  }
+
+  const getItems = async()=>{
+
+
+    return client.query({query:getAdmins, variables:{name:null}}).then((data)=>{
+      console.log(data)
+      return data
+    })
+
+  }
+
+
+
+  useEffect(()=>{
+
+    setItems()
+
+
+  },[])
 
 
     const addQ = gql`
@@ -68,6 +114,7 @@ export default function tableAdmin(props) {
         setAdmin([...temp])
       
       },
+      onError: (err)=>{alert(err)}
           });
 
     const [editAdmin] = useMutation(editQ, {
@@ -79,8 +126,6 @@ export default function tableAdmin(props) {
           let temp = admins.map((element, index)=>({...element}))
 
         }
-
- 
         // temp.push(data.registerUser)
         // setAdmin([...temp])
       
@@ -122,7 +167,6 @@ export default function tableAdmin(props) {
         break;
       default:
         return ""
-      
     }
 
     toggleLow()
@@ -223,7 +267,7 @@ export default function tableAdmin(props) {
                 content="Delete user"
                 color="error"
                 placement="leftEnd"
-                onClick={() => {editUser(user, columnKey); setAction('delete'); toggleHigh();  }}
+                onClick={() => {setEdit(user, columnKey); setAction('delete'); toggleHigh();  }}
               >
                 <IconButtonWrapper >
                   <DeleteIconWrapper size={20} fill="#FF0080" />

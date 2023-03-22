@@ -24,7 +24,6 @@ export async function getServerSideProps(context) {
 
 export default function amdinLanding(props) {
 
-  const [adminList, setList] = useState([...JSON.parse(props.admins)])
   const router = useRouter()
 
 
@@ -34,7 +33,20 @@ export default function amdinLanding(props) {
     jwt.verify(token, config.jwtSecret, (err, decoded)=>{
       console.log(err, decoded)
 
-      if(decoded.role!="MASTER")
+
+      if(!decoded)
+      {
+        router.push({pathname:'/club-view/sign-in'})
+        return
+      }
+      else if(err)
+      {
+    
+          router.push({pathname:'/club-view/sign-in'})
+          alert("Your session has expired.")
+
+      }
+      else if(decoded.role!="MASTER")
       {
         router.push({
           pathname:'/club-view/sign-in',
