@@ -74,7 +74,20 @@ module.exports = {
     },
     getClubs: async (_, { amount }) => {
       if (amount == null) {
-        return await Club.find()
+        let allClubs = await Club.find()
+        for(const club of allClubs){
+          let clubLogo = "https://stackdiary.com/140x100.png"
+          try{
+            let queryForLogo = await object.findOne({objType: "logo", objId: club._id})
+            clubLogo = queryForLogo.url
+            Object.assign(club, {logoURL: clubLogo})
+            console.log("this is the actual Club with a URL,", club)
+          }catch{
+            Object.assign(club, {logoURL: clubLogo})
+            console.log("this is the dummy url,", club)
+          }
+        }
+        return allClubs
       }
       return await Club.find().sort({ department: -1 }).limit(amount)
     },
