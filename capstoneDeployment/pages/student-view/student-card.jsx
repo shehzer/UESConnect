@@ -47,11 +47,11 @@ export default function StudentCard(props) {
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={handleCloseModal}
-        className="bg-white w-4/5 h-4/5 mx-auto my-auto rounded-lg shadow-lg flex items-center justify-center opacity-100"
+        className="bg-white w-4/5 h-4/5 mx-auto my-auto rounded-lg shadow-xl flex items-center justify-center opacity-100"
         overlayClassName="fixed inset-0 flex justify-center items-center"
         portalClassName="opacity-100 bg-black"
       >
-        <div className="w-full h-full flex flex-col items-center justify-center opacity-100 shadow-xl rounded-lg ">
+        <div className="w-full h-full flex flex-col items-center justify-center opacity-100 shadow-xl rounded-lg">
           <ClubPopUP clubName={props.data.name} clubId={props.data._id} />
           <button
             className="text-slate-800 py-2 w-full bg-white rounded-md font-bold hover:bg-slate-200"
@@ -66,15 +66,21 @@ export default function StudentCard(props) {
         className="cursor-pointer h-full flex flex-col"
       >
         <div className='flex justify-between'>
-          <div>
-            <h1 className="px-2 text-2xl font-bold cursor-pointer">
-              {props.data.name}
-            </h1>
-            {props.data.department ? (
-              <div className="py-1 mx-2 mt-1 text-sm text-gray-900 bg-slate-100 rounded-xl font-semibold w-24 text-center">
-                {props.data.department}
-              </div>
-            ) : null}
+          <div className='flex pl-4 pt-4'>
+            <img
+              className="h-14 w-14 rounded-full self-center"
+              src={props.data.logoURL}
+            ></img>
+            <div>
+              <h1 className="px-2 text-2xl font-bold cursor-pointer">
+                {props.data.name}
+              </h1>
+              {props.data.department ? (
+                <div className="py-1 mx-2 text-sm text-gray-900 rounded-xl font-semibold w-auto text-left">
+                  {props.data.department}
+                </div>
+              ) : null}
+            </div>
           </div>
           {!props.viewOnlyLiked
             ?
@@ -82,15 +88,15 @@ export default function StudentCard(props) {
               {/* if state isLiked is true than the like button will fill red*/}
               <button
                 onClick={handleLike}
-                className={` flex justify-center p-2 mr-2 mt-2 text-black hover:text-red-400 ${isLiked && "text-red-600 text-4xl"
+                className={` flex justify-center p-2 mr-4 mt-4 text-black hover:text-red-400 ${isLiked && "text-red-600 text-4xl"
                   } bg-none`}
               >
                 <FaHeart className="text-2xl" />
               </button>
             </div>) : null}
         </div>
-        <div className="px-2 pt-2 mb-3 flex-col flex h-full text-slate-500">
-          <div className={`text-sm ${isReadMore && 'line-clamp-3'}`}>
+        <div className="pr-6 pl-6 pt-2 pb-1 mb-3 flex-col flex h-full text-slate-500">
+          <div className={`text-sm ${isReadMore && 'line-clamp-2'} ${props.viewOnlyLiked && 'line-clamp-4'}`}>
             {props.data.description}
           </div>
           <button

@@ -5,6 +5,7 @@ import APILoadingScreen from '../loading-screen'
 import StudentHeader from '../student-header'
 import { useState, useRef, useEffect, localStorage } from 'react'
 import validator from "validator";
+import { FiShare } from 'react-icons/fi';
 var sanitizer = require('sanitize')();
 
 export default function StudentPositions(props) {
@@ -14,19 +15,42 @@ export default function StudentPositions(props) {
   const [userQA, setUserQA] = useState([{ question: '', answer: '' }])
   const [userEmail, setUserEmail] = useState('')
   const [userName, setUserName] = useState('')
-  const [applicationId, setApplicationId] = useState('')
+  const [isSharing, setIsSharing] = useState(false);
 
   const handleFormChange = (event, index) => {
     let data = [...userQA]
-    data[index].answer = event.target.value
+    data[index].answer = validator.unescape(event.target.value)
     setUserQA(data)
   }
 
+  const share = () => {
+    setIsSharing(true);
+    if (navigator.share) {
+      navigator
+        .share({
+          title: 'Application Link',
+          text: 'Check out this application!',
+          url: window.location.href,
+        })
+        .then(() => {
+          setIsSharing(false);
+        })
+        .catch((error) => {
+          console.error('Error sharing:', error);
+          setIsSharing(false);
+        });
+    } else {
+      setIsSharing(false);
+      alert('Your browser does not support web sharing.');
+    }
+  };
+
   const handleEmailChange = (event) => {
-    setUserEmail(event.target.value)
+    setUserEmail(validator.unescape(event.target.value))
   }
 
   const handleNameChange = (event) => {
+    str = event.replace(/\s+/g, '');
     setUserName(event.target.value)
     console.log(event.target.value)
   }
@@ -34,7 +58,9 @@ export default function StudentPositions(props) {
   const submit = (e) => {
     e.preventDefault()
     if (!validator.isEmail(userEmail)) {
-      alert('Please Enter a Valid Email')
+      alert('Please enter a valid email.');
+    } else if (validator.isAlpha(userName.trim())) {
+      alert('Please enter your name.');
     } else {
       applicationUpload({
         variables: {
@@ -130,8 +156,16 @@ export default function StudentPositions(props) {
 
   return (
     <div className="flex flex-col bg-white w-full h-full text-slate-800 items-center ">
-      <div className='w-4/5 pt-2'>
+      <div className='w-4/5 pt-3 flex justify-between'>
         <StudentHeader></StudentHeader>
+        <button
+          onClick={share}
+          className="bg-gray-800 text-white px-4 py-2 rounded-md flex items-center disabled:opacity-50"
+          disabled={isSharing}
+        >
+          <FiShare className="w-5 h-5 mr-2" />
+          Share Application
+        </button>
       </div>
       <div className="rounded overflow-hidden w-4/5 shadow-lg my-4 p-4 flex flex-col text-slate-800 text-sm bg-slate-200">
         <div className="flex flex-col">
@@ -142,6 +176,7 @@ export default function StudentPositions(props) {
             Positions Avilable: {positionData.numberOfOpenings}
           </div>
           <div className="flex self-center space-x-2 pb-2">
+
             <span className="text-slate-800 font-bold text-lg" >Skills:</span>
             {positionData.skills != undefined
               ? positionData.skills.map((skill) =>
@@ -159,9 +194,9 @@ export default function StudentPositions(props) {
           </div>
         </div>
         <div className="py-3 flex flex-col selfs-center">
-          <span className="text-slate-800 font-bold text-lg" >Role Description:</span>
+          <span className="text-slate-800 font-bold text-xl" >Role Description:</span>
           <div
-            className={` text-sm self-center ${isReadMore && 'line-clamp-2'
+            className={` text-md ${isReadMore && 'line-clamp-2'
               }`}
           >
             {' '}
@@ -170,7 +205,7 @@ export default function StudentPositions(props) {
           </div>
           <button
             onClick={handleReadMore}
-            className=" hover:text-slate-500 bg-none rounded text-sm font-bold self-center text-left"
+            className=" hover:text-slate-500 bg-none rounded text-md font-bold text-left"
           >
             {isReadMore ? 'Read More...' : 'Read Less...'}
           </button>
@@ -267,6 +302,7 @@ export default function StudentPositions(props) {
             type="file"
             id="resume"
             name="resume"
+            accept=".doc,.pdf,image/*"
             className="py-2 px-4 border border-gray-400 rounded-lg shadow-md text-gray-700 font-medium bg-white cursor-pointer"
             onChange={handleFileInputChange}
           />
