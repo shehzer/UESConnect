@@ -8,6 +8,7 @@ const config = require('../config/default.json')
 const transporter = require('../email/transporter')
 import { Router, useRouter } from 'next/router'
 
+
 /**
  *
  * Upon login I want to be able to
@@ -188,7 +189,7 @@ module.exports = {
         }
         if (newPassword) {
           flag = true
-          var encryptedPassword = await bcrypt.hash(password, 10)
+          var encryptedPassword = await bcrypt.hash(newPassword, 10)
           changedUser = await (
             await User.updateOne({ _id: _id }, { password: encryptedPassword })
           ).modifiedCount
