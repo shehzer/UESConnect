@@ -195,7 +195,10 @@ module.exports = {
         }
         if (flag) {
           const newUser = await User.findOne({ _id })
-          return newUser
+          return {
+            userID: newUser.id,
+            ...newUser._doc,
+          }
         }
         else {
           throw new ApolloError(
