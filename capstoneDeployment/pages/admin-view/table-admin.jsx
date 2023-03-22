@@ -142,24 +142,21 @@ export default function tableAdmin(props) {
     
           if(id==element.userID)
           {
-            element.name=name
-            element.year=year
-            element.role=role
-            element.program=program
-            element.headshotURL = data.editExec.headshotURL
+            element.name= data.editUser.name
+            element.userID = data.editUser.userID
+            element.clubID = data.editUser.clubID
+            element.clubName = data.editUser.clubName
+            element.role = data.editUser.role
+            element.password = data.editUser.password
+            element.token = data.editUser.token
+            element.email = data.editUser.email
           }
     
           return element
         })
 
-        // if(data.editUser)
-        // {
-        //   let temp = admins.map((element, index)=>({...element}))
-
-        // }
-        // temp.push(data.registerUser)
-        // setAdmin([...temp])
-      
+        setAdmin([...newArr])
+    
       },
 
       onError: (err)=>{console.log(err)}
