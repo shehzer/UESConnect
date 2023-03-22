@@ -127,6 +127,9 @@ module.exports = {
         changedClub = await (
           await Club.updateOne({ _id: ID }, { name: name })
         ).modifiedCount
+
+        const club = await Club.findOne({ _id: ID })
+        await User.updateOne({ _id: club.userID }, { clubName: name })
       }
       if (department) {
         changedClub = await (

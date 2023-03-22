@@ -83,6 +83,7 @@ module.exports = {
         name: clubName,
         department: null,
         description: null,
+        userID: user._id
       })
 
       const clubRes = await newClub.save() //This is where MongoDB actually saves
