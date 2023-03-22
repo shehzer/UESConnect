@@ -17,7 +17,6 @@ export default function studentLanding(props) {
   const [searchTerm, setSearchTerm] = useState('')
   const [showGreeting, setShowGreeting] = useState(false) // state for showing greeting popup
   const [viewOnlyLiked, setViewOnlyLiked] = useState(false)
-  console.log(viewOnlyLiked, 'bitch hoe')
 
   useEffect(() => {
     // check local storage to see if user has previously visited

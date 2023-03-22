@@ -17,13 +17,17 @@ export default function positionLanding(props) {
   const [searchTerm, setSearchTerm] = useState('')
   const [showGreeting, setShowGreeting] = useState(false) // state for showing greeting popup
   const [viewOnlyLiked, setViewOnlyLiked] = useState(false)
-  // console.log(viewOnlyLiked, 'bitch hoe')
+
 
   const [clubPositions, setClubPositions] = useState([])
 
   useEffect(() => {
     fetchClubPositions()
-    setIsLoading(false)
+    const hasVisited = localStorage.getItem('hasVisited')
+    if (!hasVisited) {
+      setShowGreeting(true)
+      localStorage.setItem('hasVisited', true)
+    }
   }, [])
 
   function viewLiked() {
@@ -92,8 +96,6 @@ export default function positionLanding(props) {
       })
   }
 
-  const hrefClub = '/student-view/student-landing'
-
   async function fetchClubPositions() {
     const clubPositions = [];
 
@@ -119,6 +121,8 @@ export default function positionLanding(props) {
       }
     }
     console.log(clubPositions)
+    setIsLoading(false)
+    console.log(isLoading, 'isloading')
     setClubPositions(clubPositions)
   }
 
