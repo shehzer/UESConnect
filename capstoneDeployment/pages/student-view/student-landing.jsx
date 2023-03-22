@@ -191,7 +191,7 @@ export default function studentLanding(props) {
         </div>
       )}
       <div className="w-4/5 h-full">
-        {isLoading ? (
+        {isLoading && !showGreeting ? (
           <APILoadingScreen />
         ) : (
           <div className="grid grid-cols-2 grid-flow-row pt-16 pb-12 min-h-screen ">
