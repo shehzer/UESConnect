@@ -152,9 +152,10 @@ module.exports = {
 
       // Create new Token
     },
-    deleteUser: async (_, { email }) => {
+    deleteUser: async (_, { ID: _id }) => {
       // Check if user exists
-      const user = await User.findOne({ email })
+      const user = await User.findOne({ _id })
+      console.log(user)
       // Check if we got a user
       if (user) {
         const wasDeleted = (await User.deleteOne(user)).deletedCount
