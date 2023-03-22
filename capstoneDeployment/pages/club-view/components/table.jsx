@@ -85,7 +85,7 @@ export default function table(props) {
 
 
 
-  const deleteExec = gql`mutation Mutation($clubId: String, $execId: String) {
+  const deleteExecM = gql`mutation Mutation($clubId: String, $execId: String) {
     deleteExec(clubId: $clubId, execId: $execId)
   }`
 
@@ -128,6 +128,17 @@ export default function table(props) {
       
     }
   }
+
+  const [deleteExec] = useMutation(deleteExecM, {
+    onCompleted: (data) => {
+      let temp = team.filter((element, index)=>(element._id!=id))
+      console.log(temp)
+      setTeam([...temp])
+      setLoading(false)
+    
+    },
+    onError: (err)=>{console.log(err, "i am erroring on deletung an exec"); setLoading(false)}
+});
 
   const [execUpload] = useMutation(uploadExec, {
     onCompleted: (data) => {
@@ -233,9 +244,9 @@ function addUser()
   setLoading(true)
 
 
-  if(file[0]!=undefined)
+  if(file!=undefined||file!='')
   {
-    execUpload({variables:{file:file[0], clubId:props.clubID, execAdd:{name:name, role:role, year:year, program:program}}})
+    execUpload({variables:{file:file, clubId:props.clubID, execAdd:{name:name, role:role, year:year, program:program}}})
   }
   else
   {
@@ -251,10 +262,10 @@ function addUser()
 
 function deleteUser()
 {
-  let temp = team.filter((element, index)=>(element._id!=id))
-  console.log(temp)
-  setTeam([...temp])
+  deleteExec({variables:{clubId:props.clubID, execId:id}})
+
   toggleLow()
+
 }
 
 function confirmEdit()

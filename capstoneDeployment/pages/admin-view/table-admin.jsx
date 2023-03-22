@@ -12,9 +12,9 @@ export default function tableAdmin(props) {
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const [match, setMatch] = useState(false)
     const [password2, setPass2] = useState('')
     const [clubName, setClub] = useState('')
+    const [oldPass, setOld] = useState('')
     const [id, setID] = useState('')
   
     const [admins, setAdmin] = useState([])
@@ -23,9 +23,6 @@ export default function tableAdmin(props) {
     const [editAction, setAction] = useState();
     const toggleHigh = ()=>{setVisible(true)}
     const toggleLow = ()=>{setVisible(false)}
-
-     
-
     const columns = [
       { name: "NAME", uid: "name" },
       { name: "EMAIL", uid: "email" },
@@ -52,57 +49,60 @@ export default function tableAdmin(props) {
     }
   }`
 
+  const deleteAdminM = gql`
+  mutation DeleteUser($id: ID!) {
+    deleteUser(ID: $id)
+  }`
+
+  const addQ = gql`
+  mutation Mutation($registerInput: RegisterInput) {
+    registerUser(registerInput: $registerInput) {
+      clubID
+      clubName
+      email
+      name
+      password
+      role
+      token
+      userID
+    }
+  }
+  `
+
+
+  const editQ = gql`
+  mutation Mutation($changeUserInput: ChangeUserInput) {
+    editUser(changeUserInput: $changeUserInput) {
+      userID
+      name
+      email
+      password
+      role
+      token
+      clubName
+      clubID
+    }
+  }
+  `
 
   const setItems = async()=>
   {
-
     let result = await getItems()
-
     setAdmin([...result.data.getAdminList.adminList])
-
   }
 
   const getItems = async()=>{
-
-
     return client.query({query:getAdmins, variables:{name:null}}).then((data)=>{
       console.log(data)
       return data
     })
 
   }
-
-
-
   useEffect(()=>{
 
     setItems()
 
-
   },[])
-
-
-    const addQ = gql`
-    mutation Mutation($registerInput: RegisterInput) {
-      registerUser(registerInput: $registerInput) {
-        clubID
-        clubName
-        email
-        name
-        password
-        role
-        token
-        userID
-      }
-    }
-    `
-
-
-    const editQ = gql`
-    mutation Mutation($changeUserInput: ChangeUserInput) {
-      editUser(changeUserInput: $changeUserInput)
-    }`
-
 
 
     const [adminUpload] = useMutation(addQ, {
@@ -117,15 +117,46 @@ export default function tableAdmin(props) {
       onError: (err)=>{alert(err)}
           });
 
+    
+
+    const [deleteAdmin] = useMutation(deleteAdminM, {
+      onCompleted: (data) => {
+        console.log(data);
+        let temp = admins.filter((element, index)=>(element.userID!=id))
+        console.log(temp)
+        setAdmin([...temp])
+
+      
+      },
+      onError: (err)=>{alert(err)}
+          });
+
     const [editAdmin] = useMutation(editQ, {
       onCompleted: (data) => {
         console.log(data);
 
-        if(data.editUser)
-        {
-          let temp = admins.map((element, index)=>({...element}))
+        let temp = admins.map((element, index)=>({...element}))
 
-        }
+
+        const newArr = temp.map((element, index)=>{
+    
+          if(id==element.userID)
+          {
+            element.name=name
+            element.year=year
+            element.role=role
+            element.program=program
+            element.headshotURL = data.editExec.headshotURL
+          }
+    
+          return element
+        })
+
+        // if(data.editUser)
+        // {
+        //   let temp = admins.map((element, index)=>({...element}))
+
+        // }
         // temp.push(data.registerUser)
         // setAdmin([...temp])
       
@@ -138,8 +169,11 @@ export default function tableAdmin(props) {
   function setEdit(user, index){
     setName(user.name)
     setEmail(user.email)
-    setPassword(user.password)
     setClub(user.clubName)
+    setPassword('')
+    setPass2('')
+    setID(user.userID)
+    setOld(user.password)
   
   }
 
@@ -148,6 +182,7 @@ export default function tableAdmin(props) {
     setName('')
     setEmail('')
     setPassword('')
+    setPass2('')
     setClub('')
 
   }
@@ -176,55 +211,31 @@ export default function tableAdmin(props) {
 
   function addUser()
   { 
-
     let qInput = {registerInput:{clubName:clubName, email:email, name:name, password:password, role:"ADMIN"}}
-
     console.log(qInput)
-
-
-
     adminUpload({variables:qInput})
-
-
-
   }
 
 
   function editUser()
   {
-    // {
-    //   "changeUserInput": {
-    //     "_id": "6418ebe469eb18967eb8e9ee",
-    //     "newEmail": "new@gmail.com",
-    //     "newName": "new323email",
-    //     "newPassword": "password",
-    //     "password": "password"
-    //   }
-    // }
-
     editAdmin({variables:{
       changeUserInput:{
-        _id: "6418ebe469eb18967eb8e9ee",
-        newEmail:"shehzerisgay@gmail.com",
-        newName:"shezy",
-        newPassword:"jasdasdl;mas;saf",
-        password:"password"
+        _id: id,
+        newEmail:email,
+        newName:name,
+        newPassword:password,
+        password:oldPass
       }
     }
   })
   }
 
-
   function deleteUser()
   {
-    let temp = team.filter((element, index)=>(element._id!=id))
-    console.log(temp)
-    console.log("hello")
-    setTeam([...temp])
-
+    console.log("I am deleting", id)
+    deleteAdmin({variables:{id:id}})
   }
-
-
 
 
   function renderCell(user, columnKey){
@@ -401,8 +412,7 @@ export default function tableAdmin(props) {
             fullWidth
             color="primary"
             size="lg"
-            label="Password"
-            placeholder={password?password:"Password"}
+            label={editAction=='edit'?"New Password":"Password"}
             onChange={(e)=>{setPassword(e.target.value)}}
             aria-labelledby="password"
            
@@ -443,7 +453,8 @@ export default function tableAdmin(props) {
       
       }
         <Modal.Footer aria-labelledby="team-footer" >
-           {editAction!="delete"?<Button className="bg-blue-600"  onPress={handleConfirm} disabled={password!=password2 || password==""}>Confirm</Button>:
+           {editAction!="delete"?<Button className="bg-blue-600"  onPress={handleConfirm} 
+           disabled={editAction=="edit"?password!=password2:password!=password2||password==''}>Confirm</Button>:
            <Button className="bg-rose-600" color='error' onPress={handleConfirm}>DELETE</Button> }
             <Button  bordered color='error' onPress={toggleLow}>Cancel</Button>
 
