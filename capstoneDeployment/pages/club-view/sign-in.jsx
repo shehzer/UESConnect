@@ -13,19 +13,17 @@ const config = require('../../pages/api/config/default.json')
 import Cookies from 'js-cookie'
 
 
-export default function signIn() {
+export default function signIn(props) {
   const router = useRouter()
 
-  const username = useRef('')
-  const password = useRef('')
+  const [username, setUser] = useState('')
+  const [password, setPass] = useState('')
 
   const handleKeyDown = function(event){
     if(event.key === 'Enter') {
       logIn()
     }
   }
-
-
 
   const mutationQ = gql`
   mutation Mutation($loginInput: LoginInput) {
@@ -37,29 +35,6 @@ export default function signIn() {
   }
   
   `
-    // name
-    // department
-    // description
-    // logoURL
-    // execs {
-    //   _id
-    //   name
-    //   role
-    //   year
-    //   program
-    //   headshotURL
-    // }
-    // adminList {
-    //   userID
-    //   name
-    //   email
-    //   password
-    //   role
-    //   token
-    //   clubName
-    //   clubID
-    // }
-
 const queryQ = gql`query Query($id: ID!) {
     club(ID: $id) {
       execs {
@@ -83,23 +58,18 @@ const queryQ = gql`query Query($id: ID!) {
         mutation: mutationQ,
         variables: {
           loginInput: {
-            email: username.current.value,
-            password: password.current.value,
+            email: username,
+            password: password
           },
         },
       })
       .then((data) => {
 
+
         console.log("initial", data)
-
         let role = data.data.loginUser.userRole
-
-        // let payload = data.data.loginUser.adminList
-
         let token = data.data.loginUser.token
         let ID = data.data.loginUser._id
-
-
         Cookies.set('token', token)
 
 
@@ -121,60 +91,12 @@ const queryQ = gql`query Query($id: ID!) {
           
         }
 
-     
-
-
-
-        // if(role=="MASTER")
-        // {
-        //   payload.map((item)=>(delete item.__typename))
-   
-        //   router.push({
-        //     pathname: '../admin-view/admin-landing',
-        //     query: {
-        //       admins:JSON.stringify(payload)
-        //     },
-        //   })
-
-        // }
-        // else
-        // {
-        //   let clubData = data.data.loginUser
-        //   client.query({
-        //     query: queryQ,
-        //     variables: {
-        //         id: clubData._id
-        //     },
-        //   })
-        //   .then((data2) => {
-      
-        //     clubData.execs = data2.data.club.execs
-        //     clubData.logoURL = data2.data.club.execs.logoURL
-        //     console.log(clubData)
-  
-        //   router.push({
-        //     pathname: 'club-landing',
-        //     query: {
-        //       id: clubData._id,
-        //       name: clubData.name,
-        //       department: clubData.department,
-        //       description: clubData.description,
-        //       execs: JSON.stringify(clubData.execs),
-        //     },
-        //   })
-      
-        //   })
-        //   .catch((e) => {
-        //     alert(e.message)
-        //   })
-  
-
-        // }
-
       })
       .catch((e) => {
         alert(e.message)
       })
+
+    
   }
 
   return (
@@ -196,21 +118,23 @@ const queryQ = gql`query Query($id: ID!) {
         style={{ display: 'flex', flexDirection: 'column', marginTop: '50px' }}
       >
         <Input
-          ref={username}
           className=" bg-black mb-8"
           color="primary"
           size="xl"
           bordered
           label="Email Address"
+          value={username}
+          onChange={(e)=>{setUser(e.target.value)}}
         />
         <Input.Password
           onKeyDown={handleKeyDown}
-          ref={password}
           className="bg-black mb-8"
           size="xl"
           color="primary"
           bordered
           label="Password"
+          onChange={(e)=>{setPass(e.target.value)}}
+          value={password}
         />
 
         <Button  className='bg-blue-600' onPress={logIn}>

@@ -358,7 +358,7 @@ export default function tableAdmin(props) {
       >
         <Modal.Header aria-labelledby="team-header" >
           <Text id="modal-title" size={18}>
-            Team Editor
+            Admin Editor
           </Text>
         </Modal.Header>
        {editAction!="delete"?
@@ -441,7 +441,7 @@ export default function tableAdmin(props) {
             color="primary"
             size="lg"
             disabled
-            placeholder={name}
+            placeholder={clubName}
             aria-labelledby="team-program"
           />
       </Modal.Body>

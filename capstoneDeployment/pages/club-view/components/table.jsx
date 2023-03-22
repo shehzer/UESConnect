@@ -94,7 +94,7 @@ export default function table(props) {
     setRole(user.role)
     setYear(user.year)
     setProgram(user.program)
-    setFile(user.headshotURL)
+    setFile('')
     setID(user._id)
   }
 
@@ -189,6 +189,7 @@ const [editExec] = useMutation(editExecs, {
     console.log(newArr)
 
     setTeam([...newArr])
+    setLoading(false)
     toggleLow()
   
   },
@@ -223,6 +224,7 @@ const [editExecNoF] = useMutation(editExecs, {
 
     setTeam([...newArr])
     toggleLow()
+    setLoading(false)
   
   },
   onError: (err)=>{console.log(err, "i am erroring on editing exec with no file "); setLoading(false)}
@@ -273,6 +275,7 @@ function confirmEdit()
 
   console.log(name, id, year, program)
   console.log(file)
+  setLoading(true)
 
   if(file=='https://stackdiary.com/140x100.png'||file==''||file==undefined)
   {
@@ -502,7 +505,10 @@ function renderCell(user, columnKey){
       }
         <Modal.Footer aria-labelledby="team-footer" >
            {editAction!="delete"?<Button className='bg-blue-600' onPress={handleConfirm} 
-           disabled={!(name&&role&&year&&program)}>Save</Button>:
+           disabled={!(name&&role&&year&&program)}>
+            {loading && <Loading type="spinner" color="currentColor" size="md" />}
+            {!loading && 'Save'}
+            </Button>:
            <Button className="bg-rose-600" color='error' onPress={handleConfirm}>DELETE</Button> }
             <Button  bordered color='error' onPress={toggleLow}>Cancel</Button>
 

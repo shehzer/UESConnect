@@ -32,19 +32,15 @@ export default function amdinLanding(props) {
 
     jwt.verify(token, config.jwtSecret, (err, decoded)=>{
       console.log(err, decoded)
-
-
       if(!decoded)
       {
         router.push({pathname:'/club-view/sign-in'})
-        return
+
       }
       else if(err)
       {
-    
           router.push({pathname:'/club-view/sign-in'})
           alert("Your session has expired.")
-
       }
       else if(decoded.role!="MASTER")
       {
@@ -58,9 +54,16 @@ export default function amdinLanding(props) {
 
   },[])
 
+
+
+
+  function logout()
+  {
+    Cookies.set('token','')
+
+    router.push({pathname:'/club-view/sign-in'})
+  }
   
-
-
 
   return (
 
@@ -73,6 +76,7 @@ export default function amdinLanding(props) {
           className="bg-[#0072F5]"
           style={{ position: 'absolute', top: 0, right: 10 }}
           size="xs"
+          onPress={logout}
         >
           Log Out
         </Button>

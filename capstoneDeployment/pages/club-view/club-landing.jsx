@@ -44,48 +44,6 @@ export default function clubLanding(props) {
   }
 
 
- 
-  useEffect(()=>{
-
-    let token = Cookies.get('token')
-
-    jwt.verify(token, config.jwtSecret, (err, decoded)=>{
-
-      console.log(decoded)
-      if(!decoded)
-      {
-        router.push({pathname:'/club-view/sign-in'})
-        return
-      }
-      else if(err)
-      {
-    
-          router.push({pathname:'/club-view/sign-in'})
-          alert("Your session has expired.")
-          return
-  
-      }
-      else if(decoded.role!="ADMIN")
-      {
-        router.push({
-          pathname:'/club-view/sign-in',
-  
-        })
-  
-      }
-  
-    });
-
-    
-
-
-
-  },[])
-
-
-
-
-
   function navigateApplications(position_id, position_name) {
     setPositionId(position_id)
     setPositionName(position_name)

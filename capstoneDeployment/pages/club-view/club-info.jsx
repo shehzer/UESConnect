@@ -9,8 +9,11 @@ import useSWR from 'swr'
 import { gql, useMutation, useQuery } from '@apollo/client'
 import client from '../../components/apollo-client'
 import { Router, useRouter } from 'next/router'
+import Cookies from 'js-cookie'
+const jwt = require('jsonwebtoken')
 import graphql from 'graphql'
 const validator = require('validator');
+const config = require('../../pages/api/config/default.json')
 
 
 export default function clubInfo(props) {
@@ -20,11 +23,13 @@ export default function clubInfo(props) {
   const [department, setDep] = useState(
     props.department == undefined ? 'Insert Department!' : props.department,
   )
+  const router = useRouter()
   const [description, setDes] = useState(
     props.description == undefined ? 'Insert Description!' : props.description,
   )
   const [load, setLoad] = useState(false)
   const[logo, setLogo] = useState('')
+
 
 
   const UPLOAD_FILE = gql`mutation UploadClubLogo($file: Upload, $clubId: String) {
@@ -98,7 +103,23 @@ const getItems = async()=>
 
 useEffect(()=>{
 
-  setItems()
+
+  let token = Cookies.get('token')
+
+  jwt.verify(token, config.jwtSecret, (err, decoded)=>{
+    if(!decoded||err||decoded.role!="ADMIN")
+    {
+      router.push({pathname:'/club-view/sign-in'})
+
+    }
+    else
+    {
+      setItems()
+    }
+  }
+  )
+
+  
 
 },[])
    
@@ -181,7 +202,7 @@ const save = async function () {
         <div className={styles.imageBox}>
           <Text size="larger">Set Your Club Logo</Text>
 
-          <input type="file" name="GraphQLUploadForMedium" accept="image/*" onChange={handleFileChange}/>
+          <input type="file" name="GraphQLUploadForMedium" accept="image/*" onChange={handleFileChange} />
 
 
         </div>
