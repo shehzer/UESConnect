@@ -39,7 +39,7 @@ export const CreateModalBody: FC<CreateModalBodyProps> = ({ onDismiss, onSubmit,
 
   const questionList = questions.map((question, i) => {
     return (
-      <div className={styles.questionContainer} id={'question' + (i + 1)}>
+      <div className={styles.questionContainer} key={'question' + (i+1)} id={'question' + (i + 1)}>
         <Text className={styles.inputLabel}>{'Question ' + (i + 1)}</Text>
         <div className={styles.questionLine}>
           <Input
@@ -59,7 +59,7 @@ export const CreateModalBody: FC<CreateModalBodyProps> = ({ onDismiss, onSubmit,
 
   const skillList = skills.map((skill, i) => {
     return (
-      <div className={styles.questionContainer} id={'question' + (i + 1)}>
+      <div className={styles.questionContainer} key={'skill' + (i+1)} id={'question' + (i + 1)}>
         <Text className={styles.inputLabel}>{'Skill ' + (i + 1)}</Text>
         <div className={styles.questionLine}>
           <Input

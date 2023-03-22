@@ -1,4 +1,5 @@
 const { exec } = require('child_process')
+const User = require('../models/User')
 const Club = require('../models/Club')
 const object = require('../models/Object')
 import {createWriteStream} from 'fs'

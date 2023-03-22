@@ -45,10 +45,6 @@ export const ApplicationsModalBody: FC<ApplicationModalProps> = ({
     {name: "ACTIONS", uid: "actions"}
   ]
 
-  const handleDownload = function(downloadURL: string){
-
-  }
-
   const displayApplicationModal = function(applic:applicationResponse){
     setSelectedApplication(applic)
     setShowApplicationModal(true)
@@ -62,7 +58,7 @@ export const ApplicationsModalBody: FC<ApplicationModalProps> = ({
   const renderRow = (applic: applicationResponse) => {
     return (
       <Table.Row key={applic._id}>
-        <Table.Cell>
+        <Table.Cell key={applic._id + 'name'}>
           <Col>
             <Row>
               <Text b size={16} css={{ tt: "capitalize" }}>
@@ -71,7 +67,7 @@ export const ApplicationsModalBody: FC<ApplicationModalProps> = ({
             </Row>
           </Col>
         </Table.Cell>
-        <Table.Cell>
+        <Table.Cell key={applic._id + 'email'}>
           <Col>
             <Row>
               <Text size={14} >
@@ -80,7 +76,7 @@ export const ApplicationsModalBody: FC<ApplicationModalProps> = ({
             </Row>
           </Col>
         </Table.Cell>
-        <Table.Cell>
+        <Table.Cell key={applic._id + 'desc'}>
           <Col>
             <Row css={{maxWidth: '800px'}}>
               <Text size={14} css={{ tt: "capitalize", overflow: "clip", textOverflow: "ellipsis"}}>
@@ -89,7 +85,7 @@ export const ApplicationsModalBody: FC<ApplicationModalProps> = ({
             </Row>
           </Col>
         </Table.Cell>
-        <Table.Cell>
+        <Table.Cell key={applic._id + 'actions'}>
           <Col>
             <Row justify="center" align="center">
               <Col css={{d: "flex"}}>
@@ -143,30 +139,30 @@ export const ApplicationsModalBody: FC<ApplicationModalProps> = ({
   )
 
 
-  const applicationList = applicationsArr.map((application, i) => {
-    const questionList = application.qA.map((question, i) => {
-      return (
-        <div className={styles.qaContainer}>
-          <Text className={styles.label}>Question:</Text>
-          <Text className={styles.question}>{question.question}</Text>
-          <Text className={styles.label}>Answer:</Text>
-          <Text className={styles.ans}>{question.answer}</Text>
-        </div>
-      )
-    })
-    return (
-      <div className={styles.applicationContainer}>
-        <Text className={styles.label}>Name:</Text>
-        <Text className={styles.output}>{application.name}</Text>
-        <Text className={styles.label}>Email:</Text>
-        <Text className={styles.output}>{application.email}</Text>
-        <Text className={styles.label}>Description:</Text>
-        <Text className={styles.output}>{application.description}</Text>
-        <Text className={styles.subHeader}>Question Answers:</Text>
-        <div>{questionList}</div>
-      </div>
-    )
-  })
+  // const applicationList = applicationsArr.map((application, i) => {
+  //   const questionList = application.qA.map((question, i) => {
+  //     return (
+  //       <div className={styles.qaContainer}>
+  //         <Text className={styles.label}>Question:</Text>
+  //         <Text className={styles.question}>{question.question}</Text>
+  //         <Text className={styles.label}>Answer:</Text>
+  //         <Text className={styles.ans}>{question.answer}</Text>
+  //       </div>
+  //     )
+  //   })
+  //   return (
+  //     <div className={styles.applicationContainer}>
+  //       <Text className={styles.label}>Name:</Text>
+  //       <Text className={styles.output}>{application.name}</Text>
+  //       <Text className={styles.label}>Email:</Text>
+  //       <Text className={styles.output}>{application.email}</Text>
+  //       <Text className={styles.label}>Description:</Text>
+  //       <Text className={styles.output}>{application.description}</Text>
+  //       <Text className={styles.subHeader}>Question Answers:</Text>
+  //       <div>{questionList}</div>
+  //     </div>
+  //   )
+  // })
 
   const fetchApplications = useCallback(async () => {
     setApplicationsArr(await getApplications(position_id))

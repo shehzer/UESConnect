@@ -14,7 +14,7 @@ export const ApplicationModalBody: FC<ApplicationProps> = ({ application, onDism
 
   const questionList = application.qA.map((q, i) => {
     return (
-      <div className={styles.questionSection}>
+      <div className={styles.questionSection} key={'question' + i}>
         <Text b key={q.question + 'i'} className={styles.question}>
           {q.question}
         </Text>
