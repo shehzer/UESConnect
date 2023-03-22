@@ -7,38 +7,34 @@ import { Input, Spacer, Text, Card, Grid } from '@nextui-org/react'
 import { Router, useRouter } from 'next/router'
 import { gql } from '@apollo/client'
 import client from '../../components/apollo-client'
+const jwt = require('jsonwebtoken')
+const validator = require('validator');
+const config = require('../../pages/api/config/default.json')
+import Cookies from 'js-cookie'
 
 import Table from './components/table'
 
 export default function clubTeam(props) {
 
+  const router = useRouter()
 
-  function save(newTeam) {
 
-    let sendTeam = newTeam.map((item)=>({...item}))
-    sendTeam.forEach((item, index)=>{ delete item.__typename; delete item.headshotURL})
+  useEffect(()=>{
 
-    console.log("sendteam", sendTeam)
+      let token = Cookies.get('token')
+    
+        jwt.verify(token, config.jwtSecret, (err, decoded)=>{
+        if(!decoded||err||decoded.role!="ADMIN"||Object.keys(props).length==0)
+        {
+          router.push({pathname:'/club-view/sign-in'})
+    
+        }
 
-    const mutationQ = gql`
-      mutation Mutation($id: ID!, $clubInput: ClubInput) {
-        editClub(ID: $id, clubInput: $clubInput)
       }
-    `
-    client
-      .mutate({
-        mutation: mutationQ,
-        variables: { id: props.ID, clubInput: { execs: sendTeam } },
-      })
-      .then((result) => {
-        console.log(result)
+      )
 
-        props.update(newTeam)
-      })
-      .catch((e) => {
-        alert(e.message)
-      })
-  }
+    
+  },[])
 
   return (
     <div className={styles.container}>
@@ -46,7 +42,7 @@ export default function clubTeam(props) {
         Team Information
       </h1>
 
-          <Table execs={props.team} save={save} clubID = {props.ID}></Table>
+          <Table  clubID = {props.ID}></Table>
 
     </div>
   )
