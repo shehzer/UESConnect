@@ -106,8 +106,8 @@ useEffect(()=>{
 
   let token = Cookies.get('token')
 
-  jwt.verify(token, config.jwtSecret, (err, decoded)=>{
-    if(!decoded||err||decoded.role!="ADMIN")
+    jwt.verify(token, config.jwtSecret, (err, decoded)=>{
+    if(!decoded||err||decoded.role!="ADMIN"||Object.keys(props).length==0)
     {
       router.push({pathname:'/club-view/sign-in'})
 
