@@ -3,7 +3,7 @@ import { UpdateModalBody } from '../../components/update_position_modal'
 import { ApplicationsModalBody } from '../../components/view_applications_modal'
 import { position } from '../../public/interfaces/position.interface'
 import {FC, ReactElement, useEffect, useState} from "react";
-import { Table, Row, Col, Tooltip, Text } from "@nextui-org/react";
+import { Table, Row, Col, Tooltip, Text, Button } from "@nextui-org/react";
 import IconButtonWrapper from "./components/IconButton";
 import EditIconWrapper from "./components/EditIcon"
 import DeleteIconWrapper from "./components/DeleteIcon"
@@ -235,43 +235,43 @@ export default function ClubPostions({ID, applicationNavigator}: PositionProps):
               </Table.Body>
             </Table>
           </div>
-          <div className={styles.pageControl}>
-            <button className={styles.pageButton} onClick={decrementPage}>
-              Prev.
-            </button>
-            <p className={styles.plain}>Page: {page}</p>
-            <button className={styles.pageButton} onClick={incrementPage}>
-              Next
-            </button>
-          </div>
+          {/*<div className={styles.pageControl}>*/}
+          {/*  <button className={styles.pageButton} onClick={decrementPage}>*/}
+          {/*    Prev.*/}
+          {/*  </button>*/}
+          {/*  <p className={styles.plain}>Page: {page}</p>*/}
+          {/*  <button className={styles.pageButton} onClick={incrementPage}>*/}
+          {/*    Next*/}
+          {/*  </button>*/}
+          {/*</div>*/}
           <div className={styles.controlsContainer}>
-            <form className={styles.filterForm}>
-              <div className={styles.searchField}>
-                <label>Position ID:</label>
-                <input
-                  value={positionIdFilter}
-                  onChange={({ target }) =>
-                    setPositionIdFilter((target as HTMLInputElement).value)
-                  }
-                />
-              </div>
-              <div className={styles.searchField}>
-                <label>Position Name:</label>
-                <input
-                  value={nameFilter}
-                  onChange={({ target }) =>
-                    setNameFilter((target as HTMLInputElement).value)
-                  }
-                />
-              </div>
-            </form>
+            {/*<form className={styles.filterForm}>*/}
+            {/*  <div className={styles.searchField}>*/}
+            {/*    <label>Position ID:</label>*/}
+            {/*    <input*/}
+            {/*      value={positionIdFilter}*/}
+            {/*      onChange={({ target }) =>*/}
+            {/*        setPositionIdFilter((target as HTMLInputElement).value)*/}
+            {/*      }*/}
+            {/*    />*/}
+            {/*  </div>*/}
+            {/*  <div className={styles.searchField}>*/}
+            {/*    <label>Position Name:</label>*/}
+            {/*    <input*/}
+            {/*      value={nameFilter}*/}
+            {/*      onChange={({ target }) =>*/}
+            {/*        setNameFilter((target as HTMLInputElement).value)*/}
+            {/*      }*/}
+            {/*    />*/}
+            {/*  </div>*/}
+            {/*</form>*/}
             <div className={styles.miscControls}>
-              <button className={styles.searchButton} onClick={() => searchPositions()}>
-                Search
-              </button>
-              <button className={styles.createButton} onClick={presentCreateModal}>
-                Create New
-              </button>
+              {/*<button className={styles.searchButton} onClick={() => searchPositions()}>*/}
+              {/*  Search*/}
+              {/*</button>*/}
+              <Button className={styles.createButton} onClick={presentCreateModal}>
+                Create Position
+              </Button>
             </div>
           </div>
         </div>
