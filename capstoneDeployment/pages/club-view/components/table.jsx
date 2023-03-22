@@ -31,11 +31,80 @@ export default function table(props) {
       { name: "ACTIONS", uid: "actions" },
   ];
 
+  const uploadExec = gql`mutation Mutation($file: Upload!, $clubId: String, $execAdd: ExecAdd) {
+    addExec(file: $file, clubId: $clubId, execAdd: $execAdd) {
+      _id
+      name
+      program
+      role
+      year
+      headshotURL
+    }
+  }`
+
+  const uploadExecNoFile = gql`mutation Mutation($clubId: String, $execAdd: ExecAdd) {
+    addExec(clubId: $clubId, execAdd: $execAdd) {
+      _id
+      name
+      program
+      role
+      year
+      headshotURL
+    }
+  }`
+
+  const getClubExecs= gql`
+  query Query($id: ID!) {
+    club(ID: $id) {
+      _id
+      name
+      department
+      description
+      execs {
+        _id
+        headshotURL
+        name
+        program
+        role
+        year
+      }
+      logoURL
+    }
+  }`
+
+  const editExecs = gql`mutation EditExec($file: Upload, $clubId: String, $execInput: ExecsInput) {
+    editExec(file: $file, clubId: $clubId, execInput: $execInput) {
+      _id
+      headshotURL
+      name
+      program
+      role
+      year
+    }
+  }`
+
+
+  const editExecsNoFile = gql`mutation EditExec($clubId: String, $execInput: ExecsInput) {
+    editExec(clubId: $clubId, execInput: $execInput) {
+      _id
+      headshotURL
+      name
+      program
+      role
+      year
+    }
+  }`
+
+  const deleteExec = gql`mutation Mutation($clubId: String, $execId: String) {
+    deleteExec(clubId: $clubId, execId: $execId)
+  }`
+
   function editUser(user, index){
     setName(user.name)
     setRole(user.role)
     setYear(user.year)
     setProgram(user.program)
+    setFile(user.headshotURL)
     setID(user._id)
   }
 
@@ -70,47 +139,6 @@ export default function table(props) {
     }
   }
 
-  const uploadExec = gql`mutation Mutation($file: Upload!, $clubId: String, $execAdd: ExecAdd) {
-    addExec(file: $file, clubId: $clubId, execAdd: $execAdd) {
-      _id
-      name
-      program
-      role
-      year
-      headshotURL
-    }
-  }`
-
-  const getClubExecs= gql`
-  query Query($id: ID!) {
-    club(ID: $id) {
-      _id
-      name
-      department
-      description
-      execs {
-        _id
-        headshotURL
-        name
-        program
-        role
-        year
-      }
-      logoURL
-    }
-  }`
-
-  const uploadExecWithoutFile = gql`mutation Mutation($clubId: String, $execAdd: ExecAdd) {
-    addExec(clubId: $clubId, execAdd: $execAdd) {
-      _id
-      name
-      program
-      role
-      year
-      headshotURL
-    }
-  }`
-
   const [execUpload] = useMutation(uploadExec, {
     onCompleted: (data) => {
       let temp = team.map((element, index)=>({...element}))
@@ -122,12 +150,59 @@ export default function table(props) {
     onError: (err)=>{console.log(err, "i am erroring on exec upload"); setLoading(false)}
 });
 
+
+const [execUploadNoFile] = useMutation(uploadExecNoFile, {
+  onCompleted: (data) => {
+    let temp = team.map((element, index)=>({...element}))
+    temp.push(data.addExec)
+    setTeam([...temp])
+    setLoading(false)
+  
+  },
+  onError: (err)=>{console.log(err, "i am erroring on exec uploadNoFile"); setLoading(false)}
+});
+
+const [editExec] = useMutation(editExecs, {
+  onCompleted: (data) => {
+
+    console.log(data)
+    let payload = data.editExec
+    console.log(payload.headshotURL)
+    let temp = team.map((element, index)=>({...element}))
+
+    console.log(id, name, role, program, year)
+
+
+    const newArr = temp.map((element, index)=>{
+
+      if(id==element._id)
+      {
+        element.name=name
+        element.year=year
+        element.role=role
+        element.program=program
+        element.file = payload.headshotURL
+      }
+
+      return element
+    })
+
+    console.log(newArr)
+
+    setTeam([...newArr])
+    toggleLow()
+  
+  },
+  onError: (err)=>{console.log(err, "i am erroring on execEditFile"); setLoading(false)}
+});
+
+
 const handleFileChange = (e) => {
   const file = e.target.files;
-  console.log(file, "from handleFileChange")
+  console.log(file[0], "from handleFileChange")
 
   if (!file) return;
-  setFile(file)
+  setFile(file[0])
 
 };
    
@@ -137,7 +212,17 @@ function addUser()
 { 
   setLoading(true)
 
-  execUpload({variables:{file:file[0], clubId:props.clubID, execAdd:{name:name, role:role, year:year, program:program}}})
+
+  if(file[0]!=undefined)
+  {
+    execUpload({variables:{file:file[0], clubId:props.clubID, execAdd:{name:name, role:role, year:year, program:program}}})
+  }
+  else
+  {
+    execUploadNoFile({variables:{clubId:props.clubID, execAdd:{name:name, role:role, year:year, program:program}}})
+  }
+
+
 
   toggleLow()
 
@@ -152,30 +237,22 @@ function deleteUser()
   toggleLow()
 }
 
-function saveEdit()
+function confirmEdit()
 {
-  let temp = team.map((element, index)=>({...element}))
 
-  console.log(id, name, role, program, year)
+  console.log(name, id, year, program)
+  console.log(file)
 
+  if(file=='https://stackdiary.com/140x100.png')
+  {
 
-  const newArr = temp.map((element, index)=>{
+  }
+  else
+  {
+    editExec({variables:{file:file, clubId:props.clubID, execInput:{_id:id,name:name, role:role, year:year, program:program}}})
 
-    if(id==element._id)
-    {
-      element.name=name
-      element.year=year
-      element.role=role
-      element.program=program
-    }
+  }
 
-    return element
-  })
-
-  console.log(newArr)
-
-  setTeam([...newArr])
-  toggleLow()
 }
 
 
@@ -327,7 +404,7 @@ function renderCell(user, columnKey){
         onClose={toggleLow}
       >
         <Modal.Header aria-labelledby="team-header" >
-          <Text id="modal-title" size={18}>
+          <Text id="modal-title" size={18} >
             Team Editor
           </Text>
         </Modal.Header>
@@ -339,21 +416,23 @@ function renderCell(user, columnKey){
             clearable
             bordered
             fullWidth
-            color="primary"
             size="lg"
             placeholder= {name?name:"Name"}
             onChange={(e)=>{setName(e.target.value)}}
+            label="Name"
+            
+      
   
           />
           <Input
             clearable
             bordered
             fullWidth
-            color="primary"
             size="lg"
             placeholder={role?role:"Role"}
             onChange={(e)=>{setRole(e.target.value)}}
             aria-labelledby="role"
+            label="Role"
            
           />
           <Text style={{alignSelf:"center"}} >Year</Text>
@@ -365,6 +444,7 @@ function renderCell(user, columnKey){
               <input
           type="file"
           name="GraphQLUploadForMedium"
+          accept="image/*"
           onChange={handleFileChange}
         />
 

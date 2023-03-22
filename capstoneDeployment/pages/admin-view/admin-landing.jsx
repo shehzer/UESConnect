@@ -48,14 +48,6 @@ export default function amdinLanding(props) {
 
   
 
-  function addAdmin()
-  {
-
-  }
-
-
-
-
 
 
   return (

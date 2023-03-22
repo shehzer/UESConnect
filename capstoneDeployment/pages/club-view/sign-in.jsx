@@ -112,6 +112,14 @@ const queryQ = gql`query Query($id: ID!) {
               },
             })
         }
+        else
+        {
+          router.push({
+            pathname: '../admin-view/admin-landing',
+
+          })
+          
+        }
 
      
 

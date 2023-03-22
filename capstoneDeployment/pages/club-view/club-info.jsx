@@ -181,7 +181,7 @@ const save = async function () {
         <div className={styles.imageBox}>
           <Text size="larger">Set Your Club Logo</Text>
 
-          <input type="file" name="GraphQLUploadForMedium" accept="image/x-png,image/gif,image/jpeg" onChange={handleFileChange}/>
+          <input type="file" name="GraphQLUploadForMedium" accept="image/*" onChange={handleFileChange}/>
 
 
         </div>
