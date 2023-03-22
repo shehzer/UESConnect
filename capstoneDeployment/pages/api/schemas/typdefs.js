@@ -31,7 +31,7 @@ module.exports = gql`
     deleteExec(clubId: String, execId: String): Boolean!
     deleteUser(email: String): Boolean!
     editUser(changeUserInput: ChangeUserInput): Boolean!
-
+    uploadClubLogo( file: Upload, clubId: String): String
   }
 
   input ChangeUserInput {

@@ -220,5 +220,35 @@ module.exports = {
         console.log(wasDeleted)
       return wasDeleted
     },
+    uploadClubLogo: async(
+      _,
+      {file, clubId}
+    ) =>{
+      let objectResponse = await object.findOne({objType: "logo", objId: clubId})
+      let { filename, createReadStream} = await file.file;
+      let stream = createReadStream();
+      let fullName = `${clubId}${filename}`
+      let resAWS = await uploadToS3(fullName,stream)
+      console.log(objectResponse)
+      try{
+        console.log(objectResponse.url)
+        let objChange = await object.updateOne({objId: clubId, objType: "logo"},{$set:{"url": resAWS.Location}})
+        console.log(objChange)
+
+      }catch{
+        console.log("we in here")
+        let createdObject = new object({
+          filename: resAWS.key,
+          url: resAWS.Location,
+          objType: "logo",
+          objId: clubId,
+        })
+  
+        console.log("createdObject", createdObject)
+        const result = await createdObject.save() //This is where MongoDB actually saves
+        console.log("this is result", result)
+      }
+      return resAWS.Location
+    },
   },
 };
