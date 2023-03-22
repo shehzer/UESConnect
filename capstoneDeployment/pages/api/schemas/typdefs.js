@@ -32,7 +32,7 @@ module.exports = gql`
     editExec(file: Upload, clubId: String, execInput: ExecsInput): Execs
     deleteExec(clubId: String, execId: String): Boolean!
     deleteUser(ID: ID!): Boolean!
-    editUser(changeUserInput: ChangeUserInput): Boolean!
+    editUser(changeUserInput: ChangeUserInput): User!
     uploadClubLogo( file: Upload, clubId: String): String
   }
 

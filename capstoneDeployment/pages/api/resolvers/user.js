@@ -172,24 +172,37 @@ module.exports = {
       const user = await User.findOne({ _id })
       console.log(user)
       var changedUser = 0
-      if (user && (password == user.password)) {
+      var flag = false
+      if (user && password == user.password) {
         if (newName) {
+          flag = true
           changedUser = await (
             await User.updateOne({ _id: _id }, { name: newName })
           ).modifiedCount
         }
         if (newEmail) {
+          flag = true
           changedUser = await (
             await User.updateOne({ _id: _id }, { email: newEmail })
           ).modifiedCount
         }
         if (newPassword) {
+          flag = true
           var encryptedPassword = await bcrypt.hash(password, 10)
           changedUser = await (
             await User.updateOne({ _id: _id }, { password: encryptedPassword })
           ).modifiedCount
         }
-        return changedUser
+        if (flag) {
+          const newUser = await User.findOne({ _id })
+          return newUser
+        }
+        else {
+          throw new ApolloError(
+            'No fields were changed',
+            'INVALID_ENTRY',
+          )
+        }
       }
       throw new ApolloError(
         'User does not exist or wrong password ',
