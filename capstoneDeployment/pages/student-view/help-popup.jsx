@@ -13,11 +13,11 @@ const HelpPopUp = (props) => {
     <div className=" fixed top-0 w-full h-full bg-white bg-opacity-60 flex-col flex justify-center items-center">
       <div className=" fixed bg-gray-800 text-white py-2 px-4 rounded-lg opacity-100 top-40 ">
         <p className="py-1 text-xl font-bold">
-          Welcome to UES Connect! Your home to browse avaialable positions
+          Welcome to UES Connect! Your home to browse available positions
           at Engineering clubs on Campus!
         </p>
         <p className="py-1">
-          Click on a club to view the avaialable positions, then click
+          Click on a club to view the available positions, then click
           'apply' to apply!
         </p>
         <div className="flex py-1">
