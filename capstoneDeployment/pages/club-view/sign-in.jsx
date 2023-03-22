@@ -18,6 +18,7 @@ export default function signIn(props) {
 
   const [username, setUser] = useState('')
   const [password, setPass] = useState('')
+  const [load, setLoad] = useState(false)
 
   const handleKeyDown = function(event){
     if(event.key === 'Enter') {
@@ -52,7 +53,6 @@ const queryQ = gql`query Query($id: ID!) {
 
   const logIn = async function () {
 
-
     client
       .mutate({
         mutation: mutationQ,
@@ -64,6 +64,9 @@ const queryQ = gql`query Query($id: ID!) {
         },
       })
       .then((data) => {
+
+        setLoad(false)
+        
 
 
         console.log("initial", data)
@@ -93,8 +96,11 @@ const queryQ = gql`query Query($id: ID!) {
 
       })
       .catch((e) => {
+        setLoad(false)
         alert(e.message)
       })
+
+   
 
     
   }
@@ -137,8 +143,9 @@ const queryQ = gql`query Query($id: ID!) {
           value={password}
         />
 
-        <Button  className='bg-blue-600' onPress={logIn}>
-          Log In
+        <Button  className='bg-blue-600' onPress={()=>{setLoad(true);logIn()}}>
+          {load && <Loading type="spinner" color="currentColor" size="md" />}
+            {!load && 'Log In'}
         </Button>
       </div>
 
