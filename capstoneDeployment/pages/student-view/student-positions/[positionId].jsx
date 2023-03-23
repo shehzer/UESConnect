@@ -58,8 +58,6 @@ export default function StudentPositions(props) {
     e.preventDefault()
     if (!validator.isEmail(userEmail)) {
       alert('Please enter a valid email.');
-    } else if (validator.isAlpha(userName.trim())) {
-      alert('Please enter your name.');
     } else {
       applicationUpload({
         variables: {
