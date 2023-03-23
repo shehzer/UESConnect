@@ -50,7 +50,6 @@ export default function StudentPositions(props) {
   }
 
   const handleNameChange = (event) => {
-    str = event.replace(/\s+/g, '');
     setUserName(event.target.value)
     console.log(event.target.value)
   }
