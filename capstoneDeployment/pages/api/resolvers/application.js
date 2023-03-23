@@ -84,7 +84,7 @@ module.exports = {
         from: testAccount.user,
         to: email,
         subject: 'Thanks for Applying!',
-        text: `Hi ${name} Woohoo! \n  We just received your application for the Position: ${positionID}. We're so excited you're interested in growing your career at Dune Mountain.`,
+        text: `Hi ${name} Woohoo! \n  We just received your application. Here is the position description: ${description}.  We're so excited you're interested in growing your career at Dune Mountain.`,
       }
   
       transporter.sendMail(options, function (err, info) {
