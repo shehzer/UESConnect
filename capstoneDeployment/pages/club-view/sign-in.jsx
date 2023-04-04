@@ -26,6 +26,7 @@ export default function signIn(props) {
     }
   }
 
+
   const mutationQ = gql`
   mutation Mutation($loginInput: LoginInput) {
     loginUser(loginInput: $loginInput) {
@@ -53,6 +54,8 @@ const queryQ = gql`query Query($id: ID!) {
 
   const logIn = async function () {
 
+    sanitize(username)
+
     client
       .mutate({
         mutation: mutationQ,
@@ -67,9 +70,6 @@ const queryQ = gql`query Query($id: ID!) {
 
         setLoad(false)
         
-
-
-        console.log("initial", data)
         let role = data.data.loginUser.userRole
         let token = data.data.loginUser.token
         let ID = data.data.loginUser._id
