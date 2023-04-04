@@ -54,8 +54,6 @@ const queryQ = gql`query Query($id: ID!) {
 
   const logIn = async function () {
 
-    sanitize(username)
-
     client
       .mutate({
         mutation: mutationQ,
