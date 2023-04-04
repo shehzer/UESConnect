@@ -40,7 +40,6 @@ export default function clubInfo(props) {
 
   const [fileUpload] = useMutation(UPLOAD_FILE, {onCompleted: (data) => {
     
-    console.log(data)
     setLogo(data.uploadClubLogo)
 
   }});
@@ -133,7 +132,13 @@ useEffect(()=>{
 const save = async function () {
   
   setLoad(true)
-  console.log(department)
+
+  let cleanN = sanitize(clubName)
+  let cleanDes = sanitize(description)
+
+  setClubName(cleanN)
+  setDes(cleanDes)
+
 
   const mutationQ = gql`
     mutation Mutation($id: ID!, $clubInput: ClubInput) {
@@ -147,9 +152,9 @@ const save = async function () {
       variables: {
         id: props.ID,
         clubInput: {
-          name: clubName,
+          name: cleanN,
           department: department,
-          description: description,
+          description: cleanDes,
         },
       },
     })
@@ -188,20 +193,6 @@ const save = async function () {
         </div>
         <Text size='large' >Set Your Engineering Department</Text>
         <div className={styles.infoBox}>
-
-          {/* <Input
-            id="club-department"
-            bordered
-            width="40%"
-            label="Set Your Engineering Department"
-            status="default"
-            size="xl"
-            shadow={false}
-            value={department}
-            onChange={(e) => {
-              setDep(e.target.value)
-            }}
-          /> */}
 
           <Dropdown type="program" initial={department} save={setDep}/>
         </div>

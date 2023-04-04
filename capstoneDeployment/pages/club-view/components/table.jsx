@@ -8,6 +8,10 @@ import { Modal, Button,  Input,  Checkbox, Loading} from "@nextui-org/react";
 import Dropdown from './dropdown'
 import { gql, useMutation } from '@apollo/client'
 import client from '../../../components/apollo-client'
+import Cookies from 'js-cookie'
+const jwt = require('jsonwebtoken')
+import { Router, useRouter } from 'next/router'
+const config = require('../../../pages/api/config/default.json')
 
 
 
@@ -24,6 +28,7 @@ export default function table(props) {
   const toggleHigh = ()=>{setVisible(true)}
   const toggleLow = ()=>{setVisible(false)}
   const [loading, setLoading] = useState(false)
+  const router = useRouter()
 
   const columns = [
       { name: "NAME", uid: "name" },
@@ -134,7 +139,7 @@ export default function table(props) {
   const [deleteExec] = useMutation(deleteExecM, {
     onCompleted: (data) => {
       let temp = team.filter((element, index)=>(element._id!=id))
-      console.log(temp)
+
       setTeam([...temp])
       setLoading(false)
     
@@ -168,7 +173,6 @@ const [execUploadNoFile] = useMutation(uploadExecNoFile, {
 const [editExec] = useMutation(editExecs, {
   onCompleted: (data) => {
 
-    console.log(data)
     let payload = data.editExec
     console.log(payload.headshotURL)
     let temp = team.map((element, index)=>({...element}))
@@ -188,7 +192,6 @@ const [editExec] = useMutation(editExecs, {
       return element
     })
 
-    console.log(newArr)
 
     setTeam([...newArr])
     setLoading(false)
@@ -202,7 +205,6 @@ const [editExec] = useMutation(editExecs, {
 const [editExecNoF] = useMutation(editExecs, {
   onCompleted: (data) => {
 
-    console.log(data)
     let payload = data.editExec
     console.log(payload.headshotURL)
     let temp = team.map((element, index)=>({...element}))
@@ -222,7 +224,6 @@ const [editExecNoF] = useMutation(editExecs, {
       return element
     })
 
-    console.log(newArr)
 
     setTeam([...newArr])
     toggleLow()
@@ -234,7 +235,6 @@ const [editExecNoF] = useMutation(editExecs, {
 
 const handleFileChange = (e) => {
   const file = e.target.files;
-  console.log(file[0], "from handleFileChange")
 
   if (!file) return;
   setFile(file[0])
@@ -275,8 +275,6 @@ function deleteUser()
 function confirmEdit()
 {
 
-  console.log(name, id, year, program)
-  console.log(file)
   setLoading(true)
 
   if(file=='https://stackdiary.com/140x100.png'||file==''||file==undefined)
@@ -331,9 +329,28 @@ const getItems = async()=>
 
 useEffect(()=>{
 
-  console.log(props.ID)
+      let token = Cookies.get('token')
 
-  setItems()
+        
+      jwt.verify(token, config.jwtSecret, (err, decoded)=>{
+ 
+      if(!decoded||err||decoded.role!="ADMIN"||Object.keys(props).length==0||props.clubID==undefined)
+      {
+
+        router.push({pathname:'/club-view/sign-in'})
+
+      }
+      else
+      {
+        setItems()
+
+      }
+
+    }
+    )
+
+
+
 
 },[])
 
