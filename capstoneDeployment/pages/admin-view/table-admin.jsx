@@ -151,7 +151,6 @@ export default function tableAdmin(props) {
             element.token = data.editUser.token
             element.email = data.editUser.email
           }
-    
           return element
         })
 

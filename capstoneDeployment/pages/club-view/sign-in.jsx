@@ -18,12 +18,14 @@ export default function signIn(props) {
 
   const [username, setUser] = useState('')
   const [password, setPass] = useState('')
+  const [load, setLoad] = useState(false)
 
   const handleKeyDown = function(event){
     if(event.key === 'Enter') {
       logIn()
     }
   }
+
 
   const mutationQ = gql`
   mutation Mutation($loginInput: LoginInput) {
@@ -65,8 +67,8 @@ const queryQ = gql`query Query($id: ID!) {
       })
       .then((data) => {
 
-
-        console.log("initial", data)
+        setLoad(false)
+        
         let role = data.data.loginUser.userRole
         let token = data.data.loginUser.token
         let ID = data.data.loginUser._id
@@ -93,8 +95,11 @@ const queryQ = gql`query Query($id: ID!) {
 
       })
       .catch((e) => {
+        setLoad(false)
         alert(e.message)
       })
+
+   
 
     
   }
@@ -137,8 +142,9 @@ const queryQ = gql`query Query($id: ID!) {
           value={password}
         />
 
-        <Button  className='bg-blue-600' onPress={logIn}>
-          Log In
+        <Button  className='bg-blue-600' onPress={()=>{setLoad(true);logIn()}}>
+          {load && <Loading type="spinner" color="currentColor" size="md" />}
+            {!load && 'Log In'}
         </Button>
       </div>
 

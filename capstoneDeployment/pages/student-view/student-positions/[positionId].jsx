@@ -50,7 +50,6 @@ export default function StudentPositions(props) {
   }
 
   const handleNameChange = (event) => {
-    str = event.replace(/\s+/g, '');
     setUserName(event.target.value)
     console.log(event.target.value)
   }
@@ -59,8 +58,6 @@ export default function StudentPositions(props) {
     e.preventDefault()
     if (!validator.isEmail(userEmail)) {
       alert('Please enter a valid email.');
-    } else if (validator.isAlpha(userName.trim())) {
-      alert('Please enter your name.');
     } else {
       applicationUpload({
         variables: {

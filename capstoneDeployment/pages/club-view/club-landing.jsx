@@ -91,7 +91,6 @@ export default function clubLanding(props) {
     }
   }
 
-  console.log(name)
   return (
     <div>
       <div className={styles.topBar}>
