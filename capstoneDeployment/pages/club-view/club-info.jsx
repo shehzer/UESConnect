@@ -133,12 +133,6 @@ const save = async function () {
   
   setLoad(true)
 
-  let cleanN = sanitize(clubName)
-  let cleanDes = sanitize(description)
-
-  setClubName(cleanN)
-  setDes(cleanDes)
-
 
   const mutationQ = gql`
     mutation Mutation($id: ID!, $clubInput: ClubInput) {
