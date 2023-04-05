@@ -146,9 +146,9 @@ const save = async function () {
       variables: {
         id: props.ID,
         clubInput: {
-          name: cleanN,
+          name: clubName,
           department: department,
-          description: cleanDes,
+          description: description,
         },
       },
     })
