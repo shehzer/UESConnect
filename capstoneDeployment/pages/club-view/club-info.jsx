@@ -133,12 +133,6 @@ const save = async function () {
   
   setLoad(true)
 
-  let cleanN = sanitize(clubName)
-  let cleanDes = sanitize(description)
-
-  setClubName(cleanN)
-  setDes(cleanDes)
-
 
   const mutationQ = gql`
     mutation Mutation($id: ID!, $clubInput: ClubInput) {
@@ -152,9 +146,9 @@ const save = async function () {
       variables: {
         id: props.ID,
         clubInput: {
-          name: cleanN,
+          name: clubName,
           department: department,
-          description: cleanDes,
+          description: description,
         },
       },
     })
