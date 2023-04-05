@@ -36,7 +36,7 @@ module.exports = {
         q: q,
         clubId: clubId,
       })
-
+      console.log("hello professor Ouda")
       const res = await createdPosition.save() //This is where MongoDB actually saves
       return {
         id: res.id,
