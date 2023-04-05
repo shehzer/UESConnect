@@ -46,6 +46,7 @@ export const CreateModalBody: FC<CreateModalBodyProps> = ({ onDismiss, onSubmit,
             type={'text'}
             width={'85%'}
             className={styles.question}
+            value={question}
             onChange={({ target }) => {
               questions[i] = (target as HTMLInputElement).value
               setQuest([...questions])
@@ -66,6 +67,7 @@ export const CreateModalBody: FC<CreateModalBodyProps> = ({ onDismiss, onSubmit,
             type={'text'}
             width={'85%'}
             className={styles.question}
+            value={skill}
             onChange={({ target }) => {
               skills[i] = (target as HTMLInputElement).value
               setSkills([...skills])
