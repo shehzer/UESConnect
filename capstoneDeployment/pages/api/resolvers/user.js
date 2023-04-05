@@ -160,8 +160,10 @@ module.exports = {
       console.log(user)
       // Check if we got a user
       if (user) {
-        const wasDeleted = (await User.deleteOne(user)).deletedCount
-        return wasDeleted
+        const wasDeletedUser = (await User.deleteOne(user)).deletedCount
+        const wasDeletedClub = (await Club.deleteOne({ _id: user.clubID})).deletedCount
+        console.log(wasDeletedClub)
+        return wasDeletedUser
       }
       throw new ApolloError('User does not exist ', 'INVALID_USER')
     },
